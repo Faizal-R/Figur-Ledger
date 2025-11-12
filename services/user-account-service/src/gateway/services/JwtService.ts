@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import IJwtTokenService from "../../domain/interfaces/services/IJwtTokenService";
-import { IJwtTokenPayload } from "../../types/IJwt";
+import { IJwtTokenPayload } from "../../../../user-account-service/src/types/IJwt";
 import { uuidv4 } from "zod";
 import dotenv from "dotenv";
 dotenv.config();

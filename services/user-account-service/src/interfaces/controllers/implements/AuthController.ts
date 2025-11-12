@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { tryCatch } from "../../../helpers/handlers/tryCatch";
+import { tryCatch } from "../../../../../../packages/handlers/src/tryCatch/tryCatch";
 import { IAuthController } from "../interfaces/IAuthController";
 import { IAuthUseCase } from "../../../interator/useCases/interfaces/IAuthUseCase";
 import { inject, injectable } from "inversify";
@@ -18,22 +18,33 @@ export class AuthController implements IAuthController {
     private _authUseCase: IAuthUseCase
   ) {}
   login = tryCatch(async (req: Request, res: Response) => {
+    console.log("Login request body:", req.body);
     const {
       data: loginInput,
       error,
       success,
     } = userLoginSchema.safeParse(req.body);
     if (!success) {
-      return createResponse(res,HTTP_STATUS_CODE.BAD_REQUEST, false, error.issues[0].message, null);
+      return createResponse(
+        res,
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        false,
+        error.issues[0].message,
+        null
+      );
     }
 
-    const {user, accessToken, refreshToken} = await this._authUseCase.login(loginInput);
+    const { user, accessToken, refreshToken } =
+      await this._authUseCase.login(loginInput);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === "production",
     });
-    createResponse(res, HTTP_STATUS_CODE.SUCCESS, true, "Login successful", user);
+    createResponse(res, HTTP_STATUS_CODE.SUCCESS, true, "Login successful", {
+      user,
+      accessToken,
+    });
   });
   register = tryCatch(async (req: Request, res: Response) => {
     const {
@@ -46,7 +57,14 @@ export class AuthController implements IAuthController {
       return createResponse(res, 400, false, error.issues[0].message, null);
     }
 
-    const user = await this._authUseCase.register(validatedInput);
-    createResponse(res, HTTP_STATUS_CODE.CREATED, true, "Registration successful", user);
+    const { accessToken, refreshToken, user } =
+      await this._authUseCase.register(validatedInput);
+    createResponse(
+      res,
+      HTTP_STATUS_CODE.CREATED,
+      true,
+      "Registration successful",
+      { user, accessToken }
+    );
   });
 }

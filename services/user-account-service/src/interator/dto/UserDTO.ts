@@ -5,6 +5,9 @@ export interface AuthUserDTO{
     fullName:string;
     email: string
     role:string;
+    isActive:boolean,
+    createdAt:DateString
+    phone:string
 }
 export interface AuthUserResponseDTO{
     user:AuthUserDTO
@@ -20,5 +23,6 @@ export interface UserDTO{
     email: string
     role:string;
     isActive:boolean,
-    createdAt:DateString
+    createdAt:DateString,
+    phone:string
 }

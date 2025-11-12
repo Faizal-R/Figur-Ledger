@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { IUser } from "../../../domain/entities/IUser";
+import { IUser } from "../../../domain/entities/User";
 import { AuthUserResponseDTO } from "../../dto/UserDTO";
 import { IAuthUseCase } from "../interfaces/IAuthUseCase";
 import IHashService from "../../../domain/interfaces/services/IHashService";
@@ -9,6 +9,7 @@ import { CustomError } from "../../../errors/CustomError";
 import { HTTP_STATUS_CODE } from "../../../domain/enums/HttpStatusCodes";
 import IJwtTokenService from "../../../domain/interfaces/services/IJwtTokenService";
 import { UserMapper } from "../../mapper/UserMapper";
+import { UserRegisterInput } from "../../../interfaces/validations/auth/AuthSchema";
 
 @injectable()
 export class AuthUseCase implements IAuthUseCase {
@@ -59,7 +60,9 @@ export class AuthUseCase implements IAuthUseCase {
       refreshToken
     );
   }
-  async register(registerData: IUser): Promise<AuthUserResponseDTO> {
+  async register(
+    registerData: UserRegisterInput
+  ): Promise<AuthUserResponseDTO> {
     const { email, password } = registerData;
 
     const existingUser = await this._userRepository.findOne({ email });
@@ -75,6 +78,7 @@ export class AuthUseCase implements IAuthUseCase {
     const newUser = await this._userRepository.create({
       ...registerData,
       password: hashedPassword,
+      lastLoginAt: new Date(),
     });
 
     const tokenId = this._jwtTokenService.generateTokenId();

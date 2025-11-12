@@ -1,4 +1,4 @@
-import { IUser } from "../../domain/entities/IUser";
+import { IUser } from "../../domain/entities/User";
 import { DateString } from "../../types";
 import { AuthUserDTO, AuthUserResponseDTO, UserDTO } from "../dto/UserDTO";
 
@@ -9,6 +9,10 @@ export const UserMapper = {
       fullName: user.fullName,
       email: user.email,
       role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt as DateString,
+      phone: user.phone,
+    
     };
   },
   toAuthUserResponseDTO(user:IUser, accessToken:string, refreshToken:string): AuthUserResponseDTO {
@@ -25,6 +29,7 @@ export const UserMapper = {
       email:user.email,
       role:user.role,
       isActive:user.isActive,
+      phone:user.phone,
       createdAt:user.createdAt as DateString
     }
   }

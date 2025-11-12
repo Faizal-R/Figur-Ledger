@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interfaces/IUserController";
-import { tryCatch } from "../../../helpers/handlers/tryCatch";
+import { tryCatch } from "../../../../../../packages/handlers/src/tryCatch/tryCatch";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserUseCase } from "../../../interator/useCases/interfaces/IUserUseCase";

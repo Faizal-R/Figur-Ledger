@@ -1,8 +1,8 @@
-/* EXPRESS */
-import { Application, Router } from "express";
-/* LIBRARIES */
+
+import { Application } from "express";
+
 import { createProxyMiddleware } from "http-proxy-middleware";
-/* APP */
+
 import { IRoute } from "../types";
 
 export const useApiProxy = (app: Application, routes: IRoute[]) => {

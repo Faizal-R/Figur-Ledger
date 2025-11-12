@@ -1,9 +1,13 @@
-import React from 'react'
+import RegisterForm from "@/components/feature/auth/RegisterForm";
+import BrandingSection from "@/components/feature/auth/BrandingSection";
 
 const RegisterPage = () => {
   return (
-    <div>RegisterPage</div>
-  )
-}
+    <div className="min-h-screen flex bg-[hsl(222_47%_11%)] text-[hsl(210_40%_98%)]">
+      <RegisterForm />
+      <BrandingSection />
+    </div>
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;

@@ -23,6 +23,7 @@ export const errorResponse = (response: Response, error: unknown): void => {
       : error instanceof Error
       ? error.message
       : "Something unexpected happened";
+      
       console.log("ErrorResponse : ",error)
   createResponse(
     response,
