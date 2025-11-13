@@ -5,8 +5,8 @@ import { IRoute } from "../types";
 
 export const useAuth = (app: Application, routes: IRoute[]) => {
   routes.forEach((route) => {
-    if (!route.auth) return;
+    // if (!route.auth) return;
 
-    app.use(route.url, verifyAuthToken, checkRoleAccess(route.roles));
+    app.use(route.url);
   });
 };

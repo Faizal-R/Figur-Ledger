@@ -1,22 +1,31 @@
-import "reflect-metadata";
+import "reflect-metadata"
 import "./di/inversify.config";
-import express from "express";
+
+import app from "./app";
+// import { connectDatabase } from "./gateway/config/db";
+
 import dotenv from "dotenv";
-import cors from "cors";
-import router from "./presentation/routes/routes";
 
 dotenv.config();
-const app = express();
-const port = process.env.PORT
 
-app.use(cors());
-app.use(express.json());
-app.use('/api', router);
+const PORT = process.env.PORT 
 
-app.get('/', (req, res) => {
-  res.send('Hello Worldsssdfsdfsdfsklasjdlfkjslk;djflk;sjdlf;kjslkdjflksjdlfkjslkdfjlksdjlkfjlskdjklfj!');
-});
+const startServer = async () => {
+  try {
+    // await connectDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Server failed to start:", error);
+  }
+};
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+startServer();
+
+// Graceful Shutdown
+// process.on("SIGINT", async () => {
+//   console.log("🔻 Closing server...");
+//   await connectDatabase();
+//   process.exit(0);
+// });
