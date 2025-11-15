@@ -4,8 +4,9 @@ dotenv.config();
 
 export enum ServiceName {
   AUTH = "auth",
-  USERS = "users",
+  USER_ACCOUNT = "user-account",
   NOTIFICATIONS = "notifications",
+  
 }
 
 export const serviceRegistry: Record<ServiceName, ServiceConfig> = {
@@ -15,12 +16,13 @@ export const serviceRegistry: Record<ServiceName, ServiceConfig> = {
     healthCheckPath: "/health",
     timeout: 5000,
   },
-  [ServiceName.USERS]: {
-    name: ServiceName.USERS,
-    target: process.env.USER_SERVICE_URL || "http://localhost:5002",
+  [ServiceName.USER_ACCOUNT]: {
+    name: ServiceName.USER_ACCOUNT,
+    target: process.env.USER_ACCOUNT_SERVICE_URL || "http://localhost:5002",
     healthCheckPath: "/health",
     timeout: 5000,
   },
+  
   [ServiceName.NOTIFICATIONS]: {
     name: ServiceName.NOTIFICATIONS,
     target: process.env.NOTIFICATIONS_SERVICE_URL || "http://localhost:5003",

@@ -1,4 +1,4 @@
-import { Roles } from "@figur-ledger/types";
+import { DateString, Roles } from "@figur-ledger/types";
 
 export interface RegisterRequestDTO {
   email: string;
@@ -9,7 +9,7 @@ export interface RegisterRequestDTO {
   personalInfo: {
     firstName: string;
     lastName: string;
-    dateOfBirth: Date;
+    dateOfBirth: DateString;
   };
   address: {
     street: string;

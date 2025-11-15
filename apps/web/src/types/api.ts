@@ -3,3 +3,11 @@ export interface ApiResponse<T>{
     success:boolean,
     message:string
 }
+
+
+export interface ApiErrorResponse{
+    success:boolean,
+    message:string,
+    status:number,
+    error?:boolean
+}

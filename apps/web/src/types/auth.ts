@@ -1,4 +1,5 @@
 import { IUser } from "./user-account";
+import { DateString, Roles } from "@figur-ledger/types";
 
 export interface LoginRequest {
   email: string;
@@ -10,15 +11,29 @@ export interface LoginResponse {
   user: IUser;
 }
 
-export interface RegisterRequest {
-  fullName: string;
+export interface RegisterRequest  {
   email: string;
+  phone: string;
   password: string;
+  confirmPassword: string;
+  role: Roles;
+  personalInfo: {
+    firstName: string;
+    lastName: string;
+    dateOfBirth: DateString;
+  };
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
 }
 
 export interface RegisterResponse {
-  accessToken: string;
-  user: IUser;
+ email:string;
+ name:string;
 }
 
 export interface ForgotPasswordRequest {
@@ -44,6 +59,7 @@ export interface VerifyOtpRequest {
 }
 
 export interface VerifyOtpResponse {
-  message: string;
-  verified: boolean;
+ user:IUser;
+ accessToken:string
+ 
 }

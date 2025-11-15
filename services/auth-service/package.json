@@ -15,7 +15,9 @@
   "type": "commonjs",
   "dependencies": {
     "@figur-ledger/handlers": "^1.0.0",
+    "@figur-ledger/messaging-sdk": "^1.0.0",
     "@figur-ledger/shared": "^1.0.0",
-    "@figur-ledger/types": "^1.0.0"
+    "@figur-ledger/types": "^1.0.0",
+    "cookie-parser": "^1.4.7"
   }
 }

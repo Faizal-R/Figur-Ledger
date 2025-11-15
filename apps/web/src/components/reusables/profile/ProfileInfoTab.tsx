@@ -1,127 +1,161 @@
-"use client";
+"use client"
+import { User, MapPin, Globe, Edit2 } from 'lucide-react';
+import { FinledgerTheme } from '../../../theme';
+import { PersonalInfo, IUser as UserType, AddressInfo } from '@/types/user-account';
+import { PersonalInfoEditModal } from '@/components/ui/modals/user-account/PersonalInfoEditModal';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@radix-ui/react-separator";
-import { User, Mail, Phone, MapPin } from "lucide-react";
-import EditProfileDialog from "./EditableProfileDialog";
-import { useState } from "react";
-import { useUserProfile } from "@/hooks/api/useProfileAndAccount";
-import { useAuthUser, useAuthUserStore } from "@/store";
-import { IUser } from "@/types/user-account";
-
-interface ProfileInfoTabProps {
-  customerData: IUser;
-  setCustomerData: (data: IUser) => void;
-  // Remove customerData and setCustomerData props since we'll use the store
+interface PersonalInfoTabProps {
+  user: UserType;
+  handleUserProfile: (user: UserType) => void;
 }
 
-const ProfileInfoTab:React.FC<ProfileInfoTabProps> = ({ customerData, setCustomerData }) => {
-  const [isOpen, setIsOpen] = useState(false); // State to manage the dialog visibility
-  const { updateUser } = useAuthUserStore();
-  const { updateUserProfile } = useUserProfile(customerData?.id );
-  
-  const handleEditClick = () => {
-    setIsOpen(true);
+export function PersonalInfoTab({ user,handleUserProfile }: PersonalInfoTabProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(date);
   };
 
-  const handleUpdateUser = async (updatedData: IUser) => {
-    if (!customerData?.id) {
-      throw new Error('User ID is required for update');
-    }
-    
-    try {
-      await updateUserProfile.mutateAsync({ userId: customerData.id, updatedData });
-      setCustomerData(updatedData); // Update local state
-      updateUser(updatedData); // Update the Zustand store
-    } catch (error) {
-      console.error('Failed to update user:', error);
-      throw error;
-    }
-  };  
+  const handleSavePersonalInfo = (updatedUser: Partial<UserType>) => {
+
+    handleUserProfile({
+      ...user,
+      ...updatedUser,}
+)
+   
+    setIsEditModalOpen(false);
+  };
+
   return (
- <>
-   <Card className="bg-slate-800/60 border border-emerald-400/30 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_24px_rgba(16,185,129,0.4)] rounded-2xl transition-all duration-300">
-  <CardHeader>
-    <CardTitle className="text-slate-100 text-2xl">Personal Information</CardTitle>
-    <CardDescription className="text-slate-400">
-      Your contact details and personal information
-    </CardDescription>
-  </CardHeader>
+    <div className="space-y-6">
+      <PersonalInfoEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSavePersonalInfo}
+       userProfile={user}
+      />
 
-  <CardContent className="space-y-6">
-    <div className="grid gap-6 md:grid-cols-2">
-      {/* Full Name */}
-      <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-900/60 border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-lg">
-          <User className="h-5 w-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm text-slate-400">Full Name</p>
-          <p className="font-semibold text-slate-100 mt-1">{customerData?.fullName || "skdflj"}</p>
-        </div>
-      </div>
-
-      {/* Email */}
-      <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-900/60 border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-lg">
-          <Mail className="h-5 w-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm text-slate-400">Email Address</p>
-          <p className="font-semibold text-slate-100 mt-1">{customerData?.email}</p>
-        </div>
-      </div>
-
-      {/* Phone */}
-      <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-900/60 border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-lg">
-          <Phone className="h-5 w-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm text-slate-400">Phone Number</p>
-          <p className="font-semibold text-slate-100 mt-1">{customerData?.phone}</p>
-        </div>
-      </div>
-
-      {/* Address */}
-      {/* <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-900/60 border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-lg">
-          <MapPin className="h-5 w-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm text-slate-400">Address</p>
-          <p className="font-semibold text-slate-100 mt-1">{customerData.address}</p>
-        </div>
-      </div> */}
-    </div>
-
-    <Separator className="bg-slate-700" />
-
-    <div className="flex justify-end">
-      <Button
-        onClick={handleEditClick}
-        className="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] text-white font-semibold px-6 transition-all duration-300"
+      <div
+        className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 relative overflow-hidden group`}
       >
-        Edit Profile
-      </Button>
+        <div className={`absolute inset-0 ${FinledgerTheme.accent.gradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
+        <div className="relative">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 ${FinledgerTheme.accent.gradient} ${FinledgerTheme.radius.sm}`}>
+                <User className="w-5 h-5 text-slate-900" />
+              </div>
+              <h3 className={`text-xl font-semibold ${FinledgerTheme.text.primary}`}>
+                Personal Information
+              </h3>
+            </div>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className={`p-2 hover:bg-slate-800/50 ${FinledgerTheme.radius.md} transition-colors`}
+              title="Edit personal information"
+            >
+              <Edit2 className={`w-5 h-5 ${FinledgerTheme.text.secondary}`} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>
+                First Name
+              </label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.personalInfo.firstName}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>
+                Last Name
+              </label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.personalInfo.lastName}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>
+                Date of Birth
+              </label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {formatDate(new Date(user.personalInfo.dateOfBirth))}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 relative overflow-hidden group`}
+      >
+        <div className={`absolute inset-0 ${FinledgerTheme.accent.gradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
+        <div className="relative">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 ${FinledgerTheme.accent.gradient} ${FinledgerTheme.radius.sm}`}>
+                <MapPin className="w-5 h-5 text-slate-900" />
+              </div>
+              <h3 className={`text-xl font-semibold ${FinledgerTheme.text.primary}`}>
+                Address Details
+              </h3>
+            </div>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className={`p-2 hover:bg-slate-800/50 ${FinledgerTheme.radius.md} transition-colors`}
+              title="Edit address"
+            >
+              <Edit2 className={`w-5 h-5 ${FinledgerTheme.text.secondary}`} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="md:col-span-2">
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>
+                Street Address
+              </label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.address.street}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>City</label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.address.city}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>State</label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.address.state}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>
+                ZIP Code
+              </label>
+              <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                {user.address.zipCode}
+              </p>
+            </div>
+            <div>
+              <label className={`text-sm ${FinledgerTheme.text.muted} mb-2 block`}>Country</label>
+              <div className="flex items-center gap-2">
+                <Globe className={`w-4 h-4 ${FinledgerTheme.text.secondary}`} />
+                <p className={`text-lg ${FinledgerTheme.text.primary} font-medium`}>
+                  {user.address.country}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </CardContent>
-</Card>
-
-
-{customerData && (
-  <EditProfileDialog 
-    isOpen={isOpen} 
-    setIsOpen={setIsOpen} 
-    customerData={customerData} 
-    setCustomerData={(data) => updateUser(data)}
-    onUpdateUser={handleUpdateUser}
-  />
-)}
- </>
-
   );
-};
-
-export default ProfileInfoTab;
+}

@@ -3,9 +3,9 @@ import { DI_TOKENS } from "./types";
 
 
 
-import { UserPersistenceMapper } from "../infrastructure/persistence/mappers/UserPersistenceMapper";
+import { AuthUserPersistenceMapper } from "../infrastructure/persistence/mappers/AuthUserPersistenceMapper";
 import { IMapper } from "@figur-ledger/shared";
 
 
 
-container.bind(DI_TOKENS.MAPPERS.USER_PERSISTENCE_MAPPER).to(UserPersistenceMapper);
+container.bind(DI_TOKENS.MAPPERS.AUTH_USER_PERSISTENCE_MAPPER).to(AuthUserPersistenceMapper);

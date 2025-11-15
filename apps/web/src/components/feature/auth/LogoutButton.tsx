@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/buttons/button";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/api/useAuth";
@@ -19,7 +19,7 @@ export const LogoutButton = ({
   className = "" 
 }: LogoutButtonProps) => {
   const router = useRouter();
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
   const { logout: clearUserFromStore } = useAuthUserStore();
 
   const handleLogout = async () => {

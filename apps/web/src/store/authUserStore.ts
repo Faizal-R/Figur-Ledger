@@ -1,22 +1,33 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { IUser } from '@/types/user-account';
+
 
 interface AuthUserState {
-  user: IUser | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  token:string |null;
+  setToken:(token:string|null)=>void
 }
 
+interface AuthUser{
+  id:string;
+  email:string;
+   role:string
+  phone:string;
+}
+
+
 interface AuthUserActions {
-  setUser: (user: IUser | null) => void;
-  updateUser: (updatedUser: Partial<IUser>) => void;
+  setUser: (user: AuthUser | null) => void;
+  updateUser: (updatedUser: Partial<AuthUser>) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearUser: () => void;
-  login: (user: IUser) => void;
+  login: (user: AuthUser) => void;
   logout: () => void;
+  
 }
 
 type AuthUserStore = AuthUserState & AuthUserActions;
@@ -83,6 +94,8 @@ export const useAuthUserStore = create<AuthUserStore>()(
           error: null,
         });
       },
+      token: null,
+  setToken: (token) => set({ token }),
     }),
     {
       name: 'auth-user-storage', // unique name for localStorage key

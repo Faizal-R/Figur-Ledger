@@ -1,28 +1,24 @@
-import { DateString } from "../../types";
+import { DateString } from "@figur-ledger/types";
 
-export interface AuthUserDTO{
-    id: string
-    fullName:string;
-    email: string
-    role:string;
-    isActive:boolean,
-    createdAt:DateString
-    phone:string
-}
-export interface AuthUserResponseDTO{
-    user:AuthUserDTO
-    accessToken:string,
-    refreshToken:string
-}
+export interface UserDTO {
+  id: string;
+  email: string;
+  phone: string;
+  personalInfo: {
+    firstName: string;
+    lastName: string;
 
+    dateOfBirth: Date;
+  };
 
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
 
-export interface UserDTO{
-    id: string
-    fullName:string;
-    email: string
-    role:string;
-    isActive:boolean,
-    createdAt:DateString,
-    phone:string
+  createdAt: DateString;
+  updatedAt: DateString;
 }

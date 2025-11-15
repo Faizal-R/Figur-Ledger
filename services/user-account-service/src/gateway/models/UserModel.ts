@@ -7,14 +7,22 @@ const UserSchema = new Schema({
     type: Types.ObjectId, 
     required: true 
   },
+  email: { 
+    type: String, 
+    required: true, 
+  },
+  phone:{
+  type:Number,
+  required:true
+  },
+  avatarKey:{
+    type:String,
+    default:null
+  },
   personalInfo: {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date, required: true }
-  },
-  contact: {
-    email: { type: String, required: true },
-    phone: { type: String, required: true }
   },
   address: {
     street: { type: String, required: true },

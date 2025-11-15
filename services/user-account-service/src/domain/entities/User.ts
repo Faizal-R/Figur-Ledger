@@ -1,12 +1,9 @@
+import { DateString } from "@figur-ledger/types";
+
 export interface PersonalInfo {
   firstName: string;
   lastName: string;
   dateOfBirth: Date;
-}
-
-export interface ContactInfo {
-  email: string;
-  phone: string;
 }
 
 export interface AddressInfo {
@@ -20,10 +17,12 @@ export interface AddressInfo {
 export class User {
   constructor(
     public readonly id: string,
+    public readonly email: string,
+    public readonly phone: string,
+    public readonly avatarKey: string|null,
     public personalInfo: PersonalInfo,
-    public contact: ContactInfo,
     public address: AddressInfo,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly createdAt?: DateString,
+    public readonly updatedAt?: DateString
   ) {}
 }

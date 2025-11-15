@@ -8,13 +8,11 @@ export default class AuthUserDtoProfile{
             email: user.email,
             phone: user.phone,
             emailVerified: user.emailVerified,
-            phoneVerified: user.phoneVerified,
-            twoFactorAuthEnabled: user.twoFactorAuth?.enabled || false,
+            // phoneVerified: user.phoneVerified,
+            // twoFactorAuthEnabled: user.twoFactorAuth?.enabled || false,
             role: user.role,
             status: user.status,
-            lastLogin: user.lastLogin ,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+            
         };
     }
 

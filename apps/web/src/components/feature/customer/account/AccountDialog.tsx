@@ -16,7 +16,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/buttons/button";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { IAccount } from "@/types/user-account";

@@ -1,9 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends":"../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist", 
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "outDir": "./dist",
   },
-  "include": ["src/**/*", "../auth-service/src/infrastructure/services"]
-
+  "include": ["src/**/*"]
 }

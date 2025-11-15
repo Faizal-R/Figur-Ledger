@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, CreditCard, Settings } from "lucide-react";
+import { Home, User, CreditCard, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/api/useAuth";
+import { toast } from "sonner";
 
 // Icon mapping
 const iconMap = {
@@ -22,6 +24,15 @@ interface SidebarProps {
 
 const Sidebar = ({navItems}: SidebarProps) => {
   const pathname = usePathname();
+  const {logout}=useAuth()
+  const handleLogout = () =>
+  logout.mutate(undefined, {
+    onSuccess: () => toast.success("logged out successfully")
+  });
+
+
+
+  
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-900 border-r border-slate-700 flex flex-col shadow-emerald-500/30">
@@ -52,6 +63,17 @@ const Sidebar = ({navItems}: SidebarProps) => {
           );
         })}
       </nav>
+       <div className="p-4 border-t border-gray-800">
+        <button
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+          onClick={handleLogout}
+        >
+          <LogOut size={20} />
+          <span>
+            Logout
+          </span>
+        </button>
+      </div>
 
       {/* Footer / Version / Logout */}
       <div className="border-t border-slate-800 p-4">

@@ -2,12 +2,13 @@ import { inject, injectable } from "inversify";
 import { IAccountController } from "../interfaces/IAccountController";
 import { DI_TOKENS } from "../../../di/types";
 import { IAccountUseCase } from "../../../interator/useCases/interfaces/IAccountUseCase";
-import { IAccount } from "../../../domain/entities/Account";
+import { Account } from "../../../domain/entities/Account";
 import { Request, Response } from "express";
-import { tryCatch } from "../../../../../../packages/handlers/src/tryCatch/tryCatch";
+import { tryCatch,createResponse } from "@figur-ledger/handlers"
 import { AccountSchema } from "../../validations/account/AccountSchema";
-import { createResponse } from "../../../helpers/handlers/response";
-import { HTTP_STATUS_CODE } from "../../../domain/enums/HttpStatusCodes";
+
+
+import { statusCodes } from "@figur-ledger/types";
 @injectable()
 export class AccountController implements IAccountController {
   constructor(
@@ -16,13 +17,16 @@ export class AccountController implements IAccountController {
   ) {}
 
   createAccount = tryCatch(async (req: Request, res: Response) => {
-    const userId = req.query.userId as string;
+    // const userId = req.query.userId as string;
+    console.log("req.body",req.body)
     const accountPayload = req.body;
     const validatedAccountPayload = AccountSchema.safeParse(accountPayload);
+    
     if (!validatedAccountPayload.success) {
+      console.log(validatedAccountPayload.error.issues)
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_REQUEST,
+        statusCodes.BAD_REQUEST,
         false,
         validatedAccountPayload.error.issues[0].message,
         null
@@ -30,18 +34,19 @@ export class AccountController implements IAccountController {
       return;
     }
 
-    const createdAccount = await this._accountUseCase.createAccount({
-      ...validatedAccountPayload.data,
-      userId,
-    });
+    const createdAccount = await this._accountUseCase.createAccount(validatedAccountPayload.data)
     createResponse(
       res,
-      HTTP_STATUS_CODE.CREATED,
+      statusCodes.CREATED,
       true,
       "Account opened successfully",
       createdAccount
     );
   });
+
+
+
+
     updateAccount = tryCatch(async (req: Request, res: Response) => {
       const accountId = req.params.accountId as string;
       const accountPayload = req.body;
@@ -49,7 +54,7 @@ export class AccountController implements IAccountController {
       if (!validatedAccountPayload.success) {
         createResponse(
           res,
-          HTTP_STATUS_CODE.BAD_REQUEST,
+          statusCodes.BAD_REQUEST,
           false,
           validatedAccountPayload.error.issues[0].message,
           null
@@ -59,7 +64,7 @@ export class AccountController implements IAccountController {
       const updatedAccount = await this._accountUseCase.updateAccount(accountId,validatedAccountPayload.data);
         createResponse(
           res,
-          HTTP_STATUS_CODE.SUCCESS,
+          statusCodes.SUCCESS,
           true,
           "Account updated successfully",
           updatedAccount
@@ -71,7 +76,7 @@ export class AccountController implements IAccountController {
     if (!userId) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_REQUEST,
+        statusCodes.BAD_REQUEST,
         false,
         "User Id is required",
         null
@@ -83,7 +88,7 @@ export class AccountController implements IAccountController {
     const accounts = await this._accountUseCase.getAccountsByUserId(userId);
     createResponse(
       res,
-      HTTP_STATUS_CODE.SUCCESS,
+      statusCodes.SUCCESS,
       true,
       "Accounts fetched successfully",
        accounts

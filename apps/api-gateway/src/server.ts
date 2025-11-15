@@ -8,8 +8,7 @@ import { limiter } from "./lib/rate-limiter";
 import { routes } from "./config/routes";
 import morgan from "morgan";
 
-import proxy from "express-http-proxy";
-import { ServiceName, serviceRegistry } from "./config/serviceRegistry";
+
 
 const app: Application = express();
 
@@ -21,15 +20,8 @@ const middlewares = (app: Application) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Auth proxy
-  app.use(
-  "/api/v1/auth",
-  proxy(serviceRegistry[ServiceName.AUTH].target, {
-    proxyReqPathResolver: (req) => `/api/v1/auth${req.url}`,
-  })
-);
-
-  // useApiProxy(app,routes)
+  useAuth(app, routes)
+  useApiProxy(app,routes)
 };
 
 

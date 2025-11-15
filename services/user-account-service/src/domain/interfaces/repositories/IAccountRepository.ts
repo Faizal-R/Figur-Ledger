@@ -1,6 +1,7 @@
-import { IAccount } from "../../entities/Account";
-import { IBaseRepository } from "./IBaseRepository";
+import { IBaseRepository } from "@figur-ledger/shared";
+import { Account } from "../../entities/Account";
 
-export interface IAccountRepository extends IBaseRepository<IAccount> {
- getAccountsByUserId(userId:string):Promise<IAccount[]>
+
+export interface IAccountRepository extends IBaseRepository<Account> {
+ getAccountsByUserId(userId:string):Promise<Account[]>
 }

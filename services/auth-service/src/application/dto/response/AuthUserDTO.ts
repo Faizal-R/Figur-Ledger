@@ -5,11 +5,8 @@ export interface AuthUserResponseDTO {
     email: string;
     phone: string;
     emailVerified: boolean;
-    phoneVerified: boolean;
-    twoFactorAuthEnabled: boolean;
+    phoneVerified?: boolean;
+    twoFactorAuthEnabled?: boolean;
     role: string;
     status: string;
-    lastLogin?: DateString;
-    createdAt?: DateString;
-    updatedAt?: DateString;
 }

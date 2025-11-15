@@ -7,10 +7,17 @@ export const useAuth = () => {
   });
   const register = useMutation({
     mutationFn: AuthService.register,
+    
   });
-  // const logout = useMutation({
-  //   mutationFn: AuthService.logout,
-  // });
 
-  return { login, register };
+  const verifyOtp = useMutation({
+    mutationFn: AuthService.verifyOtp,
+  });
+
+
+  const logout=useMutation({
+    mutationFn:AuthService.logout
+  })
+
+  return { login, register, verifyOtp,logout};
 };

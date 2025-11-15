@@ -13,7 +13,7 @@ export class AuthUserRepository
   implements IAuthUserRepository
 {
   constructor(
-    @inject(DI_TOKENS.MAPPERS.USER_PERSISTENCE_MAPPER)
+    @inject(DI_TOKENS.MAPPERS.AUTH_USER_PERSISTENCE_MAPPER)
     mapper: IMapper<AuthUser, AuthUserDocument>
   ) {
     super(AuthUserModel, mapper);

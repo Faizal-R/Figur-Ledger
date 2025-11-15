@@ -11,9 +11,11 @@ import { IJwtTokenPayload } from "../../types/IJwt";
 import AuthUserDtoProfile from "../profiles/AuthUserDtoProfile";
 import { redis } from "@figur-ledger/shared";
 import { RegisterRequestDTO } from "../dto/request/RegisterRequestDTO";
-import RegisterSchema, {
-  RegisterWithConfirmSchema,
-} from "../../presentation/validations/AuthUserSchema";
+import { RabbitPublisher } from "@figur-ledger/messaging-sdk";
+import { generateOTP } from "../helpers/generateOtp";
+import { RedisKeys } from "../../infrastructure/constants/RedisKeys";
+import { AuthUser } from "../../domain/entities/AuthUser";
+
 @injectable()
 export default class AuthUseCases implements IAuthUseCases {
   constructor(
@@ -77,20 +79,14 @@ export default class AuthUseCases implements IAuthUseCases {
     }
   }
 
-  async register(payload: RegisterRequestDTO): Promise<{email:string,name:string}> {
+  async register(
+    payload: RegisterRequestDTO
+  ): Promise<{ email: string; name: string }> {
     try {
-      // 1. Validate input with Zod
-      const validationResult = RegisterWithConfirmSchema.safeParse(payload);
-      if (!validationResult.success) {
-        const firstError = validationResult.error.issues[0];
-        throw new CustomError(firstError.message, statusCodes.BAD_REQUEST);
-      }
-
-      const validatedData = validationResult.data;
-      
-
       // 2. Check if user already exists
-      const existingUser = await this._authUserRepository.findByEmail(validatedData.email);
+      const existingUser = await this._authUserRepository.findByEmail(
+        payload.email
+      );
       if (existingUser) {
         throw new CustomError(
           "User already exists with this email",
@@ -100,7 +96,7 @@ export default class AuthUseCases implements IAuthUseCases {
 
       // 3. Check if phone number already registered
       const existingPhone = await this._authUserRepository.findOne({
-        phone: validatedData.phone,
+        phone: payload.phone,
       });
       if (existingPhone) {
         throw new CustomError(
@@ -110,7 +106,9 @@ export default class AuthUseCases implements IAuthUseCases {
       }
 
       // 4. Check for ongoing temporary registration
-      const tempUser = await redis.get(`temp:registration:${validatedData.email}`);
+      const tempUser = await redis.get(
+        RedisKeys.TEMP_REGISTRATION(payload.email)
+      );
       if (tempUser) {
         const tempData = JSON.parse(tempUser);
         const remainingMs = tempData.expiresIn - Date.now();
@@ -122,46 +120,131 @@ export default class AuthUseCases implements IAuthUseCases {
       }
 
       // 5. Create temporary registration entry
-      const hashedPassword = await this._hashService.hash(
-        validatedData.password
-      );
-
+      const hashedPassword = await this._hashService.hash(payload.password);
+      const verificationTokenExpiry = process.env.VERIFICATION_TOKEN_EXPIRY;
       const verificationToken = this._tokenService.signAccessToken(
         {
-          sub: validatedData.email,
+          sub: payload.email,
           jti: this._tokenService.generateTokenId(),
           scope: Roles.CUSTOMER,
         },
-        "1d" 
+        verificationTokenExpiry
       );
 
       const tempRegistrationData = {
-        ...validatedData,
-        email: validatedData.email,
-        password: hashedPassword,
+        tempUser: {
+          ...payload,
+          password: hashedPassword,
+        },
         verificationToken,
         expiresIn: Date.now() + 24 * 60 * 60 * 1000,
       };
 
       await redis.setex(
-        `temp:registration:${validatedData.email}`,
+        RedisKeys.TEMP_REGISTRATION(payload.email),
         24 * 60 * 60,
         JSON.stringify(tempRegistrationData)
       );
 
-      // // 6. Send verification email (wrapped in try/catch to avoid breaking flow)
+      const otp = generateOTP();
+      await redis.setex(
+        RedisKeys.VERIFICATION_CODE(payload.email),
+        60 * 10,
+        otp
+      );
+
+      // // 6. Send verification email
+      RabbitPublisher(
+        "user.registered",
+        JSON.stringify({
+          email: payload.email,
+          otp,
+        })
+      );
 
       return {
-        email: validatedData.email,
-      name: `${validatedData.personalInfo.firstName} ${validatedData.personalInfo.lastName}`,
-      }
-
-      
+        email: payload.email,
+        name: `${payload.personalInfo.firstName} ${payload.personalInfo.lastName}`,
+      };
     } catch (error) {
       if (error instanceof CustomError) throw error;
       console.error("Registration error:", error);
       throw new CustomError(
         "Registration failed. Please try again.",
+        statusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async verifyOtp(email: string, otp: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: AuthUserResponseDTO;
+  }> {
+    try {
+      const existingOtp = await redis.get(RedisKeys.VERIFICATION_CODE(email));
+      console.log(existingOtp);
+      if (!existingOtp) {
+        throw new CustomError(
+          "The OTP has expired. Please request a new one.",
+          statusCodes.BAD_REQUEST
+        );
+      }
+
+      if (existingOtp !== otp) {
+        throw new CustomError(
+          "The OTP you entered is incorrect. Please try again.",
+          statusCodes.BAD_REQUEST
+        );
+      }
+
+      // Remove OTP after successful verification
+      await redis.del(RedisKeys.VERIFICATION_CODE(email));
+      const tempUser = await redis.get(RedisKeys.TEMP_REGISTRATION(email));
+      if (!tempUser) {
+      }
+
+      const parsedData = JSON.parse(tempUser as string);
+
+      const authUser: AuthUser = {
+        ...parsedData.tempUser,
+        role: Roles.CUSTOMER,
+        status: "active",
+        emailVerified: true,
+      };
+
+      const createdAuthUser = await this._authUserRepository.create(authUser);
+
+      const accessToken = this._tokenService.signAccessToken({
+        sub: createdAuthUser.id,
+        jti: this._tokenService.generateTokenId(),
+        scope: createdAuthUser.role,
+      });
+
+      const refreshToken = this._tokenService.signRefreshToken({
+        sub: createdAuthUser.id,
+        jti: this._tokenService.generateTokenId(),
+        scope: createdAuthUser.role,
+      });
+
+      RabbitPublisher(
+        "user.registration.verified",
+        JSON.stringify({
+          ...parsedData.tempUser,
+          _id: createdAuthUser.id,
+        })
+      );
+
+      return {
+        accessToken,
+        refreshToken,
+        user: AuthUserDtoProfile.toDto(createdAuthUser),
+      };
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      console.error("OTP verification error:", error);
+      throw new CustomError(
+        "Failed to verify OTP. Please try again later.",
         statusCodes.INTERNAL_SERVER_ERROR
       );
     }

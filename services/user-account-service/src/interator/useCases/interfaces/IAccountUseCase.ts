@@ -1,11 +1,11 @@
-import { IAccount } from "../../../domain/entities/Account";
+import { Account } from "../../../domain/entities/Account";
 
 export interface IAccountUseCase{
-    createAccount(accountPayload:Partial<IAccount>):Promise<IAccount>
-    updateAccount(accountId:string,accountPayload:Partial<IAccount>):Promise<IAccount|null>
-    // deleteAccount(accountId:string):Promise<IAccount>
-    // getAccountById(accountId:string):Promise<IAccount>
-    getAccountsByUserId(userId:string):Promise<IAccount[]>
+    createAccount(accountPayload:Partial<Account>):Promise<Account>
+    updateAccount(accountId:string,accountPayload:Partial<Account>):Promise<Account|null>
+    // deleteAccount(accountId:string):Promise<Account>
+    // getAccountById(accountId:string):Promise<Account>
+    getAccountsByUserId(userId:string):Promise<Account[]>
 
 
 }

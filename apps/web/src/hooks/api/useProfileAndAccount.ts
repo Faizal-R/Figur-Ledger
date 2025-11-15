@@ -1,37 +1,45 @@
-import { AccountService, UserService } from "@/services/api/ProfileAndAccountService";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useApi } from "./useApi";
-import { IAccount, IUser } from "@/types/user-account";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { UserService,AccountService  } from "@/services/api/ProfileAndAccountService";
+import { IUser, IAccount } from "@/types/user-account";
+
+/* ----------------------------------------------------
+   USER PROFILE QUERIES & MUTATIONS
+---------------------------------------------------- */
 
 export const useUserProfile = (userId: string) => {
-    
-    const userProfileQuery = useQuery({
-        queryKey: ['userProfile', userId],
-        queryFn: () => UserService.getById(userId), // use the argument
-        enabled: !!userId, // only fetch if userId exists
-    });
-   const updateUserProfile = useMutation({
-    mutationFn:({ userId, updatedData }: { userId: string; updatedData: IUser }) => UserService.update(userId, updatedData),
-   })
- 
-    return { userProfileQuery ,updateUserProfile};
+  return useQuery({
+    queryKey: ["userProfile", userId],
+    queryFn: () => UserService.getById(userId),
+    enabled: !!userId,
+  });
 };
 
+export const useUpdateUserProfile = (userId: string) => {
+  return useMutation({
+    mutationFn: (updatedData: IUser) =>
+      UserService.update(userId, updatedData),
+  });
+};
 
-export const useUserAccounts = (userId: string) => {
-    const userAccountsQuery = useQuery({
-        queryFn: () => AccountService.getAccountsByUserId(userId),
-        queryKey: ['userAccounts', userId],
-        enabled: !!userId,
-    })
-    const updateUserAccount=useMutation({
-        mutationFn:(updatedData:IAccount)=>AccountService.update(userId,updatedData)
-    })
-    
-    return({
-        userAccountsQuery,
-        updateUserAccount
-    })
-}
+/* ----------------------------------------------------
+   USER ACCOUNTS QUERIES & MUTATIONS
+---------------------------------------------------- */
 
+// export const useUserAccounts = (userId: string) => {
+//   return useQuery({
+//     queryKey: ["userAccounts", userId],
+//     queryFn: () => AccountService.getAccountsByUserId(userId),
+//     enabled: !!userId,
+//   });
+// };
 
+export const useCreateBankAccount = () => {
+  return useMutation({
+    mutationFn: (account: {
+      currency: string;
+      type: string;
+      nickname: string;
+      userId:string
+    }) => AccountService.createBankAccount(account),
+  });
+};

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from 'next/link'
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/buttons/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/api/useAuth";
 import { useAuthUserStore } from "@/store";
-import { IUser } from "@/types/user-account";
+
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -26,36 +26,31 @@ const LoginForm = () => {
     if (!email.trim()) return toast("Please enter your email");
     if (!password.trim()) return toast("Please enter your password");
 
-    try {
-      const res = await login.mutateAsync({email,password});
-      console.log(res);
-      
-      if (res.success) {
-       
-        const userData: IUser = {
-          id: res.data.user.id.toString(),
-          fullName: res.data.user.fullName,
-          email: res.data.user.email,
-          phone:res.data.user.phone, 
-          isActive: true, 
-          createdAt: new Date().toISOString(), 
+  login.mutate(
+  { email, password },
+  {
+    onSuccess: (res) => {
+      console.log(res)
+        setUserInStore({
+          email:res.data.user.email,
+          id:res.data.user.id as string,
+          phone:res.data.user.phone,
           role:res.data.user.role
-          
-        };
-        
-       
-        setUserInStore(userData);
-        
-        
-        navigator.push(`/${res.data.user.role.toLowerCase()}/dashboard`);
-        toast.success("Login successful!");
-      } else {
-        toast.error("Login failed");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
-    }
+        })
+
+        useAuthUserStore.getState().setToken(res.data.accessToken)
+
+      navigator.push(`/${res.data.user.role.toLowerCase()}/dashboard`);
+      toast.success("Login successful!");
+    },
+
+    onError: (err: any) => {
+      // err is ApiErrorResponse because axios interceptor normalizes it
+      toast.error(err.message || "Login failed");
+    },
+  }
+);
+
   };
 
   return (

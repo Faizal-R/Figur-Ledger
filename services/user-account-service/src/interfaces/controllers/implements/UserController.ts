@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interfaces/IUserController";
-import { tryCatch } from "../../../../../../packages/handlers/src/tryCatch/tryCatch";
+import { statusCodes } from "@figur-ledger/types";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserUseCase } from "../../../interator/useCases/interfaces/IUserUseCase";
-import { createResponse } from "../../../helpers/handlers/response";
-import { HTTP_STATUS_CODE } from "../../../domain/enums/HttpStatusCodes";
+import { createResponse } from "@figur-ledger/handlers";
+
 import { userProfileSchema } from "../../validations/user/UserProfileSchema";
+import { tryCatch } from "@figur-ledger/handlers";
 @injectable()
 export class UserController implements IUserController {
   constructor(
@@ -18,7 +19,7 @@ export class UserController implements IUserController {
     if (!userId) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_GATEWAY,
+        statusCodes.BAD_GATEWAY,
         false,
         "User Id is required",
         null
@@ -28,7 +29,7 @@ export class UserController implements IUserController {
 
     createResponse(
       res,
-      HTTP_STATUS_CODE.SUCCESS,
+      statusCodes.SUCCESS,
       true,
       "User Profile fetched successfully",
       userProfile
@@ -39,7 +40,7 @@ export class UserController implements IUserController {
     if (!userId) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_GATEWAY,
+        statusCodes.BAD_GATEWAY,
         false,
         "User Id is required",
         null
@@ -49,10 +50,11 @@ export class UserController implements IUserController {
 
     const updateData = req.body;
     const validatedData = userProfileSchema.safeParse(updateData);
+    console.log(validatedData.error?.issues);
     if (!validatedData.success) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_REQUEST,
+        statusCodes.BAD_REQUEST,
         false,
         validatedData.error.issues[0].message,
         null
@@ -65,7 +67,7 @@ export class UserController implements IUserController {
     );
     createResponse(
       res,
-      HTTP_STATUS_CODE.SUCCESS,
+      statusCodes.SUCCESS,
       true,
       "User Profile updated successfully",
       updatedProfile

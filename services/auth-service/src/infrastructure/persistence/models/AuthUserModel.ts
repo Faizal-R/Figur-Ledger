@@ -6,7 +6,6 @@ const AuthUserSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       index: true
@@ -14,7 +13,6 @@ const AuthUserSchema = new Schema(
     phone: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       index: true
     },

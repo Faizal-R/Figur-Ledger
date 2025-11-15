@@ -1,3 +1,4 @@
+import { useAuthUserStore } from "@/store/authUserStore";
 
 
 // src/api/client.ts
@@ -9,7 +10,7 @@ interface ApiResponse<T> {
     statusText: string;
 }
 
-const baseURL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:5005'
+const baseURL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:5000/api/v1'
 
 const apiClient: AxiosInstance = axios.create({
   baseURL,
@@ -20,29 +21,42 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 // Request interceptor for auth or common headers
+
 apiClient.interceptors.request.use(
   (config) => {
-    // const token = localStorage.getItem('authToken');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    console.log("Request made with headers:", config.headers,config);
+    const token = useAuthUserStore.getState().token;  // <-- Correct
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for consistent error handling
-// apiClient.interceptors.response.use(
-//   (response: AxiosResponse) => response,
-//   (error) => {
-//     if (error.response?.status === 401) {
-//       // Handle unauthorized (e.g., redirect to login)
-//       console.error('Unauthorized, redirecting to login...');
-//     }
-//     return Promise.reject(error.response?.data?.message || 'An error occurred');
-//   }
-// );
+
+apiClient.interceptors.response.use(
+  res => res,
+  async (error) => {
+    if (error.response?.status === 401) {
+      try {
+        const refreshRes = await apiClient.post("/auth/refresh");
+
+        const newToken = refreshRes.data.accessToken;
+        useAuthUserStore.getState().setToken(newToken);
+
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient.request(error.config);
+      } catch {
+        useAuthUserStore.getState().setToken(null);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 
 // Generic request wrapper
 async function request<T>(
@@ -57,6 +71,7 @@ async function request<T>(
     data,
     ...config,
   });
+  console.log("Response received:", response);
   return response.data as T; // Return only the data
 }
 

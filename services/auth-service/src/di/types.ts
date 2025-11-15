@@ -13,6 +13,6 @@ export const DI_TOKENS = {
     JWT_TOKEN_SERVICE: "JwtTokenService",
   },
   MAPPERS: {
-    USER_PERSISTENCE_MAPPER: "UserPersistenceMapper",
+    AUTH_USER_PERSISTENCE_MAPPER: "AuthUserPersistenceMapper",
   },
 };

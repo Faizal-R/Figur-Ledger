@@ -1,4 +1,6 @@
-export type AccountType = 'savings' | 'checking' | 'business';
+import { DateString } from "@figur-ledger/types";
+
+export type AccountType = 'savings' | 'salary' | 'business'|'current';
 export type AccountStatus = 'active' | 'frozen' | 'closed';
 
 export class Account {
@@ -10,7 +12,11 @@ export class Account {
     public balance: number,
     public currency: string,
     public status: AccountStatus,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly nickname: string,
+    public readonly ifsc: string,        
+    public readonly interestRate?: number, 
+    public readonly minBalance?: number,  
+    public readonly createdAt?: DateString,
+    public readonly updatedAt?: DateString
   ) {}
 }

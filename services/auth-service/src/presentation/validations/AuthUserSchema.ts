@@ -1,3 +1,4 @@
+import { Roles } from '@figur-ledger/types';
 import z from 'zod';
 
 const RegisterSchema = z.object({
@@ -7,7 +8,7 @@ const RegisterSchema = z.object({
     .min(5, "Email must be at least 5 characters")
     .max(100, "Email must be less than 100 characters")
     .transform(email => email.toLowerCase().trim()),
-  
+     role:z.enum(Roles),
   // Phone number (required for banking)
   phone: z.string()
     .min(10, "Phone number must be at least 10 digits")
@@ -57,6 +58,11 @@ const RegisterSchema = z.object({
     state: z.string()
       .min(1, "State is required")
       .max(50, "State must be less than 50 characters"),
+      
+      country: z.string()
+      .min(1, "Country is required")
+      .max(50, "country must be less than 50 characters"),
+
     
     zipCode: z.string()
       .min(5, "ZIP code must be at least 5 characters")

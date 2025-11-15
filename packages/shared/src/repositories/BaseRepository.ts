@@ -12,7 +12,9 @@ export class BaseRepository<TDomain, TDocument extends Document>
   ) {}
 
   async create(data: Partial<TDomain>): Promise<TDomain> {
+    console.log("before Persist", data)
     const persistence = this.mapper.toPersistence(data);
+    console.log("after Persist", persistence)
     const doc = await this.model.create(persistence);
     return this.mapper.toDomain(doc);
   }
@@ -44,7 +46,9 @@ export class BaseRepository<TDomain, TDocument extends Document>
   }
 
   async update(id: string, data: Partial<TDomain>): Promise<TDomain | null> {
-    const persistence = this.mapper.toPersistence(data);
+    console.log("before Persist", data)
+    const persistence = this.mapper.toPersistence({ ...data, id });
+    console.log("after Persist", persistence)
     const doc = await this.model
       .findByIdAndUpdate(id, persistence, { new: true })
       .lean<TDocument | null>();

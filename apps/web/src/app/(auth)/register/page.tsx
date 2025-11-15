@@ -1,4 +1,4 @@
-import RegisterForm from "@/components/feature/auth/RegisterForm";
+import RegisterForm from "@/components/reusables/forms/RegisterForm";
 import BrandingSection from "@/components/feature/auth/BrandingSection";
 
 const RegisterPage = () => {
