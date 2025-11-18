@@ -22,6 +22,7 @@ export class User {
     public readonly avatarKey: string|null,
     public personalInfo: PersonalInfo,
     public address: AddressInfo,
+    public readonly authUserId:string,
     public readonly createdAt?: DateString,
     public readonly updatedAt?: DateString
   ) {}

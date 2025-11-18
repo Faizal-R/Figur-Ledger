@@ -231,7 +231,7 @@ export default class AuthUseCases implements IAuthUseCases {
         "user.registration.verified",
         JSON.stringify({
           ...parsedData.tempUser,
-          _id: createdAuthUser.id,
+          authUserId: createdAuthUser.id,
         })
       );
 

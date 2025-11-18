@@ -4,19 +4,19 @@ import { IUser } from "@/types/user-account";
 import { parseAxiosError } from "@/utils/parseAxiosError";
 
 export const UserService = {
-  async getById(id: string): Promise<ApiResponse<IUser>> {
+  async getById(userId: string): Promise<ApiResponse<IUser>> {
     try {
-      return await request<ApiResponse<IUser>>("get", `/users/${id}`);
+      return await request<ApiResponse<IUser>>(httpMethods.GET, UserProfileRoutes.GET(userId));
     } catch (error) {
       throw parseAxiosError(error, "Failed to fetch user");
     }
   },
 
-  async update(id: string, data: Partial<IUser>): Promise<ApiResponse<IUser>> {
+  async update(userId: string, data: Partial<IUser>): Promise<ApiResponse<IUser>> {
     try {
       return await request<ApiResponse<IUser>>(
-        "patch",
-        `/users/${id}`,
+        httpMethods.PUT,
+        UserProfileRoutes.UPDATE(userId),
         data
       );
     } catch (error) {
@@ -24,9 +24,9 @@ export const UserService = {
     }
   },
 
-  async delete(id: string): Promise<ApiResponse<null>> {
+  async delete(userId: string): Promise<ApiResponse<null>> {
     try {
-      return await request<ApiResponse<null>>("delete", `/users/${id}`);
+      return await request<ApiResponse<null>>(httpMethods.DELETE, UserProfileRoutes.DELETE(userId));
     } catch (error) {
       throw parseAxiosError(error, "Failed to delete user");
     }
@@ -38,6 +38,8 @@ export const UserService = {
 
 
 import { IAccount } from "@/types/user-account";
+import { httpMethods } from "@/constant/api/enums/api";
+import { AccountRoutes, UserProfileRoutes } from "@/constant/api/routes/userProfileAndAccountRoutes";
 
 
 export const AccountService = {
@@ -46,8 +48,8 @@ export const AccountService = {
   ): Promise<ApiResponse<IAccount[]>> {
     try {
       return await request<ApiResponse<IAccount[]>>(
-        "get",
-        `/users/accounts?userId=${userId}`
+        httpMethods.GET,
+        AccountRoutes.GET_ACCOUNTS_BY_USER_ID(userId)
       );
     } catch (error) {
       throw parseAxiosError(error, "Failed to fetch user accounts");
@@ -62,8 +64,8 @@ export const AccountService = {
   }): Promise<ApiResponse<IAccount>> {
     try {
       return await request<ApiResponse<IAccount>>(
-        "post",
-        "/accounts/create",
+        httpMethods.POST,
+        AccountRoutes.CREATE,
         account
       );
     } catch (error) {

@@ -1,17 +1,21 @@
 import request from "@/config/client";
+import { httpMethods } from "@/constant/api/enums/api";
+import { AuthRoutes } from "@/constant/api/routes/authRoutes";
 import { ApiResponse } from "@/types/api";
 import {
   LoginRequest,
-  LoginResponse,
   RegisterRequest,
-  RegisterResponse,
   ForgotPasswordRequest,
-  ForgotPasswordResponse,
   ResetPasswordRequest,
+} from "@/types/api/request/IAuthRequest";
+import {
+  RegisterResponse,
+  ForgotPasswordResponse,
+  LoginResponse,
   ResetPasswordResponse,
   VerifyOtpRequest,
-  VerifyOtpResponse
-} from "@/types/auth";
+  VerifyOtpResponse,
+} from "@/types/api/response/IAuthResponses";
 
 import { parseAxiosError } from "@/utils/parseAxiosError";
 
@@ -19,8 +23,8 @@ export const AuthService = {
   async login(data: LoginRequest): Promise<ApiResponse<LoginResponse>> {
     try {
       return await request<ApiResponse<LoginResponse>>(
-        "post",
-        "/auth/login",
+        httpMethods.POST,
+        AuthRoutes.LOGIN,
         data
       );
     } catch (error) {
@@ -28,11 +32,13 @@ export const AuthService = {
     }
   },
 
-  async register(data: RegisterRequest): Promise<ApiResponse<RegisterResponse>> {
+  async register(
+    data: RegisterRequest
+  ): Promise<ApiResponse<RegisterResponse>> {
     try {
       return await request<ApiResponse<RegisterResponse>>(
-        "post",
-        "/auth/register",
+        httpMethods.POST,
+        AuthRoutes.REGISTER,
         data
       );
     } catch (error) {
@@ -45,8 +51,8 @@ export const AuthService = {
   ): Promise<ForgotPasswordResponse> {
     try {
       return await request<ForgotPasswordResponse>(
-        "post",
-        "/auth/forgot-password",
+        httpMethods.POST,
+        AuthRoutes.FORGOT_PASSWORD,
         data
       );
     } catch (error) {
@@ -62,8 +68,8 @@ export const AuthService = {
   ): Promise<ResetPasswordResponse> {
     try {
       return await request<ResetPasswordResponse>(
-        "post",
-        "/auth/reset-password",
+        httpMethods.POST,
+        AuthRoutes.RESET_PASSWORD,
         data
       );
     } catch (error) {
@@ -79,8 +85,8 @@ export const AuthService = {
   ): Promise<ApiResponse<VerifyOtpResponse>> {
     try {
       return await request<ApiResponse<VerifyOtpResponse>>(
-        "post",
-        "/auth/verify-otp",
+        httpMethods.POST,
+        AuthRoutes.VERIFY_OTP,
         data
       );
     } catch (error) {
@@ -88,11 +94,11 @@ export const AuthService = {
     }
   },
 
-  async logout():Promise<void>{
+  async logout(): Promise<void> {
     try {
-      return await request("post","/auth/logout")
+      return await request(httpMethods.POST, AuthRoutes.LOGOUT);
     } catch (error) {
-      throw parseAxiosError(error,"An Error occured while logOut")
+      throw parseAxiosError(error, "An Error occured while logOut");
     }
-  }
+  },
 };

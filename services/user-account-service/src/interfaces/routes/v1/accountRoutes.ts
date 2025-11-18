@@ -8,8 +8,8 @@ const router=Router();
 const accountController= resolve<IAccountController>(DI_TOKENS.CONTROLLERS.ACCOUNT_CONTROLLER)
 
 router.post('/create',accountController.createAccount)
-router.get('/:userId',accountController.getAccountsByUserId)
-router.put('/:accountId',accountController.updateAccount)
+router.get('/',accountController.getAccountsByUserId)
+router.patch('/:accountId',accountController.updateAccount)
 
 
 

@@ -1,8 +1,6 @@
 "use client";
 
 import { OtpInput } from "@/components/ui/form-fields/OtpInput";
-import { Button } from "@/components/ui/buttons/button";
-import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/api/useAuth";
 import { useRouter } from "next/navigation";
@@ -21,6 +19,7 @@ export function OtpVerifyClient({ email }: { email: string }) {
   {
     onSuccess: (res) => {
       toast.success(res.message);
+      console.log(res)
       console.log("otp verified",res)
      
         setUserInStore({
@@ -60,7 +59,7 @@ export function OtpVerifyClient({ email }: { email: string }) {
 
         <OtpInput length={6} onComplete={handleOtpComplete} />
 
-        <Button
+        {/* <Button
           className="w-full h-12 bg-gradient-to-r from-emerald-400 to-emerald-500 
                      text-slate-900 font-semibold shadow-lg shadow-emerald-500/30 
                      hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 
@@ -69,7 +68,7 @@ export function OtpVerifyClient({ email }: { email: string }) {
         >
           Verify OTP
           <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-        </Button>
+        </Button> */}
 
         <p className="text-center text-sm text-slate-400">
           Didn’t receive the code?{" "}

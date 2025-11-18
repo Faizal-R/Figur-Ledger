@@ -11,6 +11,7 @@ export class UserPersistenceMapper implements IMapper<User, IUserDocument> {
       _id: new Types.ObjectId(entity.id),
       email: entity.email,
       phone: entity.phone,
+      authUserId:entity.authUserId,
       personalInfo: {
         firstName: entity.personalInfo.firstName,
         lastName: entity.personalInfo.lastName,
@@ -37,6 +38,7 @@ export class UserPersistenceMapper implements IMapper<User, IUserDocument> {
         lastName: raw.personalInfo.lastName,
         dateOfBirth: raw.personalInfo.dateOfBirth,
       },
+      authUserId:raw.authUserId,
       avatarKey: null,
       address: {
         street: raw.address.street,
@@ -45,6 +47,7 @@ export class UserPersistenceMapper implements IMapper<User, IUserDocument> {
         zipCode: raw.address.zipCode,
         country: raw.address.country,
       },
+      
       createdAt: raw.createdAt?.toISOString(),
       updatedAt: raw.updatedAt?.toISOString(),
     };

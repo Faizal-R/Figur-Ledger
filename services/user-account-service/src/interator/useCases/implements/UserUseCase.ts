@@ -18,7 +18,7 @@ export class UserUseCase implements IUserUseCase {
     
     try {
       console.log(userId)
-      const userProfile = await this._userRepository.findById(userId);
+      const userProfile = await this._userRepository.findOne({authUserId:userId});
       console.log(userProfile)
       if (!userProfile) {
         throw new CustomError(
@@ -40,9 +40,10 @@ export class UserUseCase implements IUserUseCase {
   }
   async updateUserProfile(userId: string, userData: UserDTO): Promise<UserDTO> {
     try {
-       console.log(userId)
+       const userProfile= await this._userRepository.findOne({authUserId:userId});
+      
       const updatedUserProfile = await this._userRepository.update(
-        userId,
+        userProfile?.id as string,
         userData
       );
       console.log(updatedUserProfile)

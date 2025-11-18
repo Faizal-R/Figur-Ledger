@@ -5,6 +5,7 @@ export interface IUserDocument extends Document {
   email:string;
   phone: string;
   avatarKey: string|null;
+  authUserId:string;
   personalInfo: {
     firstName: string;
     lastName: string;

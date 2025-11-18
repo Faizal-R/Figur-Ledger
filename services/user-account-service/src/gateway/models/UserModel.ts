@@ -7,6 +7,11 @@ const UserSchema = new Schema({
     type: Types.ObjectId, 
     required: true 
   },
+  authUserId:{
+    type:String,
+    required:true,
+    index:true
+  },
   email: { 
     type: String, 
     required: true, 

@@ -201,13 +201,19 @@ export default class AuthController implements IAuthController {
 
   // Orchestrate use-case
  const {accessToken,refreshToken,user}= await this._authUseCases.verifyOtp(normalizedEmail, normalizedOtp);
+ 
+ res.cookie("refreshToken", refreshToken,REFRESH_TOKEN_COOKIE_OPTIONS)
 
 
   return createResponse(
     res,
     statusCodes.SUCCESS,
     true,
-    "OTP verified successfully"
+    "OTP verified successfully",
+    {
+      accessToken,
+      user,
+    }
   );
 });
 

@@ -1,8 +1,11 @@
+import { httpMethods } from "@/constant/api/enums/api";
+import { AuthRoutes } from "@/constant/api/routes/authRoutes";
 import { useAuthUserStore } from "@/store/authUserStore";
 
 
 // src/api/client.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { toast } from "sonner";
 
 interface ApiResponse<T> {
     data: T;
@@ -18,13 +21,15 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials:true
 });
 
-// Request interceptor for auth or common headers
+
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = useAuthUserStore.getState().token;  // <-- Correct
+    const token = useAuthUserStore.getState().token; 
+    console.log("Token:", token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -37,30 +42,46 @@ apiClient.interceptors.request.use(
 
 
 apiClient.interceptors.response.use(
-  res => res,
+  (res) => res,
   async (error) => {
+    const originalRequest = error.config;
+
+    
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
+      originalRequest._retry = true;
+
       try {
-        const refreshRes = await apiClient.post("/auth/refresh");
+        // 3. Call refresh token API
+        const refreshRes = await request(httpMethods.POST,AuthRoutes.REFRESH_TOKEN);
 
         const newToken = refreshRes.data.accessToken;
         useAuthUserStore.getState().setToken(newToken);
 
-        error.config.headers.Authorization = `Bearer ${newToken}`;
-        return apiClient.request(error.config);
-      } catch {
+        
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(originalRequest);
+
+      } catch (err) {
+        
         useAuthUserStore.getState().setToken(null);
+        return Promise.reject(err);
       }
     }
 
+    // 6. For non-401 errors
     return Promise.reject(error);
   }
 );
 
 
+
 // Generic request wrapper
 async function request<T>(
-  method: 'get' | 'post' | 'put' | 'delete' | 'patch',
+  method: httpMethods,
   url: string,
   data?: unknown,
   config?: AxiosRequestConfig
@@ -72,7 +93,7 @@ async function request<T>(
     ...config,
   });
   console.log("Response received:", response);
-  return response.data as T; // Return only the data
+  return response.data as T; 
 }
 
 export default request;
