@@ -20,8 +20,7 @@ import { useAuthUserStore } from "@/store";
 export function ProfilePage() {
  
   const {user} = useAuthUserStore()
-  console.log(user)
-  const userId=user?.id || "6918385052ba50872af20f77"
+  const userId=user?.id
   // const userId= "6918385052ba50872af20f77"
 
   const [activeTab, setActiveTab] = useState<TabType>("personal");
@@ -67,7 +66,7 @@ export function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center text-red-400">
         Failed to load profile.
       </div>
-    );
+    );    
   }
 
 

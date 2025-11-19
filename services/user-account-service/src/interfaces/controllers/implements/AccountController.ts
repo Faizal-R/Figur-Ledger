@@ -72,7 +72,7 @@ export class AccountController implements IAccountController {
     });
 
   getAccountsByUserId = tryCatch(async (req: Request, res: Response) => {
-    const userId = req.params.userId as string;
+    const userId = req.query.userId as string;
     if (!userId) {
       createResponse(
         res,

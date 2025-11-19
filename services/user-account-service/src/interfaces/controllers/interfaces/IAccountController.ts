@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { IAccount } from "../../../domain/entities/Account";
 
 export interface IAccountController {
   createAccount(req:Request,res:Response):Promise<void>;
