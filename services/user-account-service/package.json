@@ -14,6 +14,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "-": "^0.0.1",
+    "@figur-ledger/handlers": "^1.0.0",
+    "@figur-ledger/messaging-sdk": "^1.0.0",
+    "@figur-ledger/shared": "^1.0.0",
+    "@figur-ledger/utils": "^1.0.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2"

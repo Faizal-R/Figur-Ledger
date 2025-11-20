@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ROLES } from "../../../domain/enums/index";
+import { Roles } from '@figur-ledger/types';
 
 const passwordSchema = z
   .string()
@@ -24,7 +24,7 @@ export const userRegisterSchema = z.object({
     .toLowerCase()
     .email("Please enter a valid email address (e.g. jane@example.com)"),
   password: passwordSchema,
-  role: z.nativeEnum(ROLES).default(ROLES.CUSTOMER),
+  role: z.nativeEnum(Roles).default(Roles.CUSTOMER),
   isActive: z.boolean().default(true),
   createdAt: z.string().datetime().optional(), 
 });

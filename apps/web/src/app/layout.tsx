@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+// @ts-ignore: side-effect import of global CSS without module declarations
 import "./globals.css";
 
 const geistSans = localFont({
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
   description: "An Finacial Ledger Application",
 };
 
+import TanstackQueryProvider from "@/providers/TanstackQueryProvider";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/providers/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,7 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <AuthProvider>
+          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+        </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
