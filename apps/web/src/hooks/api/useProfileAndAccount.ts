@@ -2,10 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { UserService,AccountService  } from "@/services/api/ProfileAndAccountService";
 import { IUser, IAccount } from "@/types/user-account";
 
-/* ----------------------------------------------------
-   USER PROFILE QUERIES & MUTATIONS
----------------------------------------------------- */
-
+// Profile Hooks
 export const useUserProfile = (userId: string) => {
   return useQuery({
     queryKey: ["userProfile", userId],
@@ -21,17 +18,17 @@ export const useUpdateUserProfile = (userId: string) => {
   });
 };
 
-/* ----------------------------------------------------
-   USER ACCOUNTS QUERIES & MUTATIONS
----------------------------------------------------- */
 
-// export const useUserAccounts = (userId: string) => {
-//   return useQuery({
-//     queryKey: ["userAccounts", userId],
-//     queryFn: () => AccountService.getAccountsByUserId(userId),
-//     enabled: !!userId,
-//   });
-// };
+
+// Account Hooks
+
+export const useUserAccounts = (userId: string) => {
+  return useQuery({
+    queryKey: ["userAccounts", userId],
+    queryFn: () => AccountService.getAccountsByUserId(userId),
+    enabled: !!userId,
+  });
+};
 
 export const useCreateBankAccount = () => {
   return useMutation({

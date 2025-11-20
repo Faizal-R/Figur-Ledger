@@ -5,8 +5,9 @@ import { useAuthUserStore } from "@/store/authUserStore";
 import request from "@/config/client";
 import { AuthRoutes } from "@/constant/api/routes/authRoutes";
 import { httpMethods } from "@/constant/api/enums/api";
+import { ApiResponse } from "@/types/api";
 
-export function AuthProvider({ children }:{children:React.ReactNode}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const setToken = useAuthUserStore((s) => s.setToken);
   const token = useAuthUserStore((s) => s.token);
@@ -15,9 +16,12 @@ export function AuthProvider({ children }:{children:React.ReactNode}) {
     const bootstrap = async () => {
       if (!token) {
         try {
-          const res = await request(httpMethods.POST, AuthRoutes.REFRESH_TOKEN);
-          const accessToken = res.data.accessToken;
-          setToken(accessToken);
+          const refreshRes = await request<
+            ApiResponse<{ accessToken: string }>
+          >(httpMethods.POST, AuthRoutes.REFRESH_TOKEN);
+
+          const newToken = refreshRes.data.accessToken;
+          setToken(newToken);
         } catch (err) {
           console.log("No session found");
         }

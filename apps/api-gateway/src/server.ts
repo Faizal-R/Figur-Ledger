@@ -32,20 +32,13 @@ const middlewares = (app: Application) => {
 export const server = () => {
   middlewares(app);
 
-  // Register routes BEFORE starting server
-  // app.get("/health", (req, res) => {
-  //   res.status(200).json({
-  //     status: "OK",
-  //     service: "api-gateway111",
-  //     timestamp: new Date().toISOString(),
-  //   });
-  // });
-
-  app.get('/test', (req, res) => {
-    console.log('Test route hit');
-    res.send('Test OK'); 
+  app.get("/health", (req, res) => {
+    res.status(200).json({
+      status: "OK",
+      service: "api-gateway",
+      timestamp: new Date().toISOString(),
+    });
   });
-  
 
   // Global error handler
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/api/useAuth";
 import { useAuthUserStore } from "@/store";
-import { IUser } from "@/types/user-account";
-import { Roles } from "@figur-ledger/shared";
+import { Roles } from "@/types/role";
+
 
 export default function RegisterForm() {
   const [step, setStep] = useState(1);
@@ -56,7 +56,7 @@ export default function RegisterForm() {
 
   const navigate = useRouter();
   const { register } = useAuth();
-  const { login: setUserInStore } = useAuthUserStore();
+  const { setUser: setUserInStore } = useAuthUserStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

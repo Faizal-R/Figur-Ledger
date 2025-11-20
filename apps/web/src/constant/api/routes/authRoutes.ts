@@ -5,7 +5,7 @@ export const AuthRoutes={
     FORGOT_PASSWORD:'/auth/forgot-password',
     RESET_PASSWORD:'/auth/reset-password',
     LOGOUT:'/auth/logout',
-    REFRESH_TOKEN:'/auth/refresh-token'
+    REFRESH_TOKEN:'/auth/refresh'
 
 
 }

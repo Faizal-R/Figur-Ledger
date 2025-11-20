@@ -40,39 +40,41 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+const refreshClient = axios.create({ baseURL, withCredentials: true });
+
+async function refreshToken() {
+  return refreshClient.post(AuthRoutes.REFRESH_TOKEN);
+}
+
 
 apiClient.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
 
-    
-    if (originalRequest._retry) {
+    // 1. Never retry refresh endpoint
+    if (originalRequest.url === AuthRoutes.REFRESH_TOKEN) {
       return Promise.reject(error);
     }
 
-    if (error.response?.status === 401) {
+    // 2. Only retry once
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // 3. Call refresh token API
-        const refreshRes = await request<ApiResponse<{accessToken:string}>>(httpMethods.POST,AuthRoutes.REFRESH_TOKEN);
-
+        const refreshRes = await refreshToken();
         const newToken = refreshRes.data.accessToken;
+
         useAuthUserStore.getState().setToken(newToken);
-
-        
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return apiClient(originalRequest);
 
+        return apiClient(originalRequest);
       } catch (err) {
-        
         useAuthUserStore.getState().setToken(null);
         return Promise.reject(err);
       }
     }
 
-    // 6. For non-401 errors
     return Promise.reject(error);
   }
 );

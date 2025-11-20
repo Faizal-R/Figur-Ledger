@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/api/useAuth";
 import { toast } from "sonner";
 
+import { useAuthUserStore } from "@/store";
+
 // Icon mapping
 const iconMap = {
   Home,
@@ -27,7 +29,10 @@ const Sidebar = ({navItems}: SidebarProps) => {
   const {logout}=useAuth()
   const handleLogout = () =>
   logout.mutate(undefined, {
-    onSuccess: () => toast.success("logged out successfully")
+    onSuccess: () =>{
+       toast.success("logged out successfully")
+       useAuthUserStore.getState().clearAuth();
+    }
   });
 
 

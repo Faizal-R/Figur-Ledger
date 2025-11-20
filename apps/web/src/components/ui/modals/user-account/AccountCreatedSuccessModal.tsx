@@ -6,7 +6,7 @@ interface SuccessModalProps {
   onClose: () => void;
   accountData: {
     accountNumber: string;
-    ifscCode: string;
+    ifsc: string;
     accountType: string;
   };
   onGoToDashboard: () => void;
@@ -92,7 +92,7 @@ export function SuccessModal({
 
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">IFSC Code</label>
-              <div className="text-sm font-mono text-slate-300">{accountData.ifscCode}</div>
+              <div className="text-sm font-mono text-slate-300">{accountData.ifsc}</div>
             </div>
 
             <div>

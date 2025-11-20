@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { IAccountDocument } from "./interfaces/IAccountModel";
+import { accountType } from "../../interator/constant/account";
 
 const AccountSchema = new Schema(
   {
@@ -33,7 +34,7 @@ const AccountSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["savings", "checking", "business"],
+      enum:accountType,
       required: true,
     },
     balance: {

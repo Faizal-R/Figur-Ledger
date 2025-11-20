@@ -218,8 +218,10 @@ export default class AuthController implements IAuthController {
   );
 });
 
-refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
+ refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
+  console.log("entered refresh token controller")
     const refreshToken = req.cookies["refreshToken"];
+    console.log("refresh token in controller",refreshToken)
       if( !refreshToken){
         return createResponse(
           res,
@@ -228,9 +230,9 @@ refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
           "Session expired. Please log in again."
         );
       }
-  const { accessToken } = await this._authUseCases.refreshAccessToken(refreshToken);
+     const { accessToken } = await this._authUseCases.refreshAccessToken(refreshToken);
 
-    return createResponse(
+      return createResponse(
       res,
       statusCodes.SUCCESS,
       true,

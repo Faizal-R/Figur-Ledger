@@ -11,7 +11,10 @@ export const currency={
 export const accountType={
     SAVINGS:"savings",
     CHECKING:"checking",
-    BUSINESS:"business"
+    BUSINESS:"business",
+    CURRENT:"current",
+    SALARY:"salary"
+
 }
 export const accountStatus:Record<string,AccountStatus>={
     ACTIVE:"active",

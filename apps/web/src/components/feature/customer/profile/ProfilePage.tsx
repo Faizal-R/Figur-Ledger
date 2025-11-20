@@ -11,6 +11,7 @@ import {
   useUpdateUserProfile,
 
   useCreateBankAccount,
+  useUserAccounts,
 } from "@/hooks/api/useProfileAndAccount";
 
 import { IUser, IAccount } from "@/types/user-account";
@@ -20,15 +21,14 @@ import { useAuthUserStore } from "@/store";
 export function ProfilePage() {
  
   const {user} = useAuthUserStore()
-  const userId=user?.id
-  // const userId= "6918385052ba50872af20f77"
+  const userId=user?.id;
 
   const [activeTab, setActiveTab] = useState<TabType>("personal");
   
   const userProfileQuery = useUserProfile(userId!);
   const updateUserProfile = useUpdateUserProfile(userId!);
   
-  // const userAccountsQuery = useUserAccounts(user.id);
+  const userAccountsQuery = useUserAccounts(userId!);
   const createBankAccount = useCreateBankAccount();
   
   const [userState, setUserState] = useState<IUser | null>(null);
@@ -80,22 +80,34 @@ export function ProfilePage() {
     });
   };
 
-  const handleCreateBankAccount = (data: {
-    nickname: string;
-    type: string;
-    currency: string;
-  }) => {
-    createBankAccount.mutate(
-      { ...data, userId:userId! },
-      {
-        onError: (err) => toast.error(err.message),
-        onSuccess: () => {
-          toast.success("Account created successfully");
-          
-        },
-      }
-    );
-  };
+const handleCreateBankAccount = (data: {
+  nickname: string;
+  type: string;
+  currency: string;
+}, onSuccessCallback: (accountData: {
+  accountNumber: string;
+  ifsc: string;
+  accountType: string;
+}) => void) => {
+  
+  createBankAccount.mutate(
+    { ...data, userId: userId! },
+    {
+      onError: (err) => toast.error(err.message),
+      onSuccess: (res) => {
+        toast.success("Account created successfully");
+        
+        // Pass created bank account details TO CHILD component
+        onSuccessCallback({
+          accountNumber: res.data.accountNumber!,
+          ifsc: res.data.ifsc!,
+          accountType: res.data.type!
+        });
+      },
+    }
+  );
+};
+
 
   return (
     <div className={`min-h-screen ${FinledgerTheme.background} p-6`}>
@@ -117,7 +129,7 @@ export function ProfilePage() {
             createAccount={handleCreateBankAccount}
             handleAccounts={(accounts: IAccount[]) => console.log(accounts)}
             userKycData={userState}
-            accounts={ []}
+            accounts={userAccountsQuery.data?.data || []}
           />
         )}
 
