@@ -6,4 +6,5 @@ export default interface IAuthController {
   register(req:Request,res:Response): Promise<void>;
   logout(req:Request,res:Response):Promise<void>
   verifyOtp(req:Request,res:Response):Promise<void>
+  refreshAccessToken(req:Request,res:Response):Promise<void>
 }

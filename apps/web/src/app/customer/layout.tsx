@@ -1,4 +1,6 @@
+"use client";
 import Sidebar from '@/components/reusables/sidebar/Sidebar'
+import { withRole } from '@/hoc/withRouteProtection';
 
 const navItems = [
 { name: "Dashboard", href: "/customer/dashboard", icon: "Home" as const },
@@ -16,4 +18,4 @@ const CustomerLayout = ({ children }:{children:React.ReactNode}) => {
   )
 }
 
-export default CustomerLayout
+export default withRole(CustomerLayout, ['customer']);

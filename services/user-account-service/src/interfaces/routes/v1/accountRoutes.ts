@@ -9,7 +9,7 @@ const accountController= resolve<IAccountController>(DI_TOKENS.CONTROLLERS.ACCOU
 
 router.post('/create',accountController.createAccount)
 router.get('/',accountController.getAccountsByUserId)
-router.patch('/:accountId',accountController.updateAccount)
+// router.patch('/:accountId',accountController.updateAccount)
 
 
 

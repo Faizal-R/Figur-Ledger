@@ -9,7 +9,7 @@ import { useAuthUserStore } from "@/store";
 export function OtpVerifyClient({ email }: { email: string }) {
   const router = useRouter();
   const { verifyOtp } = useAuth();
-  const {login:setUserInStore}=useAuthUserStore()
+  const {setUser:setUserInStore,setToken}=useAuthUserStore()
   
 
   const handleOtpComplete = async (code: string) => {
@@ -29,7 +29,7 @@ export function OtpVerifyClient({ email }: { email: string }) {
           role:res.data.user.role
         })
 
-        useAuthUserStore.getState().setToken(res.data.accessToken)
+       setToken(res.data.accessToken)
 
 
       router.push(`/${res.data.user.role}/dashboard`);

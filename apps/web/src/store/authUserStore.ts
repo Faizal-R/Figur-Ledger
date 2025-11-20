@@ -1,114 +1,38 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-
-interface AuthUserState {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-  token:string |null;
-  setToken:(token:string|null)=>void
+interface AuthUser {
+  id: string;
+  email: string;
+  role: string;
+  phone: string;
 }
 
-interface AuthUser{
-  id:string;
-  email:string;
-   role:string
-  phone:string;
-}
+interface AuthStore {
+  token: string | null;         // NOT persisted
+  user: AuthUser | null;        // PERSISTED only
 
-
-interface AuthUserActions {
+  setToken: (token: string | null) => void;
   setUser: (user: AuthUser | null) => void;
-  updateUser: (updatedUser: Partial<AuthUser>) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  clearUser: () => void;
-  login: (user: AuthUser) => void;
-  logout: () => void;
-  
+  clearAuth: () => void;
 }
 
-type AuthUserStore = AuthUserState & AuthUserActions;
-
-export const useAuthUserStore = create<AuthUserStore>()(
+export const useAuthUserStore = create<AuthStore>()(
   persist(
-    (set, get) => ({
-      // Initial state
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
+    (set) => ({
+      token: null,       // memory only
+      user: null,        // persisted
 
-      // Actions
-      setUser: (user) => {
-        set({
-          user,
-          isAuthenticated: !!user,
-          error: null,
-        });
-      },
+      setToken: (token) => set({ token }),
+      setUser: (user) => set({ user }),
 
-      updateUser: (updatedUser) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          set({
-            user: { ...currentUser, ...updatedUser },
-            error: null,
-          });
-        }
-      },
-
-      setLoading: (loading) => {
-        set({ isLoading: loading });
-      },
-
-      setError: (error) => {
-        set({ error });
-      },
-
-      clearUser: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        });
-      },
-
-      login: (user) => {
-        set({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-      },
-
-      logout: () => {
-        set({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        });
-      },
-      token: null,
-  setToken: (token) => set({ token }),
+      clearAuth: () => set({ token: null, user: null }),
     }),
     {
-      name: 'auth-user-storage', // unique name for localStorage key
+      name: "auth-user-storage",
       partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }), // only persist user and isAuthenticated, not loading states
+        user: state.user,   // only persist the user
+      }),
     }
   )
 );
-
-// Selectors for easier access to specific parts of the state
-export const useAuthUser = () => useAuthUserStore((state) => state.user);
-export const useIsAuthenticated = () => useAuthUserStore((state) => state.isAuthenticated);
-export const useAuthLoading = () => useAuthUserStore((state) => state.isLoading);
-export const useAuthError = () => useAuthUserStore((state) => state.error);

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/api/useAuth";
 import { useAuthUserStore } from "@/store";
 import { IUser } from "@/types/user-account";
-import { Roles } from "@figur-ledger/types";
+import { Roles } from "@figur-ledger/shared";
 
 export default function RegisterForm() {
   const [step, setStep] = useState(1);

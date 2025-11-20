@@ -4,7 +4,7 @@ import IAuthController from "./interfaces/IAuthController";
 import { DI_TOKENS } from "../../di/types";
 import { createResponse, tryCatch } from "@figur-ledger/handlers";
 import { Request, Response } from "express";
-import { statusCodes } from "@figur-ledger/types";
+import { statusCodes } from "@figur-ledger/shared";
 import {
   loginSchema,
   RegisterWithConfirmSchema,
@@ -54,12 +54,13 @@ export default class AuthController implements IAuthController {
    */
 
   login = tryCatch(async (req: Request, res: Response) => {
+    console.log(req.body)
     const {
       success,
       error,
       data: validatedData,
     } = loginSchema.safeParse(req.body);
-
+     
     if (!success) {
       return createResponse(
         res,
@@ -217,4 +218,18 @@ export default class AuthController implements IAuthController {
   );
 });
 
+refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
+    const refreshToken = req.cookies["refreshToken"];
+      if( !refreshToken){
+        return createResponse(
+          res,
+          statusCodes.UNAUTHORIZED,
+          false,
+          "Session expired. Please log in again."
+        );
+      }
+
+
+
+  })
 }

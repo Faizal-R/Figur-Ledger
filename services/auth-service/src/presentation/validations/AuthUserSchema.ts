@@ -1,4 +1,4 @@
-import { Roles } from '@figur-ledger/types';
+import { Roles } from '@figur-ledger/shared';
 import z from 'zod';
 
 const RegisterSchema = z.object({

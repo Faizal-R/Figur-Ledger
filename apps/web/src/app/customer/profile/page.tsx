@@ -1,6 +1,5 @@
 import {  ProfilePage } from "@/components/feature/customer/profile/ProfilePage";
-import { IUser } from "@/types/user-account";
-import { DateString, Roles } from "@figur-ledger/types";
+
 
 
 
@@ -17,4 +16,4 @@ const CustomerProfilePage = () => {
   );
 };
 
-export default CustomerProfilePage;
+export default CustomerProfilePage

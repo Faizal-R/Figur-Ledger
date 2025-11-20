@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interfaces/IUserController";
-import { statusCodes } from "@figur-ledger/types";
+import { statusCodes } from "@figur-ledger/shared";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserUseCase } from "../../../interator/useCases/interfaces/IUserUseCase";

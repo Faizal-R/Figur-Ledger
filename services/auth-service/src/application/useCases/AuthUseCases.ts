@@ -4,7 +4,7 @@ import { DI_TOKENS } from "../../di/types";
 import { IAuthUserRepository } from "../../domain/interfaces/reposiotries/IAuthUserRepository";
 import { AuthUserResponseDTO } from "../dto/response/AuthUserDTO";
 import { CustomError } from "@figur-ledger/utils";
-import { Roles, statusCodes } from "@figur-ledger/types";
+import { Roles, statusCodes, TokenErrorCode } from "@figur-ledger/shared";
 import IHashService from "../../domain/interfaces/services/IHashService";
 import IJwtTokenService from "../../domain/interfaces/services/IJwtTokenService";
 import { IJwtTokenPayload } from "../../types/IJwt";
@@ -176,7 +176,10 @@ export default class AuthUseCases implements IAuthUseCases {
     }
   }
 
-  async verifyOtp(email: string, otp: string): Promise<{
+  async verifyOtp(
+    email: string,
+    otp: string
+  ): Promise<{
     accessToken: string;
     refreshToken: string;
     user: AuthUserResponseDTO;
@@ -248,5 +251,43 @@ export default class AuthUseCases implements IAuthUseCases {
         statusCodes.INTERNAL_SERVER_ERROR
       );
     }
+  }
+  async refreshAccessToken(refreshToken: string):Promise<{accessToken:string}> {
+    try {
+      const payload = this._tokenService.verifyRefreshToken(refreshToken);
+
+      const accessToken = this._tokenService.signAccessToken({
+        sub: payload.sub,
+        scope: payload.scope,
+        jti: this._tokenService.generateTokenId(),
+      });
+
+      return { accessToken };
+    } catch (error) {
+      if(error instanceof CustomError){
+
+      
+      switch (error.code) {
+        case TokenErrorCode.REFRESH_TOKEN_EXPIRED:
+          throw new CustomError(
+            "Your session has expired. Please sign in again.",
+            401,
+            TokenErrorCode.REFRESH_TOKEN_EXPIRED
+          );
+
+        case TokenErrorCode.REFRESH_TOKEN_INVALID:
+          throw new CustomError(
+            "Your session is invalid. Please log in again.",
+            401,
+            TokenErrorCode.REFRESH_TOKEN_INVALID
+          );
+      }
+    }
+    throw new CustomError(
+      "Unable to refresh your session right now. Please try again.",
+      400,
+      TokenErrorCode.REFRESH_TOKEN_FAILED
+    );
+  }
   }
 }

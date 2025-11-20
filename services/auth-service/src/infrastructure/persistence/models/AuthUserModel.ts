@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { AuthUserDocument } from '../interfaces/IAuthUserModel';
-  import { Roles } from '@figur-ledger/types';
+  import { Roles } from '@figur-ledger/shared';
 const AuthUserSchema = new Schema(
   {
     email: {

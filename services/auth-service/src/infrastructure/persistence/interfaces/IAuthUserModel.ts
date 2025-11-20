@@ -1,4 +1,4 @@
-import  {Roles} from "@figur-ledger/types";
+import  {Roles} from "@figur-ledger/shared";
 import { Document, Types } from 'mongoose';
 export interface AuthUserDocument extends Document {
   _id: Types.ObjectId;

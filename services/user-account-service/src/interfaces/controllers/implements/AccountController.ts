@@ -8,7 +8,7 @@ import { tryCatch,createResponse } from "@figur-ledger/handlers"
 import { AccountSchema } from "../../validations/account/AccountSchema";
 
 
-import { statusCodes } from "@figur-ledger/types";
+import { statusCodes } from "@figur-ledger/shared";
 @injectable()
 export class AccountController implements IAccountController {
   constructor(

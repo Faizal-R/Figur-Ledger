@@ -1,9 +1,11 @@
 import { injectable } from "inversify";
-import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import jwt, { JwtPayload, SignOptions,JsonWebTokenError,TokenExpiredError } from "jsonwebtoken";
 import IJwtTokenService from "../../domain/interfaces/services/IJwtTokenService";
-import { IJwtTokenPayload } from '../../types/IJwt';
+import { IJwtTokenPayload } from "../../types/IJwt";
 import { uuidv4 } from "zod";
 import dotenv from "dotenv";
+import { CustomError } from "@figur-ledger/utils";
+import {TokenErrorCode} from '@figur-ledger/shared'
 dotenv.config();
 @injectable()
 export default class JwtService implements IJwtTokenService {
@@ -21,7 +23,7 @@ export default class JwtService implements IJwtTokenService {
   signAccessToken(payload: IJwtTokenPayload): string {
     const secret = process.env.ACCESS_TOKEN_SECRET as string;
     const options: SignOptions = {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY as SignOptions["expiresIn"], 
+      expiresIn: this.accessTokenExpiry as SignOptions["expiresIn"],
     };
 
     return jwt.sign(payload, secret, options);
@@ -31,8 +33,7 @@ export default class JwtService implements IJwtTokenService {
     const secret = process.env.REFRESH_TOKEN_SECRET as string;
 
     const options: jwt.SignOptions = {
-      expiresIn: process.env
-        .REFRESH_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
+      expiresIn: this.refreshTokenExpiry as jwt.SignOptions["expiresIn"],
     };
 
     return jwt.sign(payload, secret, options);
@@ -42,9 +43,33 @@ export default class JwtService implements IJwtTokenService {
     return jwt.verify(token, this.accessSecret) as TPayload;
   }
 
-  verifyRefreshToken<TPayload = IJwtTokenPayload>(token: string): TPayload {
+verifyRefreshToken<TPayload = IJwtTokenPayload>(token: string): TPayload {
+  try {
     return jwt.verify(token, this.refreshSecret) as TPayload;
+  } catch (error) {
+    if (error instanceof TokenExpiredError) {
+      throw new CustomError(
+        "Your session has expired. Please log in again.",
+        401,
+        TokenErrorCode.REFRESH_TOKEN_EXPIRED
+      );
+    }
+
+    if (error instanceof JsonWebTokenError) {
+      throw new CustomError(
+        "Invalid session token. Please log in again.",
+        401,
+        TokenErrorCode.REFRESH_TOKEN_INVALID
+      );
+    }
+
+    throw new CustomError(
+      "Unable to verify your session. Please try again.",
+      400,
+      TokenErrorCode.REFRESH_TOKEN_ERROR
+    );
   }
+}
 
   decode<TPayload = IJwtTokenPayload>(token: string): TPayload | null {
     const decoded = jwt.decode(token) as JwtPayload | string | null;

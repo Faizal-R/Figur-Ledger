@@ -1,5 +1,6 @@
-import { IUser } from "../../user-account";
-import { DateString, Roles } from "@figur-ledger/types";
+
+import { DateString } from "@figur-ledger/types";
+import {  Roles } from "@figur-ledger/shared";
 
 export interface LoginRequest {
   email: string;

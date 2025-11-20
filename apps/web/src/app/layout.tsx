@@ -16,10 +16,9 @@ export const metadata: Metadata = {
   description: "An Finacial Ledger Application",
 };
 
-
 import TanstackQueryProvider from "@/providers/TanstackQueryProvider";
 import { Toaster } from "sonner";
-
+import { AuthProvider } from "@/providers/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -29,8 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <TanstackQueryProvider>{children}</TanstackQueryProvider>
-        <Toaster/>
+        <AuthProvider>
+          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+        </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );

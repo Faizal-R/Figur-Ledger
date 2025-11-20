@@ -5,7 +5,7 @@ import { IUserUseCase } from "../interfaces/IUserUseCase";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserRepository } from "../../../domain/interfaces/repositories/IUserRepository";
 import {CustomError} from "@figur-ledger/utils";
-import { statusCodes } from '@figur-ledger/types'
+import { statusCodes } from '@figur-ledger/shared';
 import { UserDTOMapper } from "../../mapper/UserDTOMapper";
 import { User } from "../../../domain/entities/User";
 @injectable()

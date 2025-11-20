@@ -13,6 +13,10 @@ import morgan from "morgan";
 const app: Application = express();
 
 const middlewares = (app: Application) => {
+  app.use((req, res, next) => {
+  console.log(`[Gateway] Incoming: ${req.method} ${req.originalUrl}`);
+  next();
+});
   app.use(morgan("dev"));
   app.use(cors(corsOptions));
   app.use(helmet());
@@ -29,20 +33,28 @@ export const server = () => {
   middlewares(app);
 
   // Register routes BEFORE starting server
-  app.get("/health", (req, res) => {
-    res.status(200).json({
-      status: "OK",
-      service: "api-gateway",
-      timestamp: new Date().toISOString(),
-    });
+  // app.get("/health", (req, res) => {
+  //   res.status(200).json({
+  //     status: "OK",
+  //     service: "api-gateway111",
+  //     timestamp: new Date().toISOString(),
+  //   });
+  // });
+
+  app.get('/test', (req, res) => {
+    console.log('Test route hit');
+    res.send('Test OK'); 
   });
+  
 
   // Global error handler
-  app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "Internal Server Error" });
-    next();
+  app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  return res.status(500).json({
+    message: "Internal Server Error: ApiGateway",
   });
+});
+
 
   listen(app);
 };

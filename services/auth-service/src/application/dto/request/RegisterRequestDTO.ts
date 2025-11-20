@@ -1,4 +1,5 @@
-import { DateString, Roles } from "@figur-ledger/types";
+import { DateString } from "@figur-ledger/types";
+import { Roles } from "@figur-ledger/shared";
 
 export interface RegisterRequestDTO {
   email: string;

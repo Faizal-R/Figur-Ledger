@@ -1,4 +1,4 @@
-import { Roles } from "@figur-ledger/types";
+import { Roles } from "@figur-ledger/shared";
 import { IRoute } from "../types";
 import { serviceRegistry, ServiceName } from "./serviceRegistry";
 
@@ -41,5 +41,5 @@ export const routes: IRoute[] =
 
 ];
 
-// import { IRoute } from "../types";
+
 
