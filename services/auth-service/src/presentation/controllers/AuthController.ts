@@ -228,7 +228,15 @@ refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
           "Session expired. Please log in again."
         );
       }
+  const { accessToken } = await this._authUseCases.refreshAccessToken(refreshToken);
 
+    return createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "Access token refreshed successfully",
+      { accessToken }
+    );
 
 
   })

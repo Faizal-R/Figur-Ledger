@@ -56,7 +56,7 @@ apiClient.interceptors.response.use(
 
       try {
         // 3. Call refresh token API
-        const refreshRes = await request(httpMethods.POST,AuthRoutes.REFRESH_TOKEN);
+        const refreshRes = await request<ApiResponse<{accessToken:string}>>(httpMethods.POST,AuthRoutes.REFRESH_TOKEN);
 
         const newToken = refreshRes.data.accessToken;
         useAuthUserStore.getState().setToken(newToken);
