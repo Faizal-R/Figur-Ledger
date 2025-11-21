@@ -9,7 +9,6 @@ import { AccountsTab } from "@/components/feature/customer/account/AccountsTab";
 import {
   useUserProfile,
   useUpdateUserProfile,
-
   useCreateBankAccount,
   useUserAccounts,
 } from "@/hooks/api/useProfileAndAccount";
@@ -19,28 +18,34 @@ import { toast } from "sonner";
 import { useAuthUserStore } from "@/store";
 
 export function ProfilePage() {
- 
-  const {user} = useAuthUserStore()
-  const userId=user?.id;
+  const { user } = useAuthUserStore();
+  const userId = user?.id;
 
   const [activeTab, setActiveTab] = useState<TabType>("personal");
-  
+
   const userProfileQuery = useUserProfile(userId!);
   const updateUserProfile = useUpdateUserProfile(userId!);
-  
+
   const userAccountsQuery = useUserAccounts(userId!);
   const createBankAccount = useCreateBankAccount();
-  
+
   const [userState, setUserState] = useState<IUser | null>(null);
-  
-  
+  const [accountsState, setAccountsState] = useState<IAccount[]>([]);
+
+  // Sync profile
   useEffect(() => {
     if (userProfileQuery.isSuccess) {
       setUserState(userProfileQuery.data.data);
     }
-  }, [userProfileQuery]);
-  
-  
+  }, [userProfileQuery.isSuccess]);
+
+  // Sync accounts
+  useEffect(() => {
+    if (userAccountsQuery.isSuccess) {
+      setAccountsState(userAccountsQuery.data.data);
+    }
+  }, [userAccountsQuery.isSuccess]);
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -50,6 +55,7 @@ export function ProfilePage() {
       </div>
     );
   }
+
   if (userProfileQuery.isLoading || !userState) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -60,15 +66,13 @@ export function ProfilePage() {
     );
   }
 
-
   if (userProfileQuery.isError) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-400">
         Failed to load profile.
       </div>
-    );    
+    );
   }
-
 
   const handleUserProfile = (updatedUserProfile: IUser) => {
     updateUserProfile.mutate(updatedUserProfile, {
@@ -80,34 +84,42 @@ export function ProfilePage() {
     });
   };
 
-const handleCreateBankAccount = (data: {
-  nickname: string;
-  type: string;
-  currency: string;
-}, onSuccessCallback: (accountData: {
-  accountNumber: string;
-  ifsc: string;
-  accountType: string;
-}) => void) => {
-  
-  createBankAccount.mutate(
-    { ...data, userId: userId! },
-    {
-      onError: (err) => toast.error(err.message),
-      onSuccess: (res) => {
-        toast.success("Account created successfully");
-        
-        // Pass created bank account details TO CHILD component
-        onSuccessCallback({
-          accountNumber: res.data.accountNumber!,
-          ifsc: res.data.ifsc!,
-          accountType: res.data.type!
-        });
-      },
-    }
-  );
-};
+  // Add or update account in state
+  const handleAccounts = (updatedAccount: IAccount) => {
+    setAccountsState((prev) => {
+      const exists = prev.some((acc) => acc.id === updatedAccount.id);
 
+      if (exists) {
+        // update existing
+        return prev.map((acc) =>
+          acc.id === updatedAccount.id ? updatedAccount : acc
+        );
+      }
+
+      // add new
+      return [...prev, updatedAccount];
+    });
+  };
+
+  const handleCreateBankAccount = (
+    data: { nickname: string; type: string; currency: string },
+    onSuccessCallback: (account: IAccount) => void
+  ) => {
+    createBankAccount.mutate(
+      { ...data, userId: userId! },
+      {
+        onError: (err) => toast.error(err.message),
+        onSuccess: (res) => {
+          toast.success("Account created successfully");
+
+          const createdAccount: IAccount = res.data;
+
+          handleAccounts(createdAccount);
+          onSuccessCallback(createdAccount);
+        },
+      }
+    );
+  };
 
   return (
     <div className={`min-h-screen ${FinledgerTheme.background} p-6`}>
@@ -127,12 +139,11 @@ const handleCreateBankAccount = (data: {
         {activeTab === "accounts" && (
           <AccountsTab
             createAccount={handleCreateBankAccount}
-            handleAccounts={(accounts: IAccount[]) => console.log(accounts)}
+            handleAccounts={handleAccounts}
             userKycData={userState}
-            accounts={userAccountsQuery.data?.data || []}
+            accounts={accountsState}  
           />
         )}
-
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { X, Wallet, ArrowDownCircle } from "lucide-react";
 import { formatCurrency } from "@/utils/formats";
 import { IAccount } from "@/types/user-account";
+
+import { initiateRazorpayPayment } from "@/utils/razorpay";
 export interface IDepositMoneyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -69,7 +71,7 @@ export function DepositMoneyModal({
             <div className="mt-4">
               <p className="text-xs text-slate-400 mb-1">Current Balance</p>
               <p className="text-3xl font-bold text-white">
-                {formatCurrency(account.balance, account.currency)}
+                {formatCurrency(account.balance!, account.currency!)}
               </p>
             </div>
           </div>
@@ -97,7 +99,10 @@ export function DepositMoneyModal({
         <div className="p-6 border-t border-slate-800/60 bg-[#19212e] rounded-b-2xl">
           <button
             disabled={isDisabled}
-            onClick={() => onDeposit(account.id, Number(amount))}
+            onClick={() => {
+              onDeposit(account.id!, Number(amount))
+              setAmount("");
+            }}
             className={`w-full py-3 rounded-xl font-semibold transition-all 
               ${isDisabled
                 ? "bg-slate-700 text-slate-500 cursor-not-allowed"

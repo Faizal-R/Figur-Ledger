@@ -6,6 +6,7 @@ export interface IAccountUseCase{
     // deleteAccount(accountId:string):Promise<Account>
     // getAccountById(accountId:string):Promise<Account>
     getAccountsByUserId(userId:string):Promise<Account[]>
+    amountCredited(accountId:string,amount:number):Promise<{updatedAmount:number}>
 
 
 }

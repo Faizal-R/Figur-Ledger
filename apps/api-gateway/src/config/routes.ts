@@ -27,13 +27,24 @@ export const routes: IRoute[] =
   },
   {
     url: "/api/v1/accounts/",
-    auth: true,
+    auth: false,
     roles:[Roles.CUSTOMER],
 
     proxy: {
       target: serviceRegistry[ServiceName.USER_ACCOUNT].target,
       timeout: serviceRegistry[ServiceName.AUTH].timeout,
       proxyReqPathResolver: (req) => `/api/v1/accounts${req.url}`
+    },
+  },
+  {
+    url: "/api/v1/transactions/",
+    auth: true,
+    roles:[Roles.CUSTOMER],
+
+    proxy: {
+      target: serviceRegistry[ServiceName.TRANSACTIONS].target,
+      timeout: serviceRegistry[ServiceName.TRANSACTIONS].timeout,
+      proxyReqPathResolver: (req) => `/api/v1/transactions${req.url}`
     },
   },
 

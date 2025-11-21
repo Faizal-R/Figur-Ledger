@@ -1,14 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
 import "reflect-metadata"
 import "./di/inversify.config";
 
 import app from "./app";
 
-import dotenv from "dotenv";
-import { connectDatabase, disconnectDatabase } from "./infrastructure/config/dbConnection";
+import { connectDatabase, disconnectDatabase } from "./infra/config/dbConnection";
 import {RabbitMQ
  } from '@figur-ledger/messaging-sdk'
 
-dotenv.config();
 
 const PORT = process.env.PORT 
 let server: ReturnType<typeof app.listen>;

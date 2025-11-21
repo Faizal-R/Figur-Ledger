@@ -26,7 +26,7 @@ export class AccountPersistenceMapper
 
   toPersistence(entity: Account): Partial<IAccountDocument> {
     return {
-      userId: new Types.ObjectId(entity.userId),
+     userId: entity.userId ? new Types.ObjectId(entity.userId) : undefined,
       accountNumber: entity.accountNumber,
       type: entity.type,
       balance: entity.balance,

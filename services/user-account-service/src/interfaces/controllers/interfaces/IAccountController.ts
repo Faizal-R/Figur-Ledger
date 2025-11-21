@@ -6,4 +6,5 @@ export interface IAccountController {
   // deleteAccount(req:Request,res:Response):Promise<void>;
   // getAccountById(req:Request,res:Response):Promise<void>;
   getAccountsByUserId(req:Request,res:Response):Promise<void>;
+  amountCredited(req:Request,res:Response):Promise<void>;
 }
