@@ -7,4 +7,9 @@ export interface IAccountController {
   // getAccountById(req:Request,res:Response):Promise<void>;
   getAccountsByUserId(req:Request,res:Response):Promise<void>;
   amountCredited(req:Request,res:Response):Promise<void>;
+  amountDebited(req:Request,res:Response):Promise<void>;
+  refundAmount(req:Request,res:Response):Promise<void>;
+  verifyUserAccount(req:Request,res:Response):Promise<void>;
+  
+
 }

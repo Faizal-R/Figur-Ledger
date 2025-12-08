@@ -10,12 +10,14 @@ export const DI_TOKENS = {
     },
     USE_CASES:{
     TRANSACTION_USE_CASES: Symbol.for("TransactionUseCases"),
+    TRANSFER_USE_CASE:Symbol.for("TransferUseCase")
     },
-    EXTERNAL:{
-    RAZORPAY_CLIENT: Symbol.for("RazorpayClient"),
-    },
+   
     HTTP:{
     ACCOUNT_SERVICE_CLIENT: Symbol.for("AccountServiceClient"),
+    },
+    CLIENT:{
+    PRISMA_CLIENT: Symbol.for("PrismaClient"),
     }
 
 };

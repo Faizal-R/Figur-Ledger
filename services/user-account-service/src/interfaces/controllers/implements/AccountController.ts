@@ -114,8 +114,87 @@ export class AccountController implements IAccountController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Account credited successfully",
+      "Amount credited successfully",
       updatedAmount
     );
   });
+  amountDebited= tryCatch(async (req: Request, res: Response) => {
+    const accountId = req.params.accountId as string;
+    const { amount } = req.body;
+
+    if (amount <= 0) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        "Amount must be greater than zero",
+        null
+      );
+      return;
+    }
+    const updatedAmount = await this._accountUseCase.amountDebited(accountId, amount);
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "Amount Debited successfully",
+      updatedAmount
+    );
+  });
+
+  refundAmount = tryCatch(async (req: Request, res: Response) => {
+  const accountId = req.params.accountId as string;
+  const { amount } = req.body;
+
+  if (!amount || amount <= 0) {
+    createResponse(
+      res,
+      statusCodes.BAD_REQUEST,
+      false,
+      "Amount must be greater than zero",
+      null
+    );
+    return;
+  }
+
+  const refundedAmount = await this._accountUseCase.refund(accountId, amount);
+
+  createResponse(
+    res,
+    statusCodes.SUCCESS,
+    true,
+    "Amount refunded successfully",
+    refundedAmount
+  );
+});
+
+verifyUserAccount = tryCatch(async (req: Request, res: Response) => {
+  const accountNumber = req.body.accountNumber
+
+  if (!accountNumber) {
+    createResponse(
+      res,
+      statusCodes.BAD_REQUEST,
+      false,
+      "Valid account number is required",
+      null
+    );
+    return;
+  }
+
+  const accountId =
+    await this._accountUseCase.verifyUserAccount(accountNumber);
+
+  createResponse(
+    res,
+    statusCodes.SUCCESS,
+    true,
+    "Account verified successfully",
+    {
+      accountId
+    }
+  );
+});
+
+
 }

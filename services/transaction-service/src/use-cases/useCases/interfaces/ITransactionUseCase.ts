@@ -1,6 +1,9 @@
+import { Transaction } from "../../../domain/entities/Transaction";
 
 export interface ITransactionUseCase {
-    verifyPayment(orderId:string,paymentId:string,signature:string,txId:string):Promise<any>
-   processDeposit(accountId: string, amount: number): Promise<
-  { orderId: string; amount: number; txId: string }>
+
+   processDeposit(accountId: string, amount: number, referenceId: string): Promise<{ balance: number, txId: string }>;
+   processWithdrawal(accountId: string, amount: number, referenceId: string): Promise<{ balance: number, txId: string }>;
+   getMoney(accountId: string, amount: number, referenceId: string): Promise<{ balance: number; txId: string }>;
+   getTransactionHistory(userId: string): Promise<Transaction[]>;
 }

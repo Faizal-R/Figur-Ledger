@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, CreditCard, Settings, LogOut } from "lucide-react";
+import { Home, User, CreditCard, Settings, LogOut, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/api/useAuth";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ const iconMap = {
   User,
   CreditCard,
   Settings,
+  ArrowLeftRight
   
 } as const;
 

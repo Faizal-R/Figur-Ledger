@@ -40,3 +40,15 @@ export const useCreateBankAccount = () => {
     }) => AccountService.createBankAccount(account),
   });
 };
+
+
+export const useVerifyUserAccount = () => {
+  return useMutation({
+    mutationFn: async (accountNumber:string) => {
+      const res = await AccountService.verifyAccountByNumber(
+       accountNumber
+      );
+      return res.data;
+    },
+  });
+};

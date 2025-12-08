@@ -1,5 +1,5 @@
 import { Response } from "express";
-import {statusCodes} from '@figur-ledger/types'
+import {statusCodes} from '@figur-ledger/shared'
 import { CustomError } from "@figur-ledger/utils";
 
 export function createResponse<T>(

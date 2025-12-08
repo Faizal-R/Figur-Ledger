@@ -23,7 +23,7 @@ import { IAccount } from "@/types/user-account";
 
 // Schema validation
 const accountSchema = z.object({
-  accountType: z.enum(["savings", "current", "credit"]),
+  accountType: z.enum(["savings", "current", "credit","checking","business","salary"]),
   currency: z.string().min(1, "Currency is required"),
   balance: z.number().min(0, "Balance must be positive"),
 });
@@ -55,7 +55,7 @@ const AccountDialog = ({
   useEffect(() => {
     if (account && mode === "update") {
       setFormData({
-        accountType: account.accountType,
+        accountType: account.type,
         currency: account.currency,
         balance: account.balance,
       });

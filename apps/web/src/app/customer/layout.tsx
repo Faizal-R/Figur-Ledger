@@ -3,9 +3,12 @@ import Sidebar from '@/components/reusables/sidebar/Sidebar'
 import { withRole } from '@/hoc/withRouteProtection';
 
 const navItems = [
-{ name: "Dashboard", href: "/customer/dashboard", icon: "Home" as const },
-{ name: "Profile & Account", href: "/customer/profile", icon: "User" as const },
+  { name: "Dashboard", href: "/customer/dashboard", icon: "Home" as const },
+  { name: "Profile & Account", href: "/customer/profile", icon: "User" as const },
+  { name: "Transactions", href: "/customer/transactions", icon: "CreditCard" as const },
+  { name: "Transfer", href: "/customer/transfer", icon: "ArrowLeftRight" as const }
 ];
+
 
 const CustomerLayout = ({ children }:{children:React.ReactNode}) => {
   return (

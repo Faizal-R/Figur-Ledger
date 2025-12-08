@@ -6,6 +6,7 @@ interface AuthUser {
   email: string;
   role: string;
   phone: string;
+  accountId:string
 }
 
 interface AuthStore {

@@ -1,82 +1,169 @@
 import { inject, injectable } from "inversify";
 import { ITransactionUseCase } from "./interfaces/ITransactionUseCase";
-import { DI_TOKENS } from "../../di/types";
+import { DI_TOKENS } from "../../infra/di/types";
 import { ITransactionRepository } from "../../domain/interfaces/repositories/ITransactionRepository";
-import { IRazorpayClient } from "../../domain/interfaces/external/IRazorPayClient";
 import { Transaction } from "../../domain/entities/Transaction";
 import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServiceClient";
+import { TransactionStatus, TransactionType } from "@prisma/client";
+import { CustomError } from "@figur-ledger/utils";
+import { statusCodes } from "@figur-ledger/shared";
 @injectable()
 export class TransactionUseCase implements ITransactionUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.TRANSACTION_REPOSITORY)
     private _transactionRepository: ITransactionRepository,
-    @inject(DI_TOKENS.EXTERNAL.RAZORPAY_CLIENT)
-    private readonly _razorPayClient: IRazorpayClient,
     @inject(DI_TOKENS.HTTP.ACCOUNT_SERVICE_CLIENT)
     private readonly _accountServiceClient: IAccountServiceClient
-  ) {}
+  ) { }
+  async processDeposit(
+    accountId: string,
+    amount: number,
+    referenceId: string
+  ): Promise<{ balance: number; txId: string }> {
+    const idempotencyKey = `DEPOSIT:${referenceId}`;
+    const existingTx =
+      await this._transactionRepository.findByIdempotencyKey(idempotencyKey);
 
-  async processDeposit(accountId: string, amount: number): Promise<
-  { orderId: string; amount: number; txId: string }> {
-    if (amount <= 0) throw new Error("Invalid amount");
+    if (existingTx) {
+      if (existingTx.status === "SUCCESS") {
+        // Already processed → return safely
+        const balance = await this._accountServiceClient.getBalance(accountId);
+        return { balance, txId: existingTx.id };
+      }
 
-    const order = await this._razorPayClient.createOrder(amount);
+      if (existingTx.status === "PENDING") {
+        throw new Error("Transaction already in progress");
+      }
 
-    // const transactionId = crypto.randomUUID();
+      if (existingTx.status === "FAILED") {
+      }
+    }
+
     const transaction = new Transaction(
-      '',
-      order.id,
-      crypto.randomUUID(),
-    
-      null,
-      accountId,
-
+      crypto.randomUUID(), // internal DB id
+      referenceId, // external correlation id
+      idempotencyKey,
+      null, // senderAccountId
+      accountId, // receiverAccountId
       amount,
       "INR",
-
-      "PENDING", // initial state
-      "DEPOSIT", // transaction type
-
-      null, // failureReason
-      null // metadata
+      TransactionStatus.PENDING,
+      TransactionType.DEPOSIT,
+      null,
+      new Date(),
+      new Date()
     );
 
-    const persistenceTx = await this._transactionRepository.create(transaction);
- 
-    return {
-      orderId: order.id,
-      amount: order.amount,
-      txId: persistenceTx.id
-    };
+    const createdTx = await this._transactionRepository.create(transaction);
+
+    try {
+      const result = await this._accountServiceClient.creditAccount({
+        accountId,
+        amount,
+      });
+      console.log("Account credited:", result);
+
+      await this._transactionRepository.updateById(createdTx.id, {
+        status: TransactionStatus.SUCCESS,
+      });
+      console.log("Transaction marked as SUCCESS");
+      console.log(result);
+
+      return { balance: result.data.balance, txId: createdTx.id };
+    } catch (error: any) {
+      await this._transactionRepository.updateById(createdTx.id, {
+        status: TransactionStatus.FAILED,
+      });
+
+      throw new CustomError(
+        `Deposit failed: ${error.message || "Unknown error"}`,
+        statusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
-  async verifyPayment(orderId: string, paymentId: string, signature: string,txId:string): Promise<any> {
-    const isValid =  this._razorPayClient.verifySignature(
-      orderId,
-      paymentId,
-      signature
+  async processWithdrawal(
+    accountId: string,
+    amount: number,
+    referenceId: string
+  ): Promise<{ balance: number; txId: string }> {
+    const idempotencyKey = `WITHDRAWAL:${referenceId}`;
+
+    const existingTx =
+      await this._transactionRepository.findByIdempotencyKey(idempotencyKey);
+
+    if (existingTx) {
+      if (existingTx.status === "SUCCESS") {
+        // Already processed → return safely
+        const balance = await this._accountServiceClient.getBalance(accountId);
+        return { balance, txId: existingTx.id };
+      }
+
+      if (existingTx.status === "PENDING") {
+        throw new Error("Transaction already in progress");
+      }
+
+      if (existingTx.status === "FAILED") {
+        // Allow retry → continue execution
+      }
+    }
+
+    const transaction = new Transaction(
+      crypto.randomUUID(), // internal DB id
+      referenceId, // external correlation id
+      idempotencyKey,
+      accountId, // senderAccountId
+      null, // receiverAccountId
+      amount,
+      "INR",
+      TransactionStatus.PENDING,
+      TransactionType.WITHDRAW,
+      null,
+      new Date(),
+      new Date()
     );
-    console.log("Is signature valid?", isValid);
-    if (!isValid) {
-      throw new Error("Invalid payment signature");
+
+    const createdTx = await this._transactionRepository.create(transaction);
+
+    try {
+      const result = await this._accountServiceClient.debitAccount({
+        accountId,
+        amount,
+      });
+
+      console.log("Account debited:", result);
+
+      await this._transactionRepository.updateById(createdTx.id, {
+        status: TransactionStatus.SUCCESS,
+      });
+
+      console.log("Transaction marked as SUCCESS");
+
+      return { balance: result.data.balance, txId: createdTx.id };
+    } catch (error: any) {
+      console.error("Error during withdrawal:", error);
+      await this._transactionRepository.updateById(createdTx.id, {
+        status: TransactionStatus.FAILED,
+      });
+
+      throw new CustomError(
+        `Withdrawal failed: ${error.message || "Unknown error"}`,
+        statusCodes.INTERNAL_SERVER_ERROR
+      );
     }
-    await this._transactionRepository.update(txId, {
-      status: "SUCCESS",
-    });
+  }
 
-    console.log(
-      `Payment verified for Order ID: ${orderId}, Payment ID: ${paymentId}, Tx ID: ${txId}`
-    )
-    const tx= await this._transactionRepository.findById(txId);
-    if(!tx){
-      throw new Error("Transaction not found");
-    }
 
-    // call account service to credit amount - to be implemented
-   const respone= await this._accountServiceClient.creditAccount(tx.receiverAccountId as string, tx.amount);
-    console.log("Account service response:", respone.data);
+  async getTransactionHistory(userId: string): Promise<Transaction[]> {
+    const transactions = await this._transactionRepository.findByAccountId(userId);
+    return transactions || [];
+  }
 
-    return { updatedAmount: respone.data.updatedAmount  };
-
+  async getMoney(
+    accountId: string,
+    amount: number,
+    referenceId: string
+  ): Promise<{ balance: number; txId: string }> {
+    return this.processWithdrawal(accountId, amount, referenceId);
   }
 }

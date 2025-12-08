@@ -7,6 +7,7 @@ import {
   Circle,
   PlusCircle,
   Eye,
+  HandCoinsIcon,
 } from "lucide-react";
 import { FinledgerTheme } from "@/theme";
 import {
@@ -27,17 +28,18 @@ import {
   formatFullName,
 } from "@/utils/formats";
 import { ViewAccountModal } from "@/components/ui/modals/user-account/ViewAccountModal";
-import { DepositMoneyModal } from "@/components/ui/modals/user-account/DepositMoneyModal";
-import { initiateRazorpayPayment } from "@/utils/razorpay";
+import { TransactionMoneyModal } from "@/components/ui/modals/user-account/DepositMoneyModal";
+
 import { toast } from "sonner";
 import {
   useProcessDeposit,
-  useVerifyPayment,
+  useProcessWithdrawal,
 } from "@/hooks/api/useTransaction";
+import { response } from "express";
 
 interface AccountsTabProps {
   accounts: Account[];
-  handleAccounts: (account: Account) => void; // <-- updated
+  handleAccounts: (account: Account) => void;
   userKycData: IUser;
   createAccount: (
     data: {
@@ -86,9 +88,13 @@ export function AccountsTab({
   const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
 
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [depositingAccount, setDepositingAccount] = useState<Account | null>(
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(
     null
   );
+
+  const [transactionType, setTransactionType] = useState<
+    "deposit" | "withdraw"
+  >("deposit");
 
   const [successData, setSuccessData] = useState<{
     accountNumber: string;
@@ -106,7 +112,7 @@ export function AccountsTab({
   };
 
   const processDeposit = useProcessDeposit();
-  const verifyDepositPayment = useVerifyPayment();
+  const processWithdrawal = useProcessWithdrawal();
 
   const handleCreateSuccess = (data: {
     nickname: string;
@@ -126,10 +132,13 @@ export function AccountsTab({
   };
 
   const onHandleDeposit = async (accountId: string, amount: number) => {
+    const referenceId = `dep-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     try {
       const response = await processDeposit.mutateAsync({
         accountId,
         amount,
+        referenceId,
       });
 
       if (!response.success) {
@@ -137,54 +146,91 @@ export function AccountsTab({
         return;
       }
 
-      const { orderId, amount: orderAmount, txId } = response.data;
+      const { balance } = response.data;
 
-      await initiateRazorpayPayment({
-        amount: orderAmount,
-        orderId,
-        name: "FigurLedger",
-        description: "Account Deposit",
-        image: "https://your-image-url",
-        prefill: {
-          name: userKycData?.personalInfo?.firstName ?? "",
-          email: userKycData?.email ?? "",
-          contact: userKycData?.phone ?? "",
-        },
-
-        onSuccess: async (paymentResponse) => {
-          const res = await verifyDepositPayment.mutateAsync({
-            paymentId: paymentResponse.razorpay_payment_id,
-            orderId: paymentResponse.razorpay_order_id,
-            signature: paymentResponse.razorpay_signature,
-            txId,
-          });
-
-          if (!res.success) {
-            toast(res.message);
-            return;
-          }
-
-          const updatedAccount = accounts.find((a) => a.id === accountId);
-
-          if (updatedAccount) {
-            handleAccounts({
-              ...updatedAccount,
-              balance: res.data.updatedAmount,
-            });
-          }
-          setIsDepositModalOpen(false);
-          toast("Deposit successful.");
-        },
-
-        onFailure: () => {
-          toast("Payment failed or cancelled.");
-        },
+      handleAccounts({
+        ...selectedAccount!,
+        balance,
       });
+
+      setIsDepositModalOpen(false);
+      setSelectedAccount(null);
+
+      toast.success(
+        `Deposit successful! New balance of ${selectedAccount?.nickname}: ${formatCurrency(
+          balance,
+          "INR"
+        )}`
+      );
     } catch (err) {
       toast("Unexpected error while processing deposit.");
       console.error(err);
     }
   };
+
+ const onHandleWithdraw = (accountId: string, amount: number) => {
+  const currentBalance = selectedAccount?.balance ?? 0;
+
+  // ❌ Invalid amount checks
+  if (!amount || isNaN(amount)) {
+    toast.error("Amount is required.");
+    return;
+  }
+
+  if (amount <= 0) {
+    toast.error("Withdrawal amount must be greater than 0.");
+    return;
+  }
+
+  // ❌ Insufficient balance
+  if (amount > currentBalance) {
+    toast.error("Insufficient balance for this withdrawal.");
+    return;
+  }
+
+  const referenceId = `wd-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  processWithdrawal.mutate(
+    {
+      accountId,
+      amount,
+      referenceId,
+    },
+    {
+      onSuccess: (response) => {
+        if (!response.success) {
+          toast(response.message);
+          return;
+        }
+
+        const { balance } = response.data;
+
+        handleAccounts({
+          ...selectedAccount!,
+          balance,
+        });
+
+        setIsDepositModalOpen(false);
+        setSelectedAccount(null);
+
+        toast.success(
+          `Withdrawal successful! New balance of ${selectedAccount?.nickname}: ${formatCurrency(
+            balance,
+            "INR"
+          )}`
+        );
+      },
+
+      onError: (err: any) => {
+        toast.error(
+          err?.message || "Unexpected error while processing withdrawal."
+        );
+        console.error(err);
+      },
+    }
+  );
+};
+
 
   const totalBalance = accounts.reduce(
     (sum, account) => sum + account.balance,
@@ -202,11 +248,14 @@ export function AccountsTab({
           <p className={`text-sm ${FinledgerTheme.text.muted} mb-2`}>
             Total Balance
           </p>
-          <p className={`text-4xl font-bold ${FinledgerTheme.text.primary} mb-1`}>
+          <p
+            className={`text-4xl font-bold ${FinledgerTheme.text.primary} mb-1`}
+          >
             {formatCurrency(totalBalance, "USD")}
           </p>
           <p className={`text-sm ${FinledgerTheme.text.secondary}`}>
-            Across {accounts.length} account{accounts.length !== 1 ? "s" : ""}
+            Across {accounts.length} account
+            {accounts.length !== 1 ? "s" : ""}
           </p>
         </div>
         <button
@@ -243,10 +292,14 @@ export function AccountsTab({
                       </h4>
                       <div className="flex items-center gap-1">
                         <Circle
-                          className={`w-2 h-2 ${getStatusColor(account.status)} fill-current`}
+                          className={`w-2 h-2 ${getStatusColor(
+                            account.status
+                          )} fill-current`}
                         />
                         <span
-                          className={`text-xs ${getStatusColor(account.status)} capitalize`}
+                          className={`text-xs ${getStatusColor(
+                            account.status
+                          )} capitalize`}
                         >
                           {account.status}
                         </span>
@@ -255,7 +308,9 @@ export function AccountsTab({
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                       <div>
-                        <p className="text-xs text-slate-400 mb-1">Account Number</p>
+                        <p className="text-xs text-slate-400 mb-1">
+                          Account Number
+                        </p>
                         <p className="text-sm text-slate-300 font-mono">
                           {account.accountNumber}
                         </p>
@@ -286,15 +341,30 @@ export function AccountsTab({
                     <Eye className="w-5 h-5 text-slate-300" />
                   </button>
 
+                  {/* ✅ DEPOSIT */}
                   <button
                     onClick={() => {
-                      setDepositingAccount(account);
+                      setTransactionType("deposit");
+                      setSelectedAccount(account);
                       setIsDepositModalOpen(true);
                     }}
                     className="p-2 hover:bg-slate-800/50 rounded-md"
                     title="Deposit Money"
                   >
                     <Wallet className="w-5 h-5 text-slate-300" />
+                  </button>
+
+                  {/* ✅ WITHDRAW */}
+                  <button
+                    onClick={() => {
+                      setTransactionType("withdraw");
+                      setSelectedAccount(account);
+                      setIsDepositModalOpen(true);
+                    }}
+                    className="p-2 hover:bg-slate-800/50 rounded-md"
+                    title="Withdraw Money"
+                  >
+                    <HandCoinsIcon className="w-5 h-5 text-slate-300" />
                   </button>
                 </div>
               </div>
@@ -328,14 +398,16 @@ export function AccountsTab({
         kycData={kycData}
       />
 
-      <DepositMoneyModal
+      <TransactionMoneyModal
         isOpen={isDepositModalOpen}
         onClose={() => {
           setIsDepositModalOpen(false);
-          setDepositingAccount(null);
+          setSelectedAccount(null);
         }}
-        account={depositingAccount}
+        account={selectedAccount}
+        transactionType={transactionType}
         onDeposit={onHandleDeposit}
+        onWithdraw={onHandleWithdraw}
       />
     </div>
   );

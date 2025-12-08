@@ -1,9 +1,12 @@
-import { Types } from "mongoose";
+// src/infrastructure/mappers/TransactionPersistenceMapper.ts
+import { Prisma, Transaction as PrismaTransaction } from "@prisma/client";
 import { Transaction } from "../../domain/entities/Transaction";
-import { ITransactionDocument } from "../model/interfaces/ITransactionModel";
+import { ITransactionPersistenceMapper } from "./interfaces/ITransactionPersistenceMapper";
 
-export class TransactionPersistenceMapper {
-   toDomain(raw: ITransactionDocument): Transaction {
+
+export class TransactionPersistenceMapper implements ITransactionPersistenceMapper {
+  // DB → Domain
+  toDomain(raw: PrismaTransaction): Transaction {
     if (!raw) throw new Error("Cannot map null/undefined transaction record");
 
     return new Transaction(
@@ -11,39 +14,58 @@ export class TransactionPersistenceMapper {
       raw.referenceId,
       raw.idempotencyKey,
 
-      raw.senderAccountId ?? null,
-      raw.receiverAccountId ?? null,
+      raw.senderAccountId,
+      raw.receiverAccountId,
 
-      raw.amount,
+      Number(raw.amount),        
       raw.currency,
 
       raw.status,
       raw.type,
 
       raw.failureReason ?? null,
-      raw.metadata ?? null,
 
       raw.createdAt,
       raw.updatedAt
     );
   }
 
-   toPersistence(entity: Transaction): Partial<ITransactionDocument> {
+
+  toPersistence(dto:Transaction): Prisma.TransactionCreateInput {
     return {
-      referenceId: entity.referenceId,
-      idempotencyKey: entity.idempotencyKey,
+      id: dto.id,
+      referenceId: dto.referenceId,
+      idempotencyKey: dto.idempotencyKey,
 
-      senderAccountId: entity.senderAccountId,
-      receiverAccountId: entity.receiverAccountId,
+      senderAccountId: dto.senderAccountId ?? null,
+      receiverAccountId: dto.receiverAccountId ?? null,
 
-      amount: entity.amount,
-      currency: entity.currency,
+      amount: new Prisma.Decimal(dto.amount),
+      currency: dto.currency,
+      type: dto.type,
+      status: "PENDING",
 
-      status: entity.status,
-      type: entity.type,
+      failureReason: dto.failureReason ?? null
+      
+    };
+  }
 
-      failureReason: entity.failureReason,
-      metadata: entity.metadata,
+ 
+  toUpdatePersistence(
+    partial: Partial<Transaction>
+  ): Prisma.TransactionUpdateInput {
+    return {
+      senderAccountId: partial.senderAccountId,
+      receiverAccountId: partial.receiverAccountId,
+      amount:
+        partial.amount !== undefined
+          ? new Prisma.Decimal(partial.amount)
+          : undefined,
+      currency: partial.currency,
+      status: partial.status,
+      type: partial.type,
+      failureReason: partial.failureReason
+      // updatedAt handled by Prisma @updatedAt
     };
   }
 }

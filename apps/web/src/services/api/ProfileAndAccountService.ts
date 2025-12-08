@@ -71,5 +71,25 @@ export const AccountService = {
     } catch (error) {
       throw parseAxiosError(error, "An error occurred while creating account");
     }
+  },
+
+  async verifyAccountByNumber(
+  accountNumber: string
+): Promise<ApiResponse<{ 
+  accountId: string;
+}>> {
+  try {
+    return await request<
+      ApiResponse<{ userId: string; accountId: string; name?: string | null }>
+    >(
+      httpMethods.POST,
+      AccountRoutes.VERIFY_ACCOUNT,{
+        accountNumber
+      }
+    );
+  } catch (error) {
+    throw parseAxiosError(error, "Account verification failed");
   }
+}
+
 };

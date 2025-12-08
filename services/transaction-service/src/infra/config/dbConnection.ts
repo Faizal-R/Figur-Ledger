@@ -1,24 +1,15 @@
-import mongoose from "mongoose";
-import {config} from 'dotenv'
-config()
-export const connectDatabase = async () => {
-    const MONGODB_URI=process.env.MONGODB_URI as string
-    try {
-        await mongoose.connect(MONGODB_URI);
-        console.log("Connected to MongoDB.");
-      
-    } catch (error) {
-        console.error("MongoDB connection error:", error);
-    }
-    
-};
+import { prisma } from '../prisma/PrismaClient'
 
 
-export const disconnectDatabase = async () => {
+ export async function connectDB() {
   try {
-    await mongoose.connection.close();
-    console.log("MongoDB disconnected.");
-  } catch (error) {
-    console.error("MongoDB disconnection error:", error);
+    await prisma.$connect()
+    console.log('Prisma connected successfully✅')
+    
+  } catch (err) {
+    console.error('Prisma connection failed', err)
+    process.exit(1) // Hard stop. No zombie service.
   }
-};
+}
+
+
