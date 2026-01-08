@@ -11,7 +11,7 @@ const transactionController = resolve<ITransactionController>(DI_TOKENS.CONTROLL
 
 router.post('/deposit', transactionController.processDeposit)
 router.post('/withdraw', transactionController.processWithdrawal)
-router.get('/history/:userId', transactionController.getTransactionHistory)
+router.get('/history/:accountId', transactionController.getTransactionHistory)
 router.post('/transfer',transactionController.processTransfer)
 router.get(
     '/health', (req, res) => {

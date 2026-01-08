@@ -1,4 +1,4 @@
-import { OtpVerifyClient } from "@/components/feature/auth/OtpVerifyClient";
+import { OtpVerifyClient } from "@/components/features/auth/OtpVerifyClient";
 
 // SERVER COMPONENT
 export default function VerifyOtpPage({ searchParams }: { searchParams: { email?: string } }) {

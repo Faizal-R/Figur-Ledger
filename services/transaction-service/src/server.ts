@@ -7,10 +7,10 @@ import app from "./app";
 
 import { RabbitMQ } from "@figur-ledger/messaging-sdk";
 import { connectDB } from "./infra/config/dbConnection";
-import { prisma } from "./infra/prisma/PrismaClient";
+import { prisma } from "./infra/prisma/PrismaClient"; 
 
 const PORT = process.env.PORT;
-let server: ReturnType<typeof app.listen> 
+let server: ReturnType<typeof app.listen>       
 const startServer = async () => {
   try {
     await RabbitMQ.connect(process.env.RABBITMQ_URI as string);
@@ -23,7 +23,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error("❌ Server failed to start:", error);
-  }
+  }   
 };
     
 startServer();

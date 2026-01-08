@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FinledgerTheme } from "@/theme";
-import AccountSelector from "@/components/feature/customer/account/AccountSelector";
+import AccountSelector from "@/components/features/customer/account/AccountSelector";
 import { useTransferAmount } from "@/hooks/api/useTransaction";
 import { useVerifyUserAccount } from "@/hooks/api/useProfileAndAccount";
 import { toast } from "sonner";

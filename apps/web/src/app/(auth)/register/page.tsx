@@ -1,5 +1,5 @@
 import RegisterForm from "@/components/reusables/forms/RegisterForm";
-import BrandingSection from "@/components/feature/auth/BrandingSection";
+import BrandingSection from "@/components/features/auth/BrandingSection";
 
 const RegisterPage = () => {
   return (

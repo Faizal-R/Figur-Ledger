@@ -5,7 +5,7 @@ export interface ITransactionRepository {
 
   findById(id: string): Promise<Transaction | null>;
 
-  findByAccountId(userId: string): Promise<Transaction[]>;
+  findByAccountId(accountId: string): Promise<Transaction[]>;
   findByIdempotencyKey(idempotencyKey: string): Promise<Transaction | null>;
 
   updateById(

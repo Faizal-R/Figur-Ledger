@@ -8,7 +8,7 @@ import {
   Info,
 } from "lucide-react";
 import { IAccount, KYCData } from "@/types/user-account";
-import { KYCPreview } from "@/components/feature/customer/account/KYCPreview";
+import { KYCPreview } from "@/components/features/customer/account/KYCPreview";
 import { formatCurrency, formatDate } from "@/utils/formats";
 
 interface ViewAccountModalProps {

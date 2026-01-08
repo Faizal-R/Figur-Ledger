@@ -1,7 +1,7 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
+
     "plugins": [
       { "name": "next" }
     ],
@@ -15,6 +15,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/components/feature/customer/transactions/TransactionCard.tsx"  ],
+, "src/components/features/customer/transactions/TransactionCard.tsx"  ],
   "exclude": ["node_modules"]
 }

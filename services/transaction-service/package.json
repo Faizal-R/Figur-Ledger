@@ -22,7 +22,8 @@
     "@figur-ledger/types": "^1.0.0",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",
-    "axios": "^1.13.2"
+    "axios": "^1.13.2",
+    "tsx": "^4.21.0"
   },
   "prisma": {
     "schema": "src/infra/prisma/schema.prisma"

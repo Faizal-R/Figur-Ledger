@@ -1,11 +1,11 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import {  useState } from "react";
 import { FinledgerTheme } from "@/theme";
 import { ArrowUpRight, ArrowDownLeft, RefreshCcw } from "lucide-react";
 import TransactionViewModal from "./TransactionModal";
 import { useTransactionHistory } from "@/hooks/api/useTransaction";
-import { useAuthUserStore } from "@/store";
+
 
 type TransactionStatus = "PENDING" | "SUCCESS" | "FAILED";
 type TransactionType = "DEPOSIT" | "WITHDRAW" | "TRANSFER";
@@ -22,42 +22,6 @@ interface Transaction {
   createdAt: string;
 }
 
-/* ✅ Dummy fallback */
-const DUMMY_TRANSACTIONS: Transaction[] = [
-  {
-    id: "1",
-    referenceId: "SUB-1001",
-    senderAccountId: "acc_1",
-    receiverAccountId: null,
-    amount: 1999,
-    currency: "INR",
-    status: "SUCCESS",
-    type: "DEPOSIT",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    referenceId: "INT-2091",
-    senderAccountId: "acc_1",
-    receiverAccountId: "acc_2",
-    amount: 799,
-    currency: "INR",
-    status: "PENDING",
-    type: "TRANSFER",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    referenceId: "WDL-8812",
-    senderAccountId: "acc_1",
-    receiverAccountId: null,
-    amount: 500,
-    currency: "INR",
-    status: "FAILED",
-    type: "WITHDRAW",
-    createdAt: new Date().toISOString(),
-  },
-];
 
 const TABS: { label: string; value: "ALL" | TransactionType }[] = [
   { label: "All", value: "ALL" },

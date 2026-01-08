@@ -1,7 +1,7 @@
 import { FinledgerTheme } from "@/theme";
-import TransferHeader from "@/components/feature/customer/transfer/TransferHeader";
+import TransferHeader from "@/components/features/customer/transfer/TransferHeader";
 // import AccountSelector from "@/components/accounts/AccountSelector";
-import TransferForm from "@/components/feature/customer/transfer/TransferForm";
+import TransferForm from "@/components/features/customer/transfer/TransferForm";
 
 export default function TransferPage() {
   return (

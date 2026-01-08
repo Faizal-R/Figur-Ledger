@@ -47,6 +47,17 @@ export const routes: IRoute[] =
       proxyReqPathResolver: (req) => `/api/v1/transactions${req.url}`
     },
   },
+  {
+    url: "/api/v1/loan/",
+    auth: true,
+    roles:[Roles.CUSTOMER,Roles.ADMIN,Roles.EMPLOYEE],
+
+    proxy: {
+      target: serviceRegistry[ServiceName.LOAN_CREDIT].target,
+      timeout: serviceRegistry[ServiceName.LOAN_CREDIT].timeout,
+      proxyReqPathResolver: (req) => `/api/v1/loan${req.url}`
+    },
+  },
 
 
 

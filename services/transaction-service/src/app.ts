@@ -19,10 +19,10 @@ const corsOptions = {
 };
 
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use((req,res,next)=>{
- console.log("req",req.url)
+ console.log("req:transaction",req.url)
  next()
 })
 

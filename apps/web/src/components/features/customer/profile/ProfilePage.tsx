@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { FinledgerTheme } from "@/theme";
 import { ProfileHeader } from "@/components/reusables/profile/ProfileHeader";
-import { TabNavigation, TabType } from "@/components/feature/customer/profile/TabNavigation";
+import { TabNavigation, TabType } from "@/components/features/customer/profile/TabNavigation";
 import { PersonalInfoTab } from "@/components/reusables/profile/ProfileInfoTab";
-import { AccountsTab } from "@/components/feature/customer/account/AccountsTab";
+import { AccountsTab } from "@/components/features/customer/account/AccountsTab";
 
 import {
   useUserProfile,

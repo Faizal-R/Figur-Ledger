@@ -100,9 +100,9 @@ processDeposit = tryCatch(async (req: Request, res: Response) => {
 
   getTransactionHistory = tryCatch(async (req: Request, res: Response) => {
     const { accountId } = req.params;
-
+   console.log("accountId", req.params);
     if (!accountId) {
-      return createResponse(res, statusCodes.BAD_REQUEST, false, "userId is required");
+      return createResponse(res, statusCodes.BAD_REQUEST, false, "AccountId is required");
     }
     const transactions = await this._transactionUseCases.getTransactionHistory(accountId);
    console.log("Fetched transactions for userId", { accountId, transactions });

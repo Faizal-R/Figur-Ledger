@@ -1,4 +1,4 @@
-import LoginForm from "@/components/feature/auth/LoginForm";
+import LoginForm from "@/components/features/auth/LoginForm";
 import { Shield, Zap, Lock } from "lucide-react";
 import heroImage from "@/assets/hero-finance.jpg";
 const LoginPage = () => {

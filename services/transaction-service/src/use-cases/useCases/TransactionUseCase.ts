@@ -7,14 +7,18 @@ import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServ
 import { TransactionStatus, TransactionType } from "@prisma/client";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
+
 @injectable()
+
 export class TransactionUseCase implements ITransactionUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.TRANSACTION_REPOSITORY)
     private _transactionRepository: ITransactionRepository,
+
     @inject(DI_TOKENS.HTTP.ACCOUNT_SERVICE_CLIENT)
     private readonly _accountServiceClient: IAccountServiceClient
   ) { }
+
   async processDeposit(
     accountId: string,
     amount: number,
@@ -82,7 +86,7 @@ export class TransactionUseCase implements ITransactionUseCase {
     }
   }
 
-  async processWithdrawal(
+  async processWithdrawal( 
     accountId: string,
     amount: number,
     referenceId: string
@@ -126,6 +130,7 @@ export class TransactionUseCase implements ITransactionUseCase {
     const createdTx = await this._transactionRepository.create(transaction);
 
     try {
+
       const result = await this._accountServiceClient.debitAccount({
         accountId,
         amount,
@@ -152,18 +157,11 @@ export class TransactionUseCase implements ITransactionUseCase {
       );
     }
   }
-
-
-  async getTransactionHistory(userId: string): Promise<Transaction[]> {
-    const transactions = await this._transactionRepository.findByAccountId(userId);
+  
+  async getTransactionHistory(accountId: string): Promise<Transaction[]> {
+    const transactions = await this._transactionRepository.findByAccountId(accountId);
+    console.log("Transaction history: ", transactions);
     return transactions || [];
   }
-
-  async getMoney(
-    accountId: string,
-    amount: number,
-    referenceId: string
-  ): Promise<{ balance: number; txId: string }> {
-    return this.processWithdrawal(accountId, amount, referenceId);
-  }
+  
 }
