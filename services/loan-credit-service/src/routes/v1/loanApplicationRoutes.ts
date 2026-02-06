@@ -9,6 +9,7 @@ const loanApplicationController= resolve<ILoanApplicationController>(DI_TOKENS.C
 
 router.post('/apply',loanApplicationController.createLoanApplication)
 router.put('/update-status',loanApplicationController.approveOrRejectLoanApplication)
+router.get('/:userId',loanApplicationController.getAllLoanApplicationsByUserAndStatus)
 
 router.get('/',loanApplicationController.getAllLoanApplications)
 

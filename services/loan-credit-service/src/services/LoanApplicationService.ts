@@ -6,11 +6,18 @@ import { ILoanApplicationRepository } from "../repositories/interfaces/ILoanAppl
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
 import Api from "../config/api";
+import { config } from "dotenv";
+import { generateRepaymentSchedules } from "../helpers/generateRepaymentSchedule";
+import { IRepaymentScheduleRepository } from "../repositories/interfaces/IRepaymentScheduleRepository";
+import { Types } from "mongoose";
+config();
 @injectable()
 export class LoanApplicationService implements ILoanApplicationService {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.LOAN_APPLICATION_REPOSITORY)
-    private _loanApplicationRepository: ILoanApplicationRepository
+    private _loanApplicationRepository: ILoanApplicationRepository,
+    @inject(DI_TOKENS.REPOSITORIES.REPAYMENT_SCHEDULE_REPOSITORY)
+    private _repaymentScheduleRepository: IRepaymentScheduleRepository
   ) {}
   async createLoanApplication(
     payload: Partial<ILoanApplication>
@@ -26,7 +33,7 @@ export class LoanApplicationService implements ILoanApplicationService {
   async getAllLoanApplications(): Promise<ILoanApplication[]> {
     try {
       const loanApplications = await this._loanApplicationRepository.find({
-        status:"APPLIED"
+        status: "APPLIED",
       });
       return loanApplications;
     } catch (error) {
@@ -42,28 +49,63 @@ export class LoanApplicationService implements ILoanApplicationService {
   }): Promise<ILoanApplication | null> {
     try {
       const { applicationId, status, approvedAmount, approvedBy } = payload;
-      console.log("payload",payload)
+      console.log("payload", payload);
       const loanApplication = await this._loanApplicationRepository.update(
         applicationId,
         { status, approvedAmount, approvedBy }
       );
-      if(status==="REJECTED"){
-        return loanApplication        
-      } 
-      
-      console.log("loanApplication",loanApplication)
+      if (status === "REJECTED") {
+        return loanApplication;
+      }
 
-     const res= await Api.post("/transactions/transfer",{
-        senderAccountId:"6946495c2340c99a34c10bd9",
-        receiverAccountId:"6920237390a9111e7c401ee8",
-        amount:loanApplication?.requestedAmount,
-       
+      console.log("loanApplication", loanApplication);
+      
+      const res = await Api.post("/transactions/transfer", {
+        senderAccountId: process.env.SYSTEM_ACCOUNT_ID!,
+        receiverAccountId: loanApplication?.creditedAccountId,
+        amount: loanApplication?.requestedAmount,
       });
-      console.log("res",res.data)
-      return loanApplication
-    } catch (error) {  
+      console.log("res", res.data);
+
+      const updatedLoanApplication =
+        await this._loanApplicationRepository.update(applicationId, {
+          status: "DISBURSED",
+          disbursedAt: new Date(),
+        });
+
+      const schedules = generateRepaymentSchedules({
+        loanApplicationId: new Types.ObjectId(applicationId),
+        principal: updatedLoanApplication?.requestedAmount!,
+        annualInterestRate: updatedLoanApplication?.annualInterestRate!,
+        tenureInMonths: updatedLoanApplication?.tenureInMonths!,
+        disbursedAt: updatedLoanApplication?.disbursedAt!,
+      });
+      console.log("schedules", schedules);
+       await this._repaymentScheduleRepository.insertMany(schedules);
+
+     const activeLoan = await this._loanApplicationRepository.update(applicationId, {
+  status: "ACTIVE",
+});
+
+return activeLoan;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllLoanApplicationsByUserAndStatus(userId:string,status:string): Promise<ILoanApplication[]> {
+    try {
+      const loanApplications = await this._loanApplicationRepository.find({
+        userId,
+        status,
+      });
+      console.log(
+
+        "ACTIVE:LOAN of USER: ",userId,"Applications : ",loanApplications
+      )
+      return loanApplications;
+    } catch (error) {
       throw error;
     }
   }
 }
-  

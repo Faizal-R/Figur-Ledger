@@ -3,13 +3,14 @@ export const DI_TOKENS = {
         LOAN_APPLICATION_CONTROLLER: Symbol.for("LoanApplicationController"),
         LOAN_PRODUCT_CONTROLLER: Symbol.for("LoanProductController"),
         CREDIT_PROFILE_CONTROLLER: Symbol.for("CreditProfileController"),
-        REPAYMENT_SCHEDULE_CONTROLLER: Symbol.for("RepaymentScheduleController"),
+        LOAN_EMI_CONTROLLER: Symbol.for("LoanEmiController"),
     },
     SERVICES: {
         LOAN_APPLICATION_SERVICE: Symbol.for("LoanApplicationService"),
         LOAN_PRODUCT_SERVICE: Symbol.for("LoanProductService"),
         CREDIT_PROFILE_SERVICE: Symbol.for("CreditProfileService"),
         REPAYMENT_SCHEDULE_SERVICE: Symbol.for("RepaymentScheduleService"),
+        EMI_SERVICE: Symbol.for("EmiService"),
     },
     REPOSITORIES: {
         LOAN_APPLICATION_REPOSITORY: Symbol.for("LoanApplicationRepository"),

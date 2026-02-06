@@ -13,10 +13,17 @@ export class LoanApplicationController implements ILoanApplicationController {
   ) {}
   createLoanApplication = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
-        const {loanApplication}=req.body
-        console.log("loanApplication",loanApplication)
-      const createdLoanApplication=
-        await this._loanApplicationService.createLoanApplication(loanApplication);
+      const { loanApplication } = req.body;
+      console.log("loanApplication", loanApplication);
+      const createdLoanApplication =
+        await this._loanApplicationService.createLoanApplication(
+          {
+            ...loanApplication,
+            status: "APPLIED",
+            approvedAmount:loanApplication.requestedAmount,
+     
+          }
+        );
       createResponse(
         res,
         statusCodes.CREATED,
@@ -39,21 +46,43 @@ export class LoanApplicationController implements ILoanApplicationController {
       );
     }
   );
- 
 
-  approveOrRejectLoanApplication=tryCatch(
-    async (req:Request,res:Response):Promise<void>=>{
-      console.log(req.body)
-        const {applicationData}=req.body
-        const approvedLoanApplication=await this._loanApplicationService.approveOrRejectLoanApplication(applicationData)
-        createResponse(
-            res,
-            statusCodes.SUCCESS,
-            true,
-            "Loan Application Approved Successfully",
-            approvedLoanApplication
-        )
+  approveOrRejectLoanApplication = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      console.log(req.body);
+      const { applicationData } = req.body;
+      const approvedLoanApplication =
+        await this._loanApplicationService.approveOrRejectLoanApplication(
+          applicationData
+        );
+      createResponse(
+        res,
+        statusCodes.SUCCESS,
+        true,
+        "Loan Application Approved Successfully",
+        approvedLoanApplication
+      );
     }
-)
+  );
 
+  getAllLoanApplicationsByUserAndStatus = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const { userId } = req.params;
+      console.log("userId", userId);
+      const { status } = req.query;
+      console.log("status", req.query);
+      const loanApplications =
+        await this._loanApplicationService.getAllLoanApplicationsByUserAndStatus(
+          userId,
+          status as string
+        );
+      createResponse(
+        res,
+        statusCodes.SUCCESS,
+        true,
+        "Loan Applications Fetched Successfully",
+        loanApplications
+      );
+    }
+  );
 }

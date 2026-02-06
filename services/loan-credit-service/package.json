@@ -19,6 +19,7 @@
     "@figur-ledger/shared": "^1.0.0",
     "@figur-ledger/utils": "^1.0.0",
     "axios": "^1.13.2",
+    "node-cron": "^4.2.1",
     "tsx": "^4.21.0"
   }
 }

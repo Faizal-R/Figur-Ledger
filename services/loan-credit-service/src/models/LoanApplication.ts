@@ -1,10 +1,7 @@
 // LoanApplication.schema.ts
-import { Schema, model, Types,Document } from "mongoose";
+import { Schema, model, Types, Document } from "mongoose";
 
-
-
-
-export interface ILoanApplication extends Document{
+export interface ILoanApplication extends Document {
   _id: Types.ObjectId;
 
   userId: Types.ObjectId;
@@ -30,6 +27,7 @@ export interface ILoanApplication extends Document{
     | "CLOSED"
     | "REJECTED"
     | "DEFAULTED";
+  creditedAccountId: Types.ObjectId;
 
   approvedBy?: Types.ObjectId;
 
@@ -39,7 +37,6 @@ export interface ILoanApplication extends Document{
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 const LoanApplicationSchema = new Schema(
   {
@@ -52,6 +49,10 @@ const LoanApplicationSchema = new Schema(
     loanProductId: {
       type: Types.ObjectId,
       ref: "LoanProduct",
+      required: true,
+    },
+    creditedAccountId: {
+      type: Types.ObjectId,
       required: true,
     },
 

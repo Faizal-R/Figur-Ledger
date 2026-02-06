@@ -14,3 +14,4 @@ export default  class HashService implements IHashService {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 }
+    

@@ -18,9 +18,9 @@ export class LoanProductController implements ILoanProductController {
       const { loanProduct }= req.body;
       console.log("loanProduct",loanProduct)
       //add validation
-
+      
       const createdLoanProduct =
-        await this._loanProductService.createLoanProduct(loanProduct);
+        await this._loanProductService.createLoanProduct({...loanProduct,isActive:true});
       return createResponse(
         res,
         statusCodes.CREATED,
@@ -50,7 +50,8 @@ export class LoanProductController implements ILoanProductController {
 
   getAllLoanProducts = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
-      const loanProducts = await this._loanProductService.getAllLoanProducts();
+      const {userId}=req.params;
+      const loanProducts = await this._loanProductService.getAllLoanProducts(userId);
       return createResponse(
         res,
         statusCodes.SUCCESS,

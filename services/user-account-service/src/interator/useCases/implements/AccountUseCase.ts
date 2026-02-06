@@ -157,7 +157,7 @@ export class AccountUseCase implements IAccountUseCase {
     return { balance: updatedAccount.balance };
   }
 
-  // ✅ Refund = simple credit (used by Saga compensation)
+
   async refund(
     accountId: string,
     amount: number,

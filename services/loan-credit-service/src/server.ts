@@ -9,6 +9,7 @@ import { RabbitMQ } from "@figur-ledger/messaging-sdk";
 import { resolve } from "./di";
 import { CreditProfileConsumer } from "./messaging/consumers/CreditProfileConsumer";
 import { DI_TOKENS } from "./di/types";
+import { startEmiCron } from "./jobs/cron/emiCron";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const startServer = async () => {
     await connectDatabase();
     const consumer = resolve<CreditProfileConsumer>(DI_TOKENS.CONSUMERS.CREDIT_PROFILE_CONSUMER);
     consumer.start();
+    startEmiCron();
     app.listen(PORT, () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
