@@ -1,5 +1,9 @@
-import Sidebar from '@/components/reusables/sidebar/Sidebar'
 
+
+"use client"
+import Sidebar from '@/components/reusables/sidebar/Sidebar'
+import { withRole } from '@/hoc/withRouteProtection';
+import { Roles } from '@/types/role';
 const navItems = [
   { name: "Dashboard", href: "/employee/dashboard", icon: "Home" as const },
 
@@ -27,4 +31,4 @@ const Employeelayout = ({ children }:{children:React.ReactNode}) => {
   )
 }
 
-export default Employeelayout
+export default withRole(Employeelayout, [Roles.EMPLOYEE]) 

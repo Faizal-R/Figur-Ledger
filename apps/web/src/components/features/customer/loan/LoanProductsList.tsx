@@ -12,15 +12,15 @@ export default function LoanProductsList() {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {data?.data.map((product) => (
-          <LoanProductCard
-            key={product.id}
-            product={product}
-            onApply={() => setSelected(product)}
-          />
-        ))}
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+      {data?.data.map((product) => (
+        <LoanProductCard
+          key={product.id}
+          product={product}
+          onApply={() => setSelected(product)}
+        />
+      ))}
+    </div>
 
       {selected && (
         <LoanApplyModal

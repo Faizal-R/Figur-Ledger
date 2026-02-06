@@ -7,6 +7,7 @@ import LoanApplicationSubmitted from "./LoanApplicationSubmitted";
 import { useApplyLoan } from "@/hooks/api/useLoan";
 import { useAuthUserStore } from "@/store";
 import { ILoanApplication } from "@/types/ILoan";
+import { IAccount } from "@/types/user-account";
 
 
 export default function LoanCalculator({
@@ -30,7 +31,7 @@ export default function LoanCalculator({
   const totalPayable = amount + interest + processingFee;
   const emi = Math.round(totalPayable / tenure);
 
-  function handleConfirmApply() {
+  function handleConfirmApply(selectedAccountId:string) {
     const payload = {
       loanProductId: product._id,
       requestedAmount: amount,
@@ -38,11 +39,13 @@ export default function LoanCalculator({
       annualInterestRate: product.annualInterestRate,
       emiAmount: emi,
       totalPayableAmount: totalPayable,
+      creditedAccountId:selectedAccountId,
       userId:user?.id!,
     };
 
     console.log("APPLY LOAN PAYLOAD", payload);
-    // TODO: Call API
+
+  
     applyLoan.mutate(payload,{
         onSuccess:()=>{
             setConfirmOpen(false);

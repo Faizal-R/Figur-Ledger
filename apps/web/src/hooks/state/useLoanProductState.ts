@@ -18,6 +18,7 @@ export function useLoanProductState() {
       annualInterestRate: 11,
       allowedTenuresInMonths: [3, 6], 
       isActive: false,
+      minCreditScore: 600,
     },
   ]);
 

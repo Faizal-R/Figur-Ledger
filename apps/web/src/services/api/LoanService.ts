@@ -20,11 +20,12 @@ export const LoanProductService = {
       throw parseAxiosError(error, "Failed to create loan product");
     }
   },
-  async getAllLoanProducts():Promise<ApiResponse<ILoanProduct[]>>{
+  async getAllLoanProducts(userId?:string):Promise<ApiResponse<ILoanProduct[]>>{
     try {
       return await request<ApiResponse<ILoanProduct[]>>(
         httpMethods.GET,
-        LoanRoutes.LoanProductRoutes.GET_ALL
+        LoanRoutes.LoanProductRoutes.GET_ALL(userId),
+        {userId}
       );
     } catch (error) {
       throw parseAxiosError(error, "Failed to get all loan products");
@@ -58,6 +59,17 @@ export const LoanApplicationService={
     }
   },
 
+  async getAllLoanApplicationsByUserAndStatus(userId:string,status:string):Promise<ApiResponse<ILoanApplication[]>>{
+    try {
+      return await request<ApiResponse<ILoanApplication[]>>(
+        httpMethods.GET,
+        LoanRoutes.LoanApplicationRoutes.GET_ALL_BY_USER_AND_STATUS(userId,status)
+      );
+    } catch (error) {
+      throw parseAxiosError(error, "Failed to get all loan applications by user and status");
+    }
+  },
+
   async approveOrRejectLoanApplication(data:{applicationId:string,status:"APPROVED"|"REJECTED",approvedAmount?:number,approvedBy?:string}):Promise<ApiResponse<ILoanApplication>>{
     try {
       console.log("data:service",data)
@@ -73,3 +85,17 @@ export const LoanApplicationService={
 }
 
 
+
+
+export const LoanEmiService={
+  async getAllLoanEmis(applicationId:string):Promise<ApiResponse<any[]>>{
+    try {
+      return await request<ApiResponse<any[]>>(
+        httpMethods.GET,
+        LoanRoutes.LoanEmiRoutes.GET_ALL(applicationId)
+      );
+    } catch (error) {
+      throw parseAxiosError(error, "Failed to get all loan emis");
+    }
+  }
+}

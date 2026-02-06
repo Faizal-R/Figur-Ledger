@@ -7,7 +7,7 @@ export interface ILoanProduct {
 
   minAmount: number;
   maxAmount: number;
-
+  minCreditScore:number;
   annualInterestRate: number;
 
   allowedTenuresInMonths: Array<3 | 6 | 9>;

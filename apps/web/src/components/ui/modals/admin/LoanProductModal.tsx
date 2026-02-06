@@ -1,9 +1,10 @@
 "use client";
 
 import { FinledgerTheme } from "@/theme";
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import { ILoanProduct } from "@/types/ILoan";
-
+import { toast } from "sonner";
+const TENURES = [3, 6, 9] as const;
 
 export default function LoanProductModal({
   open,
@@ -26,10 +27,15 @@ export default function LoanProductModal({
     annualInterestRate: 0,
     allowedTenuresInMonths: [],
     isActive: false,
+    minCreditScore: 500,
   });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === "minCreditScore" && Number(value) < 500) {
+      toast.error("Credit Score must be atleast 500");
+    }
+
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -37,7 +43,7 @@ export default function LoanProductModal({
   };
 
   useEffect(() => {
-    if (editing) setForm({...editing});
+    if (editing) setForm({ ...editing });
   }, [editing]);
 
   if (!open) return null;
@@ -81,22 +87,29 @@ export default function LoanProductModal({
             name="maxAmount"
           />
 
-          <div className="md:col-span-2">
-            <Input
-              label="APR %"
-              type="number"
-              value={form.annualInterestRate}
-              onChange={onInputChange}
-              name="annualInterestRate"
-            />
-          </div>
+          <Input
+            label="APR %"
+            type="number"
+            value={form.annualInterestRate}
+            onChange={onInputChange}
+            name="annualInterestRate"
+          />
+          <Input
+            label="Minimum Credit Score"
+            type="number"
+            value={form.minCreditScore}
+            onChange={onInputChange}
+            name="minCreditScore"
+          />
         </div>
 
         <div>
           <p className="text-xs text-slate-400 mb-1">Tenures</p>
           <div className="flex gap-2">
-            {[3, 6, 9].map((t:number) => {
-              const selected = form.allowedTenuresInMonths.includes(t as 3 | 6 | 9);
+            {TENURES.map((t: number) => {
+              const selected = form.allowedTenuresInMonths.includes(
+                t as 3 | 6 | 9
+              );
 
               return (
                 <button
@@ -105,9 +118,9 @@ export default function LoanProductModal({
                   onClick={() => {
                     setForm((prev) => ({
                       ...prev,
-                      tenures: selected
+                      allowedTenuresInMonths: selected
                         ? prev.allowedTenuresInMonths.filter((x) => x !== t)
-                        : [...prev.allowedTenuresInMonths, t],
+                        : [...prev.allowedTenuresInMonths, t as 3 | 6 | 9],
                     }));
                   }}
                   className={`px-4 py-2 rounded-full border ${
@@ -147,7 +160,7 @@ export default function LoanProductModal({
 
             {/* Publish */}
             <button
-              onClick={()=>onPublish(form)}
+              onClick={() => onPublish(form)}
               className="relative px-6 py-2.5 rounded-xl text-sm font-semibold
                  bg-gradient-to-r from-emerald-400 to-emerald-500
                  text-slate-900
@@ -164,7 +177,6 @@ export default function LoanProductModal({
       </div>
     </div>
   );
-
 }
 
 function Input({ label, ...props }: any) {

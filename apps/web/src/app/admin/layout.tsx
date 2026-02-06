@@ -1,6 +1,8 @@
+"use client"
 import Sidebar from '@/components/reusables/sidebar/Sidebar'
+import { withRole } from '@/hoc/withRouteProtection';
 import React from 'react'
-
+import { Roles } from '@/types/role';
 const AdminLayout = ({ children }:{children:React.ReactNode}) => {
   const adminNavItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: "Home" as const },
@@ -24,4 +26,4 @@ const AdminLayout = ({ children }:{children:React.ReactNode}) => {
   )
 }
 
-export default AdminLayout
+export default withRole(AdminLayout, [Roles.ADMIN])

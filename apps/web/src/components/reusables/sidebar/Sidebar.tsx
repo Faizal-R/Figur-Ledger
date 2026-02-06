@@ -17,6 +17,7 @@ import {
   Landmark,
   FileText,
   Wallet,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/api/useAuth";
@@ -39,6 +40,7 @@ const iconMap = {
   FileText,
   Wallet,
   BarChart3,
+  TrendingUp
 } as const;
 
 type IconName = keyof typeof iconMap;
