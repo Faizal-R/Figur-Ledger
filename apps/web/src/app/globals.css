@@ -148,3 +148,11 @@ input[type="number"]::-webkit-outer-spin-button {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #6ee7b7, #34d399); /* brighter emerald glow */
 }
+
+
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

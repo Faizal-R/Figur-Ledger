@@ -1,0 +1,63 @@
+import { inject, injectable } from "inversify";
+import { ILoanProductService } from "../services/interfaces/ILoanProductService";
+import { ILoanProductController } from "./interfaces/ILoanProductController";
+import { DI_TOKENS } from "../di/types";
+import { tryCatch, createResponse } from "@figur-ledger/handlers";
+import { statusCodes } from "@figur-ledger/shared";
+import { Request, Response } from "express";
+
+@injectable()
+export class LoanProductController implements ILoanProductController {
+  constructor(
+    @inject(DI_TOKENS.SERVICES.LOAN_PRODUCT_SERVICE)
+    private readonly _loanProductService: ILoanProductService
+  ) {}
+
+  createLoanProduct = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const { loanProduct }= req.body;
+      console.log("loanProduct",loanProduct)
+      //add validation
+
+      const createdLoanProduct =
+        await this._loanProductService.createLoanProduct(loanProduct);
+      return createResponse(
+        res,
+        statusCodes.CREATED,
+        true,
+        "Loan Product Created Successfully",
+        createdLoanProduct
+      );
+    }
+  );
+
+  updateLoanProduct = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const { loanProduct } = req.body;
+      //add validation
+
+      const updatedLoanProduct =
+        await this._loanProductService.updateLoanProduct(loanProduct);
+      return createResponse(
+        res,
+        statusCodes.CREATED,
+        true,
+        "Loan Product Updated Successfully",
+        updatedLoanProduct
+      );
+    }
+  );
+
+  getAllLoanProducts = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const loanProducts = await this._loanProductService.getAllLoanProducts();
+      return createResponse(
+        res,
+        statusCodes.SUCCESS,
+        true,
+        "Loan Products Fetched Successfully",
+        loanProducts
+      );
+    }
+  );
+}

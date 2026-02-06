@@ -1,0 +1,59 @@
+import { inject, injectable } from "inversify";
+import { ILoanApplicationController } from "./interfaces/ILoanApplicationController";
+import { Request, Response } from "express";
+import { DI_TOKENS } from "../di/types";
+import { ILoanApplicationService } from "../services/interfaces/ILoanApplicationService";
+import { createResponse, tryCatch } from "@figur-ledger/handlers";
+import { statusCodes } from "@figur-ledger/shared";
+@injectable()
+export class LoanApplicationController implements ILoanApplicationController {
+  constructor(
+    @inject(DI_TOKENS.SERVICES.LOAN_APPLICATION_SERVICE)
+    private _loanApplicationService: ILoanApplicationService
+  ) {}
+  createLoanApplication = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+        const {loanApplication}=req.body
+        console.log("loanApplication",loanApplication)
+      const createdLoanApplication=
+        await this._loanApplicationService.createLoanApplication(loanApplication);
+      createResponse(
+        res,
+        statusCodes.CREATED,
+        true,
+        "Loan Application Created Successfully",
+        createdLoanApplication
+      );
+    }
+  );
+  getAllLoanApplications = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const loanApplications =
+        await this._loanApplicationService.getAllLoanApplications();
+      createResponse(
+        res,
+        statusCodes.SUCCESS,
+        true,
+        "Loan Applications Fetched Successfully",
+        loanApplications
+      );
+    }
+  );
+ 
+
+  approveOrRejectLoanApplication=tryCatch(
+    async (req:Request,res:Response):Promise<void>=>{
+      console.log(req.body)
+        const {applicationData}=req.body
+        const approvedLoanApplication=await this._loanApplicationService.approveOrRejectLoanApplication(applicationData)
+        createResponse(
+            res,
+            statusCodes.SUCCESS,
+            true,
+            "Loan Application Approved Successfully",
+            approvedLoanApplication
+        )
+    }
+)
+
+}

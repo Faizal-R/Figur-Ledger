@@ -9,6 +9,10 @@ const accountController= resolve<IAccountController>(DI_TOKENS.CONTROLLERS.ACCOU
 
 router.post('/create',accountController.createAccount)
 router.get('/',accountController.getAccountsByUserId)
+router.patch('/:accountId/credit',accountController.amountCredited)
+router.patch('/:accountId/debit',accountController.amountDebited)
+router.patch('/:accountId/refund',accountController.refundAmount)
+router.post("/verify",accountController.verifyUserAccount)
 // router.patch('/:accountId',accountController.updateAccount)
 
 

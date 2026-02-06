@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { AccountType, CreateAccountFormData, KYCData } from '@/types/user-account';
-import { KYCPreview } from '@/components/feature/customer/account/KYCPreview';
+import { KYCPreview } from '@/components/features/customer/account/KYCPreview';
 
 interface CreateAccountModalProps {
   isOpen: boolean;

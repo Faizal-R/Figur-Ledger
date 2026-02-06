@@ -14,7 +14,7 @@ const PORT = process.env.PORT
 let server: ReturnType<typeof app.listen>;
 const startServer = async () => {
   try {
-    //  await RabbitMQ.connect(process.env.RABBITMQ_URI as string);
+     await RabbitMQ.connect(process.env.RABBITMQ_URI as string);
         console.log('✅ RabbitMQ connected successfully');
     await connectDatabase();
   server = app.listen(PORT, () => {

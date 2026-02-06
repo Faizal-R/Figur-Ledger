@@ -8,5 +8,7 @@ export const AccountRoutes = {
   CREATE: "/accounts/create",
   GET_ACCOUNTS_BY_USER_ID: (userId: string) =>
     `/accounts?userId=${userId}`,
+  VERIFY_ACCOUNT:'/accounts/verify'
 } as const;
+
 

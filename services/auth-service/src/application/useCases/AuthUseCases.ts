@@ -237,6 +237,13 @@ export default class AuthUseCases implements IAuthUseCases {
           authUserId: createdAuthUser.id,
         })
       );
+      
+      RabbitPublisher(
+        "create.credit-profile",
+        JSON.stringify({
+          userId: createdAuthUser.id,
+        })
+      );
 
       return {
         accessToken,
@@ -252,7 +259,9 @@ export default class AuthUseCases implements IAuthUseCases {
       );
     }
   }
-  async refreshAccessToken(refreshToken: string):Promise<{accessToken:string}> {
+  async refreshAccessToken(
+    refreshToken: string
+  ): Promise<{ accessToken: string }> {
     try {
       const payload = this._tokenService.verifyRefreshToken(refreshToken);
 
@@ -264,30 +273,28 @@ export default class AuthUseCases implements IAuthUseCases {
 
       return { accessToken };
     } catch (error) {
-      if(error instanceof CustomError){
+      if (error instanceof CustomError) {
+        switch (error.code) {
+          case TokenErrorCode.REFRESH_TOKEN_EXPIRED:
+            throw new CustomError(
+              "Your session has expired. Please sign in again.",
+              401,
+              TokenErrorCode.REFRESH_TOKEN_EXPIRED
+            );
 
-      
-      switch (error.code) {
-        case TokenErrorCode.REFRESH_TOKEN_EXPIRED:
-          throw new CustomError(
-            "Your session has expired. Please sign in again.",
-            401,
-            TokenErrorCode.REFRESH_TOKEN_EXPIRED
-          );
-
-        case TokenErrorCode.REFRESH_TOKEN_INVALID:
-          throw new CustomError(
-            "Your session is invalid. Please log in again.",
-            401,
-            TokenErrorCode.REFRESH_TOKEN_INVALID
-          );
+          case TokenErrorCode.REFRESH_TOKEN_INVALID:
+            throw new CustomError(
+              "Your session is invalid. Please log in again.",
+              401,
+              TokenErrorCode.REFRESH_TOKEN_INVALID
+            );
+        }
       }
+      throw new CustomError(
+        "Unable to refresh your session right now. Please try again.",
+        400,
+        TokenErrorCode.REFRESH_TOKEN_FAILED
+      );
     }
-    throw new CustomError(
-      "Unable to refresh your session right now. Please try again.",
-      400,
-      TokenErrorCode.REFRESH_TOKEN_FAILED
-    );
-  }
   }
 }

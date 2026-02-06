@@ -1,4 +1,4 @@
-import {  ProfilePage } from "@/components/feature/customer/profile/ProfilePage";
+import {  ProfilePage } from "@/components/features/customer/profile/ProfilePage";
 
 
 
