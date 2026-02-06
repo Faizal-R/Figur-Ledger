@@ -27,7 +27,7 @@ export const routes: IRoute[] =
   },
   {
     url: "/api/v1/accounts/",
-    auth: false,
+    auth: true,
     roles:[Roles.CUSTOMER],
 
     proxy: {

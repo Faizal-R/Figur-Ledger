@@ -15,7 +15,7 @@ export interface IRepaymentSchedule extends Document {
   totalAmount: number;
 
   status: "PENDING" | "PAID" | "OVERDUE";
-
+  outstandingPrincipal: number;
   paidAt?: Date;
 
   createdAt: Date;
@@ -43,6 +43,11 @@ const RepaymentScheduleSchema = new Schema(
     },
 
     principalAmount: {
+      type: Number,
+      required: true,
+    },
+
+    outstandingPrincipal: {
       type: Number,
       required: true,
     },

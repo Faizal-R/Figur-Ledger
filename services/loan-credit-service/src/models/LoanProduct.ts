@@ -1,5 +1,5 @@
 // LoanProduct.schema.ts
-import { Schema, model, Types,Document } from "mongoose";
+import { Schema, model, Types, Document } from "mongoose";
 
 export interface ILoanProduct extends Document {
   _id: Types.ObjectId;
@@ -7,7 +7,7 @@ export interface ILoanProduct extends Document {
   code: string;
 
   name: string;
-
+  minCreditScore: number;
   minAmount: number;
   maxAmount: number;
 
@@ -16,23 +16,29 @@ export interface ILoanProduct extends Document {
   allowedTenuresInMonths: Array<3 | 6 | 9>;
 
   isActive: boolean;
+  allowedAccountTypes: ("SAVINGS" | "BUSINESS")[];
+  gracePeriodDays: number;
+  // allowPrepayment: boolean;
 
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 const LoanProductSchema = new Schema(
   {
     code: {
       type: String,
       required: true,
-      unique: true, // e.g. "PL_SHORT_TERM"
+      unique: true,
     },
 
     name: {
       type: String,
-      required: true, // "Personal Loan"
+      required: true, 
+    },
+    minCreditScore: {
+      type: Number,
+      required: true,
     },
 
     minAmount: {
@@ -56,6 +62,16 @@ const LoanProductSchema = new Schema(
       default: [3, 6, 9],
       required: true,
     },
+    allowedAccountTypes: {
+      type: [String],
+      enum: ["SAVINGS", "BUSINESS"],
+      // required: true,
+    },
+
+    gracePeriodDays: {
+      type: Number,
+      default: 3,
+    },
 
     isActive: {
       type: Boolean,
@@ -65,4 +81,7 @@ const LoanProductSchema = new Schema(
   { timestamps: true }
 );
 
-export const LoanProduct = model<ILoanProduct>("LoanProduct", LoanProductSchema);
+export const LoanProduct = model<ILoanProduct>(
+  "LoanProduct",
+  LoanProductSchema
+);

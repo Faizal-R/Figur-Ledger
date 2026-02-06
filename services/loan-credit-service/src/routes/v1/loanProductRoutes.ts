@@ -9,8 +9,8 @@ const loanProductController= resolve<ILoanProductController>(DI_TOKENS.CONTROLLE
 
 router.post('/',loanProductController.createLoanProduct)
 
-router.put('/:id',loanProductController.updateLoanProduct)
+router.put('/:loanProductId',loanProductController.updateLoanProduct)
 
-router.get('/',loanProductController.getAllLoanProducts)
+router.get('/:userId',loanProductController.getAllLoanProducts)
 
 export default router
