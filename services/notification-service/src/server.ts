@@ -19,7 +19,9 @@ app.use(express.json());
    await RabbitMQ.connect(process.env.RABBITMQ_URI as string)
 //   await startPaymentConsumer();
  const userRegisteredConsumer=resolve<UserRegisteredConsumer>(DI_TOKENS.CONSUMERS.USER_REGISTER_CONSUMER)
+ const transactionCompletedConsumer=resolve<UserRegisteredConsumer>(DI_TOKENS.CONSUMERS.TRANSACTION_COMPLETED_CONSUMER)
     userRegisteredConsumer.start()
+    transactionCompletedConsumer.start()
   // Boot your HTTP server
   app.listen(PORT, () => {
     console.log(`Notification service listening on port ${PORT}`);

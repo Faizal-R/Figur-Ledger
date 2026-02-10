@@ -6,12 +6,12 @@ import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServ
 export class AccountServiceClient implements IAccountServiceClient {
   async creditAccount({accountId,amount}:{accountId: string, amount: number}) {
     const res = await axios.patch(`/accounts/${accountId}/credit`, { amount });
-    return res.data;
+    return res.data.data;
   }
 
   async debitAccount({accountId,amount}:{accountId: string, amount: number}) {
     const res = await axios.patch(`/accounts/${accountId}/debit`, { amount });
-    return res.data;
+    return res.data.data;
   }
   async getBalance(accountId: string): Promise<number> {
     const res = await axios.get(`/accounts/${accountId}/balance`);

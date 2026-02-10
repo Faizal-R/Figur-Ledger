@@ -14,12 +14,15 @@ import {
 } from "../../constant/account";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
+import { IUserRepository } from "../../../domain/interfaces/repositories/IUserRepository";
 
 @injectable()
 export class AccountUseCase implements IAccountUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.ACCOUNT_REPOSITORY)
-    private readonly _accountRepository: IAccountRepository
+    private readonly _accountRepository: IAccountRepository,
+    @inject(DI_TOKENS.REPOSITORIES.USER_REPOSITORY)
+    private readonly _userRepository:IUserRepository
   ) {}
   async createAccount(
     accountPayload: CreateAccountRequestDTO
@@ -92,7 +95,7 @@ export class AccountUseCase implements IAccountUseCase {
     accountId: string,
     amount: number,
     transactionId?: string
-  ): Promise<{ balance: number }> {
+  ): Promise<{ balance: number,creditedUserEmail:string }> {
     const account = await this._accountRepository.findById(accountId);
     if (!account) {
       throw new CustomError("Account not found", statusCodes.NOT_FOUND);
@@ -109,23 +112,25 @@ export class AccountUseCase implements IAccountUseCase {
         "Failed to update account balance",
         statusCodes.INTERNAL_SERVER_ERROR
       );
-    }
+    } 
+   
+    const creditedUser=await this._userRepository.findOne({authUserId:updatedAccount.userId})
 
-    
+      console.log(creditedUser)
     console.log("Credit applied", {
       accountId,
       transactionId,
       amount,
     });
 
-    return { balance: updatedAccount.balance };
+    return { balance: updatedAccount.balance,creditedUserEmail:creditedUser?.email! };
   }
 
   async amountDebited(
     accountId: string,
     amount: number,
     transactionId?: string
-  ): Promise<{ balance: number }> {
+  ): Promise<{ balance: number,debitedUserEmail:string }> {
     const account = await this._accountRepository.findById(accountId);
     if (!account) {
       throw new CustomError("Account not found", statusCodes.NOT_FOUND);
@@ -147,14 +152,16 @@ export class AccountUseCase implements IAccountUseCase {
         statusCodes.INTERNAL_SERVER_ERROR
       );
     }
-
+ 
+    const debitedUser=await this._userRepository.findOne({authUserId:updatedAccount.userId})
+    console.log("debitedUser",debitedUser)
     console.log("Debit applied", {
       accountId,
       transactionId,
       amount,
     });
 
-    return { balance: updatedAccount.balance };
+    return { balance: updatedAccount.balance,debitedUserEmail:debitedUser?.email! };
   }
 
 

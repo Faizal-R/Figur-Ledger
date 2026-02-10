@@ -4,6 +4,7 @@ import { ITransactionRepository } from "../../domain/interfaces/repositories/ITr
 import { DI_TOKENS } from "../../infra/di/types";
 import { ITransferUseCase } from "./interfaces/ITransferUseCase";
 import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServiceClient";
+import { RabbitPublisher } from "@figur-ledger/messaging-sdk";
 @injectable()
 export class TransferUseCase implements ITransferUseCase {
   constructor(
@@ -46,28 +47,42 @@ export class TransferUseCase implements ITransferUseCase {
 
     try {
       // 3. Debit Sender
-      await this.accountClient.debitAccount({
+   const debitTx=   await this.accountClient.debitAccount({
         accountId: input.senderAccountId,
         amount: input.amount,
         transactionId: transaction.id,
       });
+      console.log(
+        "debitTx",debitTx)
 
       await this._transactionRepo.updateById(transaction.id, {
         status: "DEBIT_SUCCESS",
       });
 
       // 4. Credit Receiver
-      await this.accountClient.creditAccount({
+    const creditTx=  await this.accountClient.creditAccount({
         accountId: input.receiverAccountId,
         amount: input.amount,
         transactionId: transaction.id,
       });
+      console.log("creditTx",creditTx)
 
       // 5. Final Success
-      await this._transactionRepo.updateById(transaction.id, {
+    const latestUpdatedTx=  await this._transactionRepo.updateById(transaction.id, {
         status: "SUCCESS",
       });
      console.log("TransactionCompleted",transaction)
+     const notificationMsg={
+      debiterEmail:debitTx.debitedUserEmail,
+      crediterEmail:creditTx.creditedUserEmail,
+      amount:latestUpdatedTx?.amount,
+      currency:"INR",
+      transactionId:latestUpdatedTx?.id,
+      date:latestUpdatedTx?.createdAt
+     }
+     console.log("notify",notificationMsg)
+     RabbitPublisher("transaction.completed",JSON.stringify(notificationMsg))
+  
       return transaction;
     } catch (error) {
       // 6. Compensation (Only if debit already happened)

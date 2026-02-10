@@ -4,6 +4,7 @@ export const DI_TOKENS={
     "NotificationProvider"
  },
  CONSUMERS:{
-    USER_REGISTER_CONSUMER:"UserRegisteredConsumer"
+    USER_REGISTER_CONSUMER:"UserRegisteredConsumer",
+   TRANSACTION_COMPLETED_CONSUMER:"TransactionCompletedConsumer"
  }
 }
