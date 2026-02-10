@@ -10,10 +10,12 @@ const AdminLayout = ({ children }:{children:React.ReactNode}) => {
   { name: "Employees", href: "/admin/employees", icon: "Users" as const },
 
   { name: "Loan Products", href: "/admin/loan-products", icon: "Landmark" as const },
+  { name: "Billers Management", href: "/admin/billers", icon: "Plug" as const },
 
   { name: "Reports", href: "/admin/reports", icon: "BarChart3" as const },
 
   { name: "System Settings", href: "/admin/settings", icon: "Settings" as const },
+
 ];
 
   return (

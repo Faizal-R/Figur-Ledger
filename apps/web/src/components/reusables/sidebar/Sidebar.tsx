@@ -18,6 +18,7 @@ import {
   FileText,
   Wallet,
   TrendingUp,
+ Plug
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/api/useAuth";
@@ -40,7 +41,9 @@ const iconMap = {
   FileText,
   Wallet,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  Plug
+
 } as const;
 
 type IconName = keyof typeof iconMap;

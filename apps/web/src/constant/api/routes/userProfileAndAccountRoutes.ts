@@ -5,7 +5,7 @@ export const UserProfileRoutes = {
 } as const;
 
 export const AccountRoutes = {
-  CREATE: "/accounts/create",
+  CREATE: "/accounts",
   GET_ACCOUNTS_BY_USER_ID: (userId: string) =>
     `/accounts?userId=${userId}`,
   VERIFY_ACCOUNT:'/accounts/verify'

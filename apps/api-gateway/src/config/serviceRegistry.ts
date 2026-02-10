@@ -7,7 +7,8 @@ export enum ServiceName {
   USER_ACCOUNT = "user-account",
   NOTIFICATIONS = "notifications",
   TRANSACTIONS="transactions",
-  LOAN_CREDIT="loan-credit"
+  LOAN_CREDIT="loan-credit",
+  PAYMENT_BILLING="payment-billing",
   
 }
 
@@ -40,6 +41,12 @@ export const serviceRegistry: Record<ServiceName, ServiceConfig> = {
   [ServiceName.LOAN_CREDIT]: {
     name: ServiceName.LOAN_CREDIT,
     target: process.env.LOAN_CREDIT_SERVICE_URL || "http://localhost:5005",
+    healthCheckPath: "/health",
+    timeout: 5000,
+  },
+  [ServiceName.PAYMENT_BILLING]: {
+    name: ServiceName.PAYMENT_BILLING,
+    target: process.env.PAYMENT_BILLING_SERVICE_URL || "http://localhost:5006",
     healthCheckPath: "/health",
     timeout: 5000,
   },

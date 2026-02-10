@@ -1,7 +1,7 @@
 import request from "@/config/client";
 import { httpMethods } from "@/constant/api/enums/api";
 import { TransactionRoutes } from "@/constant/api/routes/transactionRoutes";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/types/api/api";
 import { Transaction } from "@/types/ITransaction";
 import { parseAxiosError } from "@/utils/parseAxiosError";
 import { HttpStatusCode } from "axios";

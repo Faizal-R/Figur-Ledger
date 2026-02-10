@@ -1,5 +1,5 @@
 import request from "@/config/client";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/types/api/api";
 import { IUser } from "@/types/user-account";
 import { parseAxiosError } from "@/utils/parseAxiosError";
 

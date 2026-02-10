@@ -39,7 +39,12 @@ export class TransactionRepository implements ITransactionRepository {
           { senderAccountId: accountId },
           { receiverAccountId: accountId }
         ]
+      },
+      orderBy:{
+        createdAt:"desc"
       }
+      
+      
     });
 
     return records.map((r) => this.mapper.toDomain(r));

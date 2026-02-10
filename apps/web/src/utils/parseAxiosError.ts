@@ -1,4 +1,4 @@
-import { ApiErrorResponse } from "@/types/api";
+import { ApiErrorResponse } from "@/types/api/api";
 import { AxiosError, HttpStatusCode, isAxiosError } from "axios";
 
 export const parseAxiosError = (

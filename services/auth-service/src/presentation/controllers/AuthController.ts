@@ -11,7 +11,7 @@ import {
 } from "../validations/AuthUserSchema";
 
 import { RegisterRequestDTO } from "../../application/dto/request/RegisterRequestDTO";
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../../application/config/cookieConfig";
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../config/cookieConfig";
 
 /**
  * AuthController

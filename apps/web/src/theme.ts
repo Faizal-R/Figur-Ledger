@@ -26,9 +26,9 @@ export const FinledgerTheme = {
   },
   button: {
     primary:
-      "bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900 font-semibold shadow-lg shadow-emerald-500/30 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 transition-all",
+      "bg-gradient-to-r rounded-lg from-emerald-400 text-white 0 to-emerald-500  font-semibold shadow-lg shadow-emerald-500/30 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 transition-all",
     secondary:
-      "bg-slate-800 border border-slate-700 text-white font-medium hover:bg-slate-700 hover:border-slate-600 shadow-md hover:shadow-lg transition-all",
+      "bg-slate-800 rounded-lg border border-slate-700 text-white font-medium hover:bg-slate-700 hover:border-slate-600 shadow-md hover:shadow-lg transition-all",
   },
   radius: {
     sm: "rounded-lg",

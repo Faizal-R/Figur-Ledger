@@ -12,7 +12,7 @@ import { tryCatch } from "@figur-ledger/handlers";
 export class UserController implements IUserController {
   constructor(
     @inject(DI_TOKENS.USECASES.USER_USECASE)
-    private readonly _userUseCase: IUserUseCase
+    private readonly _userUseCase: IUserUseCase,
   ) {}
   getUserProfile = tryCatch(async (req: Request, res: Response) => {
     const { userId } = req.params;
@@ -22,7 +22,7 @@ export class UserController implements IUserController {
         statusCodes.BAD_GATEWAY,
         false,
         "User Id is required",
-        null
+        null,
       );
     }
     const userProfile = await this._userUseCase.getUserProfile(userId);
@@ -32,7 +32,7 @@ export class UserController implements IUserController {
       statusCodes.SUCCESS,
       true,
       "User Profile fetched successfully",
-      userProfile
+      userProfile,
     );
   });
   updateUserProfile = tryCatch(async (req: Request, res: Response) => {
@@ -43,7 +43,7 @@ export class UserController implements IUserController {
         statusCodes.BAD_GATEWAY,
         false,
         "User Id is required",
-        null
+        null,
       );
       return;
     }
@@ -57,20 +57,47 @@ export class UserController implements IUserController {
         statusCodes.BAD_REQUEST,
         false,
         validatedData.error.issues[0].message,
-        null
+        null,
       );
       return;
     }
     const updatedProfile = await this._userUseCase.updateUserProfile(
       userId,
-      updateData
+      updateData,
     );
     createResponse(
       res,
       statusCodes.SUCCESS,
       true,
       "User Profile updated successfully",
-      updatedProfile
+      updatedProfile,
+    );
+  });
+
+  createUser = tryCatch(async (req: Request, res: Response) => {
+    const { email, phone, authUserId, personalInfo } = req.body;
+    if (!email || !phone || !authUserId || !personalInfo) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        "Email, Phone, AuthUserId and PersonalInfo are required",
+        null,
+      );
+      return;
+    }
+    const createdUser = await this._userUseCase.createUser({
+      email,
+      phone,
+      authUserId,
+      personalInfo,
+    });
+    createResponse(
+      res,
+      statusCodes.CREATED,
+      true,
+      "User created successfully",
+      createdUser,
     );
   });
 }

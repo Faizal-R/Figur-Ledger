@@ -58,9 +58,10 @@ export class UserUseCase implements IUserUseCase {
     }
   }
 
-  async createUser(user:User):Promise<void>{
+  async createUser(user:User):Promise<User>{
     try {
-      await this._userRepository.create(user)
+     const createdUser = await this._userRepository.create(user)
+     return createdUser;
     } catch (error) {
       console.log(error)
       throw new CustomError(
