@@ -1,5 +1,5 @@
 import { RabbitConsumer } from "@figur-ledger/messaging-sdk";
-import { INotificationProvider } from "../../domain/services/INotificationProvider";
+import { INotificationProvider } from "../../domain/interfaces/services/INotificationProvider";
 import { injectable,inject } from "inversify";
 interface UserRegisteredPayload {
   email: string;
@@ -28,7 +28,6 @@ export class TransactionCompletedConsumer {
    async start() {
   await RabbitConsumer(this.queue, async (message: string) => {
     const data = JSON.parse(message) as TransactionNotificationMsg;
-   console.log(data)
     const debitEmailTemplate = TransactionEmailTemplate.build({
       email: data.debiterEmail,
       amount: data.amount,

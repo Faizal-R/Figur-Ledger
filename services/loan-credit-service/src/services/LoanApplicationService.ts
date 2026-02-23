@@ -10,6 +10,7 @@ import { config } from "dotenv";
 import { generateRepaymentSchedules } from "../helpers/generateRepaymentSchedule";
 import { IRepaymentScheduleRepository } from "../repositories/interfaces/IRepaymentScheduleRepository";
 import { Types } from "mongoose";
+import { RabbitPublisher } from "@figur-ledger/messaging-sdk";
 config();
 @injectable()
 export class LoanApplicationService implements ILoanApplicationService {
@@ -54,6 +55,24 @@ export class LoanApplicationService implements ILoanApplicationService {
         applicationId,
         { status, approvedAmount, approvedBy },
       );
+
+      if (!loanApplication) {
+        return null;
+      }
+
+      await RabbitPublisher("loan.status.updated", JSON.stringify({
+        userId: loanApplication.userId.toString(),
+        loanApplicationId: loanApplication._id.toString(),
+        requestedAmount: loanApplication.requestedAmount,
+        approvedAmount: loanApplication.approvedAmount,
+        tenureInMonths: loanApplication.tenureInMonths,
+        annualInterestRate: loanApplication.annualInterestRate,
+        type: status,
+        currency: "INR",
+        date: new Date().toISOString(),
+        totalPayableAmount:loanApplication.totalPayableAmount
+      }));
+
       if (status === "REJECTED") {
         return loanApplication;
       }
@@ -62,8 +81,8 @@ export class LoanApplicationService implements ILoanApplicationService {
 
       const res = await Api.post("/transactions/transfer", {
         senderAccountId: process.env.SYSTEM_ACCOUNT_ID!,
-        receiverAccountId: loanApplication?.creditedAccountId,
-        amount: loanApplication?.requestedAmount,
+        receiverAccountId: loanApplication.creditedAccountId,
+        amount: loanApplication.requestedAmount,
       });
       console.log("res", res.data);
 
@@ -72,13 +91,17 @@ export class LoanApplicationService implements ILoanApplicationService {
           status: "DISBURSED",
           disbursedAt: new Date(),
         });
+      console.log(updatedLoanApplication)
+      if (!updatedLoanApplication) {
+        return null;
+      }
 
       const schedules = generateRepaymentSchedules({
         loanApplicationId: new Types.ObjectId(applicationId),
-        principal: updatedLoanApplication?.requestedAmount!,
-        annualInterestRate: updatedLoanApplication?.annualInterestRate!,
-        tenureInMonths: updatedLoanApplication?.tenureInMonths!,
-        disbursedAt: updatedLoanApplication?.disbursedAt!,
+        principal: updatedLoanApplication.requestedAmount,
+        annualInterestRate: updatedLoanApplication.annualInterestRate,
+        tenureInMonths: updatedLoanApplication.tenureInMonths,
+        disbursedAt: updatedLoanApplication.disbursedAt!,
       });
       console.log("schedules", schedules);
       await this._repaymentScheduleRepository.insertMany(schedules);

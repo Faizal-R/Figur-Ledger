@@ -35,7 +35,7 @@ import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../config/cookieConfig";
 export default class AuthController implements IAuthController {
   constructor(
     @inject(DI_TOKENS.USE_CASES.AUTH_USE_CASES)
-    private readonly _authUseCases: IAuthUseCases
+    private readonly _authUseCases: IAuthUseCases,
   ) {}
   /**
    * LOGIN
@@ -54,30 +54,29 @@ export default class AuthController implements IAuthController {
    */
 
   login = tryCatch(async (req: Request, res: Response) => {
-    console.log(req.body)
+    console.log(req.body);
     const {
       success,
       error,
       data: validatedData,
     } = loginSchema.safeParse(req.body);
-     
+
     if (!success) {
       return createResponse(
         res,
         statusCodes.BAD_REQUEST,
         false,
-        error.issues[0].message
+        error.issues[0].message,
       );
     }
 
     const { accessToken, refreshToken, user } = await this._authUseCases.login(
       validatedData.email,
-      validatedData.password
+      validatedData.password,
     );
-    console.log("tokens",refreshToken)
+    console.log("tokens", refreshToken);
 
-  
-    res.cookie("refreshToken", refreshToken,REFRESH_TOKEN_COOKIE_OPTIONS)
+    res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
     createResponse(res, statusCodes.SUCCESS, true, "LoggedInSuccessful", {
       accessToken,
@@ -105,8 +104,8 @@ export default class AuthController implements IAuthController {
   register = tryCatch(async (req: Request, res: Response) => {
     const payload: RegisterRequestDTO = req.body;
     console.log(payload);
-    const { success, data , error } = RegisterWithConfirmSchema.safeParse(
-      req.body
+    const { success, data, error } = RegisterWithConfirmSchema.safeParse(
+      req.body,
     );
     if (!success) {
       const firstError = error.issues[0];
@@ -114,7 +113,7 @@ export default class AuthController implements IAuthController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        firstError.message
+        firstError.message,
       );
     }
 
@@ -125,7 +124,7 @@ export default class AuthController implements IAuthController {
       statusCodes.CREATED,
       true,
       "Registration initiated. Proceed with email verification.",
-      tempRegisteredUser
+      tempRegisteredUser,
     );
   });
 
@@ -143,20 +142,20 @@ export default class AuthController implements IAuthController {
   logout = tryCatch(async (req: Request, res: Response) => {
     //  const refreshToken = req.cookies["refreshToken"];///
 
-      // await this._authService.signout(refreshToken);
-      // response.clearCookie(Tokens.ACCESS_TOKEN);
+    // await this._authService.signout(refreshToken);
+    // response.clearCookie(Tokens.ACCESS_TOKEN);
 
-      res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken");
 
-      return createResponse(
-        res,
-        statusCodes.SUCCESS,
-        true,
-        "User Logged out Successfully"
-      );
+    return createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "User Logged out Successfully",
+    );
   });
- 
-   /**
+
+  /**
    * VERIFY OTP
    * ----------
    * Flow:
@@ -173,73 +172,72 @@ export default class AuthController implements IAuthController {
    * Important:
    * - Zero business logic here; controller ONLY orchestrates.
    */
-   
+
   verifyOtp = tryCatch(async (req: Request, res: Response) => {
-  const { email, otp } = req.body;
+    const { email, otp } = req.body;
 
-  // Basic payload validation
-  if (!email || !otp) {
-    return createResponse(
-      res,
-      statusCodes.BAD_REQUEST,
-      false,
-      "Email and OTP are required"
-    );
-  }
-
-  if (typeof otp !== "string" || otp.trim().length !== 6) {
-    return createResponse(
-      res,
-      statusCodes.BAD_REQUEST,
-      false,
-      "Invalid OTP format"
-    );
-  }
-
-  // Normalize input
-  const normalizedEmail = email.toLowerCase().trim();
-  const normalizedOtp = otp.trim();
-
-  // Orchestrate use-case
- const {accessToken,refreshToken,user}= await this._authUseCases.verifyOtp(normalizedEmail, normalizedOtp);
- 
- res.cookie("refreshToken", refreshToken,REFRESH_TOKEN_COOKIE_OPTIONS)
-
-
-  return createResponse(
-    res,
-    statusCodes.SUCCESS,
-    true,
-    "OTP verified successfully",
-    {
-      accessToken,
-      user,
-    }
-  );
-});
-
- refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
-  console.log("entered refresh token controller")
-    const refreshToken = req.cookies["refreshToken"];
-    console.log("refresh token in controller",refreshToken)
-      if( !refreshToken){
-        return createResponse(
-          res,
-          statusCodes.UNAUTHORIZED,
-          false,
-          "Session expired. Please log in again."
-        );
-      }
-     const { accessToken } = await this._authUseCases.refreshAccessToken(refreshToken);
-
+    // Basic payload validation
+    if (!email || !otp) {
       return createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        "Email and OTP are required",
+      );
+    }
+
+    if (typeof otp !== "string" || otp.trim().length !== 6) {
+      return createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        "Invalid OTP format",
+      );
+    }
+
+    // Normalize input
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedOtp = otp.trim();
+
+    // Orchestrate use-case
+    const { accessToken, refreshToken, user } =
+      await this._authUseCases.verifyOtp(normalizedEmail, normalizedOtp);
+
+    res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+    return createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "OTP verified successfully",
+      {
+        accessToken,
+        user,
+      },
+    );
+  });
+
+  refreshAccessToken = tryCatch(async (req: Request, res: Response) => {
+    console.log("entered refresh token controller");
+    const refreshToken = req.cookies["refreshToken"];
+    console.log("refresh token in controller", refreshToken);
+    if (!refreshToken) {
+      return createResponse(
+        res,
+        statusCodes.UNAUTHORIZED,
+        false,
+        "Session expired. Please log in again.",
+      );
+    }
+    const { accessToken } =
+      await this._authUseCases.refreshAccessToken(refreshToken);
+
+    return createResponse(
       res,
       statusCodes.SUCCESS,
       true,
       "Access token refreshed successfully",
-      { accessToken }
+      { accessToken },
     );
-
-
-  })
+  });
 }
