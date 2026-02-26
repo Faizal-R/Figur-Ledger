@@ -1,25 +1,28 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import {
-  X,
-  Zap,
-  Droplets,
-  Wifi,
-  Smartphone,
-  Tv,
-  Flame,
-  Download,
-  Bell,
-  Calendar,
-  CreditCard,
-  CheckCircle,
+  X, Zap, Droplets, Wifi, Smartphone, Tv, Flame, 
+  Download, Bell, Calendar, 
   Receipt,
-  Sparkles,
-  Shield,
-  Banknote,
+  History,
+  ShieldCheck, Terminal, Banknote, CheckCircle
 } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
 import { ISavedBiller } from "@/types/IBill";
 import { IAccount } from "@/types/user-account";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface BillBreakdownItem {
+  description: string;
+  amount: number;
+}
+
+interface BillDetailData {
+  totalAmount?: number;
+  dueDate?: string;
+  billNumber?: string;
+  breakdown?: BillBreakdownItem[];
+}
 
 interface BillDetailsModalProps {
   isOpen: boolean;
@@ -29,10 +32,10 @@ interface BillDetailsModalProps {
     biller: ISavedBiller,
     amount: number,
     accountId: string,
-    billDetails: any
+    billDetails: BillDetailData | null
   ) => void;
   accounts: IAccount[];
-  billDetails?: any;
+  billDetails?: BillDetailData | null;
 }
 
 const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
@@ -43,231 +46,208 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
   accounts,
   billDetails,
 }) => {
+  const { theme: t } = useTheme();
   const [selectedAccount, setSelectedAccount] = useState<string>("");
 
-  // FIX: set first account automatically
   useEffect(() => {
-    if (accounts?.length) {
-      setSelectedAccount(accounts[0]?.id!);
+    if (accounts?.[0]?.id) {
+      setSelectedAccount(accounts[0].id);
     }
   }, [accounts]);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "ELECTRICITY":
-        return <Zap size={24} className="text-yellow-400" />;
-      case "WATER":
-        return <Droplets size={24} className="text-blue-400" />;
-      case "INTERNET":
-        return <Wifi size={24} className="text-pink-400" />;
-      case "MOBILE":
-        return <Smartphone size={24} className="text-purple-400" />;
-      case "CABLE":
-        return <Tv size={24} className="text-green-400" />;
-      case "GAS":
-        return <Flame size={24} className="text-orange-400" />;
-      default:
-        return <Receipt size={24} className="text-emerald-400" />;
+      case "ELECTRICITY": return <Zap size={24} />;
+      case "WATER": return <Droplets size={24} />;
+      case "INTERNET": return <Wifi size={24} />;
+      case "MOBILE": return <Smartphone size={24} />;
+      case "CABLE": return <Tv size={24} />;
+      case "GAS": return <Flame size={24} />;
+      default: return <Receipt size={24} />;
     }
   };
 
   if (!isOpen || !biller) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden">
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <AnimatePresence mode="wait">
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            onClick={onClose}
+          />
 
-      <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-purple-500/10 to-transparent blur-2xl opacity-30" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className={`relative w-full max-w-4xl max-h-[90vh] overflow-hidden ${t.card.base} ${t.radius.md} border border-white/10 shadow-3xl flex flex-col md:flex-row`}
+          >
+            {/* Header Signal Line */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#c1ff72] to-transparent opacity-30 z-20" />
 
-        <div
-          className={`relative ${FinledgerTheme.card} ${FinledgerTheme.border} rounded-2xl overflow-hidden`}
-        >
-          {/* HEADER */}
-          <div className="p-3 bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-transparent border-b border-emerald-500/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-md flex items-center justify-center">
-                  {getCategoryIcon(biller.category)}
-                </div>
-
-                <div>
-                  <h2 className="text-base font-semibold text-white leading-tight">
-                    {biller.alias}
-                  </h2>
-                  <p className="text-slate-400 text-xs">
-                    ID • {biller.consumerId}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-white transition-all"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* STATS */}
-            <div className="flex gap-2 mt-3">
-              <div className="flex-1 bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700">
-                <p className="text-[10px] text-slate-400">Amount Due</p>
-                <p className="text-sm font-semibold text-emerald-400">
-                  ₹{billDetails?.totalAmount || "0.00"}
-                </p>
-              </div>
-
-              <div className="flex-1 bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700">
-                <div className="flex items-center gap-1 text-slate-400 text-[10px]">
-                  <Calendar size={12} />
-                  <span>Due Date</span>
-                </div>
-                <p className="text-sm font-semibold text-white">
-                  {billDetails?.dueDate}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* BODY */}
-          <div className="p-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* LEFT */}
-              <div className="space-y-5">
-                <div className={`${FinledgerTheme.card} border border-slate-700 rounded-xl p-4`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className={`${FinledgerTheme.text.primary} font-bold flex items-center gap-2`}>
-                      <Receipt size={18} />
-                      Bill Breakdown
-                    </h3>
-                    <span className="px-2 py-1 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 rounded text-xs text-emerald-400">
-                      {billDetails?.billNumber}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {(billDetails?.breakdown || []).map(
-                      (item: { description: string; amount: number }, index: number) => (
-                        <div key={index} className="flex justify-between items-center py-2">
-                          <span className={`${FinledgerTheme.text.secondary} text-sm`}>
-                            {item.description}
-                          </span>
-                          <span
-                            className={`font-medium ${
-                              item.amount >= 0
-                                ? FinledgerTheme.text.primary
-                                : "text-emerald-400"
-                            }`}
-                          >
-                            {item.amount >= 0 ? "₹" : "-₹"}
-                            {Math.abs(item.amount)}
-                          </span>
-                        </div>
-                      )
-                    )}
-
-                    <div className="mt-4 pt-4 border-t border-slate-700">
-                      <div className="flex justify-between items-center">
-                        <span className={`${FinledgerTheme.text.primary} font-bold`}>
-                          Total Payable
-                        </span>
-                        <span className="text-2xl font-bold text-emerald-400">
-                          ₹{billDetails?.totalAmount || "0.00"}
-                        </span>
+            {/* LEFT SECTION: Bill Intel */}
+            <div className="w-full md:w-[60%] p-8 border-b md:border-b-0 md:border-r border-white/5 space-y-8 overflow-y-auto custom-scrollbar">
+              <div className="flex justify-between items-start">
+                <div className="flex gap-5">
+                   <div className={`w-16 h-16 rounded-2xl bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] flex items-center justify-center shadow-xl`}>
+                      {getCategoryIcon(biller.category)}
+                   </div>
+                   <div>
+                      <h2 className={`${t.text.heading} text-2xl font-black tracking-tighter leading-none mb-1`}>{biller.alias}</h2>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-60`}>CONSUMER_ID: {biller.consumerId}</span>
+                        <div className="w-1 h-1 rounded-full bg-slate-500 opacity-20" />
+                        <span className={`text-[10px] font-black uppercase tracking-widest text-[#c1ff72] opacity-80`}>{biller.category}</span>
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <button className={`${FinledgerTheme.button.secondary} flex-1 py-2.5 flex items-center justify-center gap-2 text-sm`}>
-                    <Download size={14} />
-                    Download
-                  </button>
-                  <button className={`${FinledgerTheme.button.secondary} px-3 py-2.5 flex items-center justify-center`}>
-                    <Bell size={14} />
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-slate-500 justify-center">
-                  <Shield size={12} />
-                  <span>Secure payment powered by FinLedger</span>
+                   </div>
                 </div>
               </div>
 
-              {/* RIGHT */}
-              <div className="space-y-3">
-                <div className={`${FinledgerTheme.card} border border-slate-700 rounded-xl p-4`}>
-                  <h3 className={`${FinledgerTheme.text.primary} font-bold mb-3 flex items-center gap-2`}>
-                    <CreditCard size={18} />
-                    Select Account
-                  </h3>
+              {/* Data Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                 <div className={`p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 space-y-1`}>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Total Allocation</p>
+                    <p className={`text-xl font-black tracking-tight ${t.text.display}`}>₹{billDetails?.totalAmount || biller.dueAmount || "0.00"}</p>
+                 </div>
+                 <div className={`p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 space-y-1`}>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Synchronization Due</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={14} className="text-[#c1ff72]" />
+                      <p className={`text-sm font-black ${t.text.heading}`}>{billDetails?.dueDate || biller.dueDate}</p>
+                    </div>
+                 </div>
+              </div>
 
-                  <div className="space-y-2">
-                    {accounts.map((account) => (
-                      <div
-                        key={account.id}
-                        onClick={() => setSelectedAccount(account.id)}
-                        className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                          selectedAccount === account.id
-                            ? "bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border-emerald-500/40"
-                            : "border-slate-700 hover:border-emerald-500/30"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                              <Banknote size={14} className="text-white" />
-                            </div>
-                            <div>
-                              <p className={`${FinledgerTheme.text.primary} font-medium text-sm`}>
-                                {account.nickname}
-                              </p>
-                              <p className={`${FinledgerTheme.text.secondary} text-xs`}>
-                                Balance: ₹{account.balance.toLocaleString()}
-                              </p>
-                            </div>
+              {/* Breakdown */}
+              <div className="space-y-4">
+                 <div className="flex items-center gap-3">
+                    <History size={16} className="text-[#c1ff72]" />
+                    <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Protocol Breakdown</h3>
+                 </div>
+                 <div className={`space-y-3 p-6 rounded-2xl ${t.card.base} border border-white/5`}>
+                   {(billDetails?.breakdown || [
+                     { description: "Current Cycle Usage", amount: biller.dueAmount },
+                     { description: "Network Access Fee", amount: 0 }
+                   ]).map((item, idx) => (
+                     <div key={idx} className="flex justify-between items-center py-2 border-b border-black/5 dark:border-white/5 last:border-0">
+                       <span className={`text-xs font-bold ${t.text.body} opacity-60`}>{item.description}</span>
+                       <span className={`text-sm font-black ${t.text.heading}`}>₹{item.amount.toLocaleString()}</span>
+                     </div>
+                   ))}
+                   <div className="pt-4 flex justify-between items-center">
+                     <span className={`text-sm font-black uppercase tracking-widest ${t.text.display}`}>Net Payable</span>
+                     <span className={`text-2xl font-black text-[#c1ff72] tracking-tighter`}>₹{billDetails?.totalAmount || biller.dueAmount || "0.00"}</span>
+                   </div>
+                 </div>
+              </div>
+
+              {/* Utility Actions */}
+              <div className="flex gap-3">
+                <motion.button 
+                   whileHover={{ scale: 1.02 }}
+                   whileTap={{ scale: 0.98 }}
+                   className={`flex-1 h-12 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest ${t.text.heading} hover:bg-[#c1ff72]/5 hover:border-[#c1ff72]/20 transition-all`}
+                >
+                   <Download size={16} />
+                   Archive Data
+                </motion.button>
+                <motion.button 
+                   whileHover={{ scale: 1.02 }}
+                   whileTap={{ scale: 0.98 }}
+                   className={`w-12 h-12 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center ${t.text.muted} hover:text-[#c1ff72] transition-colors`}
+                >
+                   <Bell size={18} />
+                </motion.button>
+              </div>
+            </div>
+
+            {/* RIGHT SECTION: Transaction Matrix */}
+            <div className={`w-full md:w-[40%] p-8 bg-black/10 dark:bg-black/40 space-y-8 flex flex-col justify-between`}>
+              <div className="space-y-8">
+                <div className="flex justify-between items-center">
+                   <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Liquidity Source</h3>
+                   <motion.button 
+                      whileHover={{ scale: 1.1, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={onClose}
+                      className={`w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center text-white/40 hover:text-white transition-colors`}
+                   >
+                      <X size={18} />
+                   </motion.button>
+                </div>
+
+                {/* Account Scroller */}
+                <div className="space-y-3 h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                   {accounts.map((account) => (
+                     <motion.div
+                       key={account.id}
+                       onClick={() => setSelectedAccount(account.id)}
+                       whileHover={{ x: 5 }}
+                       className={`
+                         relative p-4 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden
+                         ${selectedAccount === account.id 
+                           ? `bg-[#c1ff72]/10 border-[#c1ff72]/40 shadow-[0_0_20px_rgba(193,255,114,0.1)]` 
+                           : `bg-black/20 border-white/5 hover:border-[#c1ff72]/20`
+                         }
+                       `}
+                     >
+                       {selectedAccount === account.id && (
+                         <div className="absolute top-0 right-0 w-16 h-16 bg-[#c1ff72]/10 blur-xl rounded-full -mr-8 -mt-8" />
+                       )}
+                       
+                       <div className="flex items-center justify-between relative z-10">
+                          <div className="flex items-center gap-4">
+                             <div className={`w-10 h-10 rounded-xl ${selectedAccount === account.id ? 'bg-[#c1ff72] text-[#0a1a15]' : 'bg-white/5 text-white/40'} flex items-center justify-center shadow-lg transition-colors`}>
+                                <Banknote size={16} />
+                             </div>
+                             <div>
+                                <p className={`text-sm font-black ${selectedAccount === account.id ? 'text-[#c1ff72]' : 'text-white/60'} transition-colors`}>{account.nickname}</p>
+                                <p className={`text-[10px] font-bold opacity-40 ${t.text.muted}`}>Available: ₹{account.balance.toLocaleString()}</p>
+                             </div>
                           </div>
                           {selectedAccount === account.id && (
-                            <CheckCircle size={16} className="text-emerald-400" />
+                             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                               <CheckCircle size={18} className="text-[#c1ff72]" />
+                             </motion.div>
                           )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* PAYMENT SUMMARY */}
-                <div className={`${FinledgerTheme.card} border border-slate-700 rounded-xl p-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5`}>
-                  <h3 className={`${FinledgerTheme.text.primary} font-bold mb-4`}>
-                    Payment Summary
-                  </h3>
-
-                  <button
-                    onClick={() =>
-                      onPayNow(
-                        biller,
-                        billDetails?.totalAmount || 0,
-                        selectedAccount,
-                        billDetails
-                      )
-                    }
-                    className={`${FinledgerTheme.button.primary} w-full py-3.5 font-bold flex items-center justify-center gap-2`}
-                  >
-                    <Sparkles size={16} />
-                    Pay ₹{billDetails?.totalAmount || "0.00"} Now
-                  </button>
+                       </div>
+                     </motion.div>
+                   ))}
                 </div>
               </div>
+
+              {/* Execution Command */}
+              <div className="space-y-6">
+                 <div className="flex items-center gap-3 justify-center mb-2">
+                    <ShieldCheck size={14} className="text-[#c1ff72] opacity-40" />
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Encrypted Execution</span>
+                 </div>
+                 
+                 <motion.button
+                   whileHover={{ scale: 1.02 }}
+                   whileTap={{ scale: 0.98 }}
+                   disabled={!selectedAccount}
+                   onClick={() => onPayNow(biller, billDetails?.totalAmount || biller.dueAmount, selectedAccount, billDetails || null)}
+                   className={`
+                     w-full h-16 rounded-2xl bg-[#c1ff72] text-[#0a1a15] font-black text-xs uppercase tracking-[0.3em]
+                     flex items-center justify-center gap-3 shadow-[0_20px_40px_rgba(193,255,114,0.2)]
+                     disabled:opacity-50 disabled:grayscale transition-all
+                   `}
+                 >
+                   <Terminal size={20} strokeWidth={3} />
+                   <span>Execute Payment</span>
+                 </motion.button>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };
 

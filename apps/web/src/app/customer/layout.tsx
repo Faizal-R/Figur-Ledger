@@ -1,6 +1,7 @@
 "use client";
 import Sidebar from '@/components/reusables/sidebar/Sidebar'
 import { withRole } from '@/hoc/withRouteProtection';
+import { useTheme } from '@/context/ThemeContext';
 
 const navItems = [
   { name: "Dashboard", href: "/customer/dashboard", icon: "Home" as const },
@@ -17,15 +18,17 @@ const navItems = [
 
 
 const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
+  const { theme: t } = useTheme();
+  
   return (
-    <div className="flex">
+    <div className={`flex min-h-screen ${t.background} transition-colors duration-700`}>
       {/* Sidebar */}
       <div className="fixed left-0 top-0 h-screen z-50">
         <Sidebar navItems={navItems} />
       </div>
 
       {/* Content */}
-      <main className="ml-64 w-full p-4 md:p-8 bg-slate-900 min-h-screen relative z-0">
+      <main className="ml-72 w-full p-4 md:p-8 relative z-0">
         {children}
       </main>
     </div>

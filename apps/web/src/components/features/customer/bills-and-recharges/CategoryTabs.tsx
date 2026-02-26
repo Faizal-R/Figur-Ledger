@@ -1,4 +1,4 @@
-// components/bills-recharges/components/CategoryTabs.tsx
+"use client";
 import React from "react";
 import {
   Zap,
@@ -9,9 +9,11 @@ import {
   Fuel,
   History,
   Sparkles,
+  Layers,
 } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
 import { Category } from "@/types/IBill";
+import { motion } from "framer-motion";
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -24,218 +26,108 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
   activeCategory,
   onCategorySelect,
 }) => {
+  const { theme: t } = useTheme();
+
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
-      case "ELECTRICITY":
-        return <Zap size={20} />;
-      case "WATER":
-        return <Droplets size={20} />;
-      case "INTERNET":
-        return <Wifi size={20} />;
-      case "MOBILE":
-        return <Smartphone size={20} />;
-      case "CABLE":
-        return <Tv size={20} />;
-      case "GAS":
-        return <Fuel size={20} />;
-      case "ALL":
-        return <History size={20} />;
-      default:
-        return <Sparkles size={20} />;
+      case "ELECTRICITY": return <Zap size={22} />;
+      case "WATER": return <Droplets size={22} />;
+      case "INTERNET": return <Wifi size={22} />;
+      case "MOBILE": return <Smartphone size={22} />;
+      case "CABLE": return <Tv size={22} />;
+      case "GAS": return <Fuel size={22} />;
+      case "ALL": return <History size={22} />;
+      default: return <Sparkles size={22} />;
     }
-  };
-
-  const getCategoryColors = (categoryId: string, isActive: boolean) => {
-    if (isActive) {
-      return {
-        iconBg: "from-emerald-400 to-emerald-600",
-        cardBg:
-          "from-emerald-500/15 via-emerald-500/10 to-emerald-500/5",
-        border: "border-emerald-500/40",
-        text: "text-white",
-        subText: "text-emerald-300",
-        shadow: "shadow-lg shadow-emerald-500/20",
-      };
-    }
-
-    switch (categoryId) {
-      case "ELECTRICITY":
-        return {
-          iconBg: "from-yellow-500 to-orange-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      case "WATER":
-        return {
-          iconBg: "from-cyan-500 to-blue-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      case "INTERNET":
-        return {
-          iconBg: "from-pink-500 to-rose-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      case "MOBILE":
-        return {
-          iconBg: "from-purple-500 to-indigo-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      case "CABLE":
-        return {
-          iconBg: "from-green-500 to-emerald-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      case "GAS":
-        return {
-          iconBg: "from-orange-500 to-amber-500",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-      default:
-        return {
-          iconBg: "from-slate-600 to-slate-700",
-          cardBg: "",
-          border: "border-slate-700",
-          text: FinledgerTheme.text.primary,
-          subText: FinledgerTheme.text.secondary,
-          shadow: "",
-        };
-    }
-  };
-
-  const handleCategoryClick = (categoryId: string) => {
-    onCategorySelect(categoryId);
   };
 
   return (
-    <div className="mb-8 relative z-10">
-      <div className="flex items-center justify-between mb-6">
-        <h2
-          className={`${FinledgerTheme.text.primary} text-2xl font-bold`}
-        >
-          Categories
-        </h2>
-
-        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-xl">
-          <Sparkles size={16} className="text-emerald-400" />
-          <span
-            className={`${FinledgerTheme.text.primary} text-sm font-medium`}
-          >
-            {categories.find((c) => c.id === activeCategory)?.name ||
-              "All Categories"}
-          </span>
+    <div className="space-y-8 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+           <div className={`w-10 h-10 ${t.card.base} ${t.radius.md} border border-black/5 dark:border-white/5 flex items-center justify-center shadow-md`}>
+              <Layers size={18} className="text-[#c1ff72]" />
+           </div>
+           <div>
+              <h2 className={`text-2xl font-black tracking-tighter ${t.text.display}`}>Service Sectors</h2>
+              <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted}`}>Protocol Categories</p>
+           </div>
         </div>
+
+        <motion.div 
+          animate={{ x: [0, 5, 0] }}
+          transition={{ repeat: Infinity, duration: 3 }}
+          className="flex items-center gap-3 px-6 py-2.5 rounded-full border border-[#c1ff72]/20 bg-[#c1ff72]/5 w-fit"
+        >
+          <Sparkles size={14} className="text-[#c1ff72]" />
+          <span className={`text-[10px] font-black uppercase tracking-widest text-[#c1ff72]`}>
+            {categories.find((c) => c.id === activeCategory)?.name || "Primary Matrix"}
+          </span>
+        </motion.div>
       </div>
 
-      {/* GRID WITHOUT SCROLLING */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      {/* Grid of Nodes */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
         {categories.map((category) => {
           const isActive = activeCategory === category.id;
-          const colors = getCategoryColors(category.id, isActive);
 
           return (
-            <button
+            <motion.button
               key={category.id}
-              onClick={() => handleCategoryClick(category.id)}
-              type="button"
+              onClick={() => onCategorySelect(category.id)}
+              whileHover={{ y: -5, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className={`
-                relative rounded-2xl p-4 border
-                transition-all duration-300 ease-out
-                ${isActive ? "z-10" : "hover:-translate-y-1"}
-                ${isActive ? colors.cardBg : FinledgerTheme.card}
-                ${colors.border}
-                ${
-                  isActive
-                    ? colors.shadow
-                    : "hover:shadow-lg hover:shadow-emerald-500/10"
+                relative h-44 rounded-3xl border transition-all duration-500 overflow-hidden group
+                ${isActive 
+                  ? `${t.card.base} border-[#c1ff72]/40 shadow-2xl shadow-[#c1ff72]/10 z-10` 
+                  : `${t.card.base} border-black/5 dark:border-white/5 hover:border-[#c1ff72]/20 shadow-lg`
                 }
-                ${!isActive ? "hover:border-emerald-500/30" : ""}
-                flex flex-col items-center justify-center
-                h-full min-h-[140px]
               `}
             >
-              {/* ACTIVE GLOW — pointer events disabled */}
+              {/* Active Indication */}
               {isActive && (
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-emerald-500/10 to-transparent rounded-2xl" />
+                <>
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-[#c1ff72] to-transparent" />
+                  <div className="absolute inset-0 bg-[#c1ff72]/5 pointer-events-none" />
+                </>
               )}
 
-              {/* CONTENT WRAPPER — forced above overlays */}
-              <div className="relative z-20 w-full flex flex-col items-center justify-center">
-                {/* ICON */}
+              <div className="flex flex-col items-center justify-center h-full p-6 space-y-4 relative z-10">
+                {/* ICON BOX */}
                 <div
                   className={`
-                    w-12 h-12 rounded-xl mb-3 flex items-center justify-center
-                    bg-gradient-to-br ${colors.iconBg}
-                    ${
-                      isActive
-                        ? "shadow-lg shadow-emerald-500/30"
-                        : "shadow-md"
+                    w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500
+                    ${isActive 
+                      ? 'bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] shadow-xl transform rotate-3' 
+                      : 'bg-black/5 dark:bg-white/5 text-slate-400 group-hover:text-[#c1ff72] group-hover:bg-[#c1ff72]/10'
                     }
-                    transition-all duration-300
                   `}
                 >
-                  <div className="text-white">
-                    {getCategoryIcon(category.id)}
-                  </div>
+                  {getCategoryIcon(category.id)}
                 </div>
 
                 {/* TEXT */}
-                <div className="text-center w-full">
+                <div className="text-center space-y-1">
                   <h3
                     className={`
-                      font-semibold mb-1 transition-colors duration-300
-                      ${colors.text}
+                      text-[12px] font-black uppercase tracking-wider transition-colors duration-300
+                      ${isActive ? t.text.heading : t.text.muted}
                     `}
                   >
                     {category.name}
                   </h3>
-                 {
-                    category.id=="ALL" && (
-                          <p
-                    className={`
-                      text-xs transition-colors duration-300
-                      ${colors.subText}
-                    `}
-                  >
-                    {category.count} billers
-                  </p>
-                    )
-                 }
+                  {category.id === "ALL" && (
+                    <p className={`text-[10px] font-bold opacity-40 ${isActive ? t.text.heading : t.text.muted}`}>
+                      {category.count} NODES
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* ACTIVE DOT */}
-              {isActive && (
-                <div className="absolute top-3 right-3 pointer-events-none w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              )}
-
-              {/* HOVER OVERLAY — non-blocking */}
-              {!isActive && (
-                <div className="absolute inset-0 pointer-events-none rounded-2xl bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 hover:from-emerald-500/5 hover:to-emerald-500/10 transition-all duration-300" />
-              )}
-            </button>
+              {/* Decorative Elements */}
+              <div className={`absolute -bottom-4 -right-4 w-12 h-12 rounded-full blur-2xl transition-opacity duration-500 ${isActive ? 'bg-[#c1ff72]/20' : 'bg-transparent opacity-0 group-hover:opacity-100 group-hover:bg-[#c1ff72]/5'}`} />
+            </motion.button>
           );
         })}
       </div>

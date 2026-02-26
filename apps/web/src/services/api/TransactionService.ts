@@ -1,3 +1,4 @@
+import { ITransactionFilters } from "@/components/features/customer/transactions/TransactionCard";
 import request from "@/config/client";
 import { httpMethods } from "@/constant/api/enums/api";
 import { TransactionRoutes } from "@/constant/api/routes/transactionRoutes";
@@ -39,11 +40,11 @@ export const TransactionService = {
 
   },
 
-  async getTransactionHistory(accountId:string): Promise<ApiResponse< Transaction[]>> {
+  async getTransactionHistory(accountId:string,page:number=1,filters:ITransactionFilters): Promise<ApiResponse< {transactions:Transaction[],totalPages:number}>> {
     try {
-      return await request<ApiResponse< Transaction[]>>(
+      return await request<ApiResponse< {transactions:Transaction[],totalPages:number}>>(
         httpMethods.GET,
-        `${TransactionRoutes.TRANSACTION_HISTORY}/${accountId}`
+       TransactionRoutes.TRANSACTION_HISTORY(accountId,page,filters)
       );
     } catch (error) {
       throw parseAxiosError(error, "Failed to fetch transaction history");

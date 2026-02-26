@@ -1,4 +1,3 @@
-// src/components/admin/biller-management/modal/CreateBillerModal.jsx
 "use client";
 
 import React, { useState } from "react";
@@ -10,8 +9,12 @@ import {
   ChevronDown,
   Loader2,
   Sparkles,
+  Zap,
+  CheckCircle2
 } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CreateBillerModal = ({
   onSubmit,
@@ -25,6 +28,7 @@ const CreateBillerModal = ({
   }) => void;
   onClose: () => void;
 }) => {
+  const { theme: t } = useTheme();
   const [formData, setFormData] = useState({
     name: "",
     category: "ELECTRICITY",
@@ -36,278 +40,252 @@ const CreateBillerModal = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const categories = [
-    { value: "ELECTRICITY", label: "⚡ Electricity", icon: "⚡" },
-    { value: "WATER", label: "💧 Water", icon: "💧" },
-    { value: "GAS", label: "🔥 Gas", icon: "🔥" },
-    { value: "TELECOM", label: "📱 Telecom", icon: "📱" },
-    { value: "INTERNET", label: "🌐 Internet", icon: "🌐" },
-    { value: "TAX", label: "💰 Tax", icon: "💰" },
-    { value: "INSURANCE", label: "🛡️ Insurance", icon: "🛡️" },
-    { value: "EDUCATION", label: "🎓 Education", icon: "🎓" },
+    { value: "ELECTRICITY", label: "Electricity", icon: "⚡" },
+    { value: "WATER", label: "Water", icon: "💧" },
+    { value: "GAS", label: "Gas", icon: "🔥" },
+    { value: "TELECOM", label: "Telecom", icon: "📱" },
+    { value: "INTERNET", label: "Internet", icon: "🌐" },
+    { value: "TAX", label: "Tax", icon: "💰" },
+    { value: "INSURANCE", label: "Insurance", icon: "🛡️" },
+    { value: "EDUCATION", label: "Education", icon: "🎓" },
   ];
  
-  const onHandleSubmit =async (e:React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  try {
-    await onSubmit(formData);
-  } finally {
-     setFormData({
-    name: "",
-    category: "",
-    contactEmail: "",
-    contactPhone: "",
-  })
-    setIsSubmitting(false);
-  }
-};
+  const onHandleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } catch (err) {
+      setError("Failed to create provider gateway.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const selectedCategory = categories.find(
     (cat) => cat.value === formData.category,
   );
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div
-        className={`${FinledgerTheme.card} ${FinledgerTheme.border} rounded-2xl w-full max-w-lg relative overflow-hidden ${FinledgerTheme.accent.glow}`}
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className={cn(
+          t.card.base,
+          t.radius.lg,
+          "w-full max-w-2xl relative overflow-hidden shadow-3xl border border-black/5 dark:border-white/5"
+        )}
       >
-        {/* Background Glow Effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 pointer-events-none" />
-
+        {/* Visual Decoration */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-[#b0f061] shadow-[0_0_20px_#b0f061]" />
+        
         {/* Header */}
-        <div className={`p-5 border-b ${FinledgerTheme.border} relative`}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div
-                className={`p-2 ${FinledgerTheme.gradients.subtleEmerald} rounded-xl`}
-              >
-                <Building2 className="text-emerald-400" size={22} />
-              </div>
-              <div>
-                <h2
-                  className={`text-xl font-bold ${FinledgerTheme.text.primary}`}
-                >
-                  Create New Biller
-                </h2>
-                <p className={`text-sm ${FinledgerTheme.text.secondary}`}>
-                  Add utility company details
-                </p>
-              </div>
+        <div className="p-10 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl", t.card.lime)}>
+              <Building2 className={t.text.lime} size={28} />
             </div>
-            <button
-              onClick={onClose}
-              className={`p-2 hover:bg-slate-800/50 rounded-lg transition-all ${FinledgerTheme.text.secondary} hover:text-white`}
-              disabled={isSubmitting}
-            >
-              <X size={20} />
-            </button>
+            <div>
+              <h2 className={cn("text-3xl font-black tracking-tighter uppercase", t.text.heading)}>
+                Biller <span className="text-[#b0f061]">Registration.</span>
+              </h2>
+              <p className={cn("text-[10px] font-black uppercase tracking-[0.3em] mt-1 opacity-50", t.text.muted)}>
+                Provider Synchronization Protocol
+              </p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-all hover:bg-black/10 dark:hover:bg-white/10", t.text.muted)}
+            disabled={isSubmitting}
+          >
+            <X size={24} />
+          </button>
         </div>
 
         {/* Form Content */}
-        <form
-          onSubmit={onHandleSubmit}
-          className="p-5 space-y-5 relative"
-        >
-      
-          {error && (
-            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-lg text-sm animate-slideDown">
-              {error}
-            </div>
-          )}
-
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Biller Name */}
-            <div>
-              <label
-                className={`block text-sm font-semibold ${FinledgerTheme.text.secondary} mb-2`}
+        <form onSubmit={onHandleSubmit} className="p-10 space-y-8">
+          <AnimatePresence>
+            {error && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-3"
               >
-                Biller Name * 
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <Building2 size={16} className="text-emerald-400" />
-                </div>
-                <input
-                  type="text"
+                <Zap size={14} />
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className={cn("text-[10px] font-black uppercase tracking-widest opacity-60 ml-1", t.text.muted)}>Provider Name</label>
+              <div className="relative group">
+                 <Building2 className={cn("absolute left-5 top-1/2 -translate-y-1/2 transition-colors", t.text.muted)} size={18} />
+                 <input
+                  required
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="e.g., BSES Yamuna Power"
-                  className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} w-full pl-10 pr-4 py-3 rounded-xl`}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Official institutional name"
+                  className={cn(
+                    "w-full pl-14 pr-6 py-4 rounded-2xl border transition-all duration-300 outline-none font-bold text-sm tracking-tight",
+                    "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+                    t.text.heading
+                  )}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
 
-            {/* Category Dropdown */}
-            <div>
-              <label
-                className={`block text-sm font-semibold ${FinledgerTheme.text.secondary} mb-2`}
-              >
-                Category *
-              </label>
+            <div className="space-y-2">
+              <label className={cn("text-[10px] font-black uppercase tracking-widest opacity-60 ml-1", t.text.muted)}>Service Type</label>
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} w-full px-4 py-3 rounded-xl flex items-center justify-between group`}
+                  className={cn(
+                    "w-full px-6 py-4 rounded-2xl border transition-all duration-300 flex items-center justify-between outline-none group",
+                    "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061]",
+                    t.text.heading
+                  )}
                   disabled={isSubmitting}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{selectedCategory?.icon}</span>
-                    <span className={FinledgerTheme.text.primary}>
-                      {selectedCategory?.label}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl grayscale group-hover:grayscale-0 transition-all">{selectedCategory?.icon}</span>
+                    <span className="font-bold text-sm">{selectedCategory?.label}</span>
                   </div>
-                  <ChevronDown
-                    size={16}
-                    className={`text-emerald-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-                  />
+                  <ChevronDown size={18} className={cn("transition-transform duration-500", isDropdownOpen ? "rotate-180" : "", t.text.lime)} />
                 </button>
 
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <div
-                    className={`absolute top-full left-0 right-0 mt-1 ${FinledgerTheme.card} ${FinledgerTheme.border} rounded-xl shadow-2xl shadow-emerald-500/20 z-10 animate-slideDown`}
-                  >
-                    <div className="p-2 max-h-48 overflow-y-auto">
-                      {categories.map((category) => (
-                        <button
-                          key={category.value}
-                          type="button"
-                          onClick={() => {
-                            setFormData({
-                              ...formData,
-                              category: category.value,
-                            });
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-all ${
-                            formData.category === category.value
-                              ? "bg-emerald-500/10 text-emerald-400"
-                              : FinledgerTheme.text.secondary
-                          }`}
-                        >
-                          <span className="text-lg">{category.icon}</span>
-                          <span className="text-sm">{category.label}</span>
-                          {formData.category === category.value && (
-                            <div className="ml-auto">
-                              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                            </div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className={cn(
+                        "absolute top-full left-0 right-0 mt-3 p-3 rounded-2xl border z-20 shadow-3xl backdrop-blur-xl",
+                        "bg-white/95 dark:bg-black/95 border-black/5 dark:border-white/10"
+                      )}
+                    >
+                      <div className="grid grid-cols-1 gap-1 max-h-64 overflow-y-auto custom-scrollbar">
+                        {categories.map((category) => (
+                          <button
+                            key={category.value}
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, category: category.value });
+                              setIsDropdownOpen(false);
+                            }}
+                            className={cn(
+                              "flex items-center gap-4 p-4 rounded-xl transition-all font-bold text-sm",
+                              formData.category === category.value
+                                ? "bg-[#b0f061] text-[#0a1a15] shadow-lg shadow-[#b0f061]/20"
+                                : "hover:bg-black/5 dark:hover:bg-white/5 text-slate-500"
+                            )}
+                          >
+                            <span className="text-xl">{category.icon}</span>
+                            <span>{category.label}</span>
+                            {formData.category === category.value && <CheckCircle2 size={16} className="ml-auto" />}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
 
-          {/* Row 2: Email & Phone */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Contact Email */}
-            <div>
-              <label
-                className={`block text-sm font-semibold ${FinledgerTheme.text.secondary} mb-2`}
-              >
-                Contact Email *
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <Mail size={16} className="text-emerald-400" />
-                </div>
-                <input
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className={cn("text-[10px] font-black uppercase tracking-widest opacity-60 ml-1", t.text.muted)}>Communications Endpoint (Email)</label>
+              <div className="relative group">
+                 <Mail className={cn("absolute left-5 top-1/2 -translate-y-1/2 transition-colors", t.text.muted)} size={18} />
+                 <input
+                  required
                   type="email"
                   value={formData.contactEmail}
-                  onChange={(e) =>
-                    setFormData({ ...formData, contactEmail: e.target.value })
-                  }
-                  placeholder="billing@company.com"
-                  className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} w-full pl-10 pr-4 py-3 rounded-xl`}
+                  onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                  placeholder="billing@provider.network"
+                  className={cn(
+                    "w-full pl-14 pr-6 py-4 rounded-2xl border transition-all duration-300 outline-none font-bold text-sm tracking-tight",
+                    "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+                    t.text.heading
+                  )}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
 
-            {/* Contact Phone */}
-            <div>
-              <label
-                className={`block text-sm font-semibold ${FinledgerTheme.text.secondary} mb-2`}
-              >
-                Contact Phone *
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <Phone size={16} className="text-emerald-400" />
-                </div>
-                <input
-                  type="number"
-                  maxLength={10}
+            <div className="space-y-2">
+              <label className={cn("text-[10px] font-black uppercase tracking-widest opacity-60 ml-1", t.text.muted)}>Direct Dial Gateway</label>
+              <div className="relative group">
+                 <Phone className={cn("absolute left-5 top-1/2 -translate-y-1/2 transition-colors", t.text.muted)} size={18} />
+                 <input
+                  required
+                  type="tel"
                   value={formData.contactPhone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, contactPhone: e.target.value })
-                  }
-                  placeholder="1800-123-456"
-                  className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} w-full pl-10 pr-4 py-3 rounded-xl`}
+                  onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                  placeholder="Primary contact integer"
+                  className={cn(
+                    "w-full pl-14 pr-6 py-4 rounded-2xl border transition-all duration-300 outline-none font-bold text-sm tracking-tight",
+                    "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+                    t.text.heading
+                  )}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
           </div>
 
-          {/* Info Note */}
-          <div
-            className={`p-3 ${FinledgerTheme.gradients.subtleEmerald} rounded-xl border ${FinledgerTheme.border}`}
-          >
-            <div className="flex items-start gap-2">
-              <Sparkles
-                size={16}
-                className="text-emerald-400 mt-0.5 flex-shrink-0"
-              />
-              <p className={`text-xs ${FinledgerTheme.text.secondary}`}>
-                <span className="font-semibold text-emerald-400">Note:</span> A
-                user account and collection account will be automatically
-                created for this biller.
-              </p>
-            </div>
+          {/* Logic Note */}
+          <div className="p-6 rounded-2xl bg-[#b0f061]/5 border border-[#b0f061]/10 flex gap-4 items-start">
+            <Sparkles size={20} className="text-[#b0f061] shrink-0 mt-0.5" />
+            <p className={cn("text-[11px] font-bold leading-relaxed", t.text.body)}>
+              <span className="text-[#b0f061] uppercase tracking-[0.2em] mr-2">Automation Trigger:</span> 
+              Linking this provider will automatically initialize a secure vault and institutional relay account on the Ledger Network.
+            </p>
           </div>
 
-          {/* Form Actions */}
-          <div className="flex gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex gap-6 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className={`${FinledgerTheme.button.secondary} flex-1 py-3.5 rounded-xl font-medium hover:scale-[1.02] transition-transform`}
+              className={cn(
+                "flex-1 h-16 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] transition-all hover:bg-black/5 dark:hover:bg-white/5",
+                t.text.muted
+              )}
               disabled={isSubmitting}
             >
-              Cancel
+              Abort
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`${FinledgerTheme.button.primary} flex-1 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform relative overflow-hidden`}
+              className={cn(
+                t.button.primary,
+                "flex-[2] h-16 rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all flex items-center justify-center gap-4 group"
+              )}
             >
-              {/* Button Glow Effect */}
-              <span className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/10 to-emerald-400/0 animate-shimmer" />
-
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin relative z-10" size={18} />
-                  <span className="relative z-10">Creating...</span>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span>Configuring Protocol...</span>
                 </>
               ) : (
                 <>
-                  <Building2 size={18} className="relative z-10" />
-                  <span className="relative z-10">Create Biller</span>
+                  <Activity size={20} className="group-hover:rotate-180 transition-transform duration-700" />
+                  <span>Synchronize Provider</span>
                 </>
               )}
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };

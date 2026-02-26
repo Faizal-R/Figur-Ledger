@@ -1,20 +1,26 @@
-// src/components/admin/biller-management/components/BillerGridHeader.jsx
+"use client";
 import { Filter } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
 
-export default function BillerGridHeader({ billerCount }) {
+export default function BillerGridHeader({ billerCount }: { billerCount: number }) {
+  const { theme: t } = useTheme();
   return (
-    <div className="flex justify-between items-center">
-      <h2 className={`text-xl font-semibold ${FinledgerTheme.text.primary}`}>
-        All Billers <span className="text-emerald-400">({billerCount})</span>
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <h2 className={cn("text-2xl font-black tracking-tighter uppercase", t.text.display)}>
+        All Billers <span className="text-[#4caf50]">({billerCount})</span>
       </h2>
       
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-4">
         {/* Filter Dropdown */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+        <div className="relative group">
+          <Filter className={cn("absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 group-focus-within:text-[#b0f061]", t.text.muted)} size={16} />
           <select 
-            className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} pl-10 pr-8 py-2 rounded-lg`}
+            className={cn(
+              "pl-12 pr-10 py-2.5 rounded-xl border transition-all duration-300 outline-none font-bold text-xs tracking-widest uppercase appearance-none cursor-pointer",
+              "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+              t.text.heading
+            )}
             id="status-filter"
           >
             <option>All Status</option>
@@ -26,7 +32,11 @@ export default function BillerGridHeader({ billerCount }) {
         
         {/* Category Filter */}
         <select 
-          className={`${FinledgerTheme.input.base} ${FinledgerTheme.input.focus} px-4 py-2 rounded-lg`}
+          className={cn(
+              "px-6 py-2.5 rounded-xl border transition-all duration-300 outline-none font-bold text-xs tracking-widest uppercase appearance-none cursor-pointer",
+              "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+              t.text.heading
+            )}
           id="category-filter"
         >
           <option>All Categories</option>

@@ -1,8 +1,9 @@
-// components/bills-recharges/components/BillerCard.tsx
+"use client";
 import React from 'react';
-import { ArrowRight, Zap, Droplets, Wifi, Smartphone, Tv, Fuel, Home } from 'lucide-react';
-import { FinledgerTheme } from '@/theme';
+import { Zap, Droplets, Wifi, Smartphone, Tv, Fuel, Home, Plus, Shield } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 import { IBiller } from '@/types/IBill';
+import { motion } from 'framer-motion';
 
 interface BillerCardProps {
   biller: IBiller;
@@ -10,87 +11,94 @@ interface BillerCardProps {
 }
 
 const BillerCard: React.FC<BillerCardProps> = ({ biller, onClick }) => {
+  const { theme: t } = useTheme();
+
   const getCategoryIcon = (category: string) => {
     switch(category) {
-      case 'ELECTRICITY': return <Zap size={20} />;
-      case 'WATER': return <Droplets size={20} />;
-      case 'INTERNET': return <Wifi size={20} />;
-      case 'MOBILE': return <Smartphone size={20} />;
-      case 'CABLE': return <Tv size={20} />;
-      case 'GAS': return <Fuel size={20} />;
-      default: return <Home size={20} />;
+      case 'ELECTRICITY': return <Zap size={22} />;
+      case 'WATER': return <Droplets size={22} />;
+      case 'INTERNET': return <Wifi size={22} />;
+      case 'MOBILE': return <Smartphone size={22} />;
+      case 'CABLE': return <Tv size={22} />;
+      case 'GAS': return <Fuel size={22} />;
+      default: return <Home size={22} />;
     }
   };
 
-  const getCategoryGradient = (category: string) => {
+  const getCategoryName = (category: string) => {
     switch(category) {
-      case 'ELECTRICITY': return 'from-yellow-500 to-orange-500';
-      case 'WATER': return 'from-cyan-500 to-blue-500';
-      case 'INTERNET': return 'from-pink-500 to-rose-500';
-      case 'MOBILE': return 'from-purple-500 to-indigo-500';
-      case 'CABLE': return 'from-green-500 to-emerald-500';
-      case 'GAS': return 'from-orange-500 to-amber-500';
-      default: return 'from-emerald-500 to-teal-500';
+      case 'ELECTRICITY': return 'Energy Protocol';
+      case 'WATER': return 'Hydro Infrastructure';
+      case 'INTERNET': return 'Data Transmission';
+      case 'MOBILE': return 'Cellular Mesh';
+      case 'CABLE': return 'Broadcast Stream';
+      case 'GAS': return 'Thermal System';
+      default: return 'Service Interface';
     }
   };
 
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -8, scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={() => onClick(biller)}
-      className="group relative cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+      className={`group relative cursor-pointer ${t.card.base} ${t.radius.lg} border border-black/5 dark:border-white/5 overflow-hidden transition-all duration-500 shadow-xl hover:shadow-2xl hover:border-[#c1ff72]/30`}
     >
-      {/* Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl blur-xl transition-opacity duration-500" />
+      {/* Decorative Aura */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#c1ff72]/5 blur-3xl rounded-full -mr-12 -mt-12 group-hover:bg-[#c1ff72]/10 transition-colors" />
       
-      {/* Main Card */}
-      <div className={`relative ${FinledgerTheme.card} ${FinledgerTheme.border} ${FinledgerTheme.radius.lg} p-5 overflow-hidden transition-all duration-300 group-hover:border-emerald-500/40 group-hover:shadow-lg group-hover:shadow-emerald-500/20`}>
-        {/* Background Pattern */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full -translate-y-12 translate-x-12" />
-        
-        <div className="relative z-10">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getCategoryGradient(biller.category)} flex items-center justify-center shadow-lg`}>
-                <div className="text-white">
-                  {getCategoryIcon(biller.category)}
+      <div className="relative z-10 p-6 space-y-6">
+        {/* Header Icon & ID */}
+        <div className="flex justify-between items-start">
+           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] shadow-xl group-hover:rotate-6`}>
+              {getCategoryIcon(biller.category)}
+           </div>
+           <div className="text-right">
+              <p className={`text-[8px] font-black uppercase tracking-[0.3em] ${t.text.muted} opacity-40 mb-1`}>Network Node</p>
+              <div className="flex items-center gap-2 justify-end">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#c1ff72] animate-pulse" />
+                 <span className={`text-[10px] font-black ${t.text.heading} opacity-60`}>ACTIVE_V1</span>
+              </div>
+           </div>
+        </div>
+
+        {/* Biller Info */}
+        <div className="space-y-1">
+           <h4 className={`${t.text.heading} text-xl font-black tracking-tight leading-tight group-hover:text-[#c1ff72] transition-colors`}>
+             {biller.name}
+           </h4>
+           <div className="flex items-center gap-2">
+              <p className={`text-[10px] font-black uppercase tracking-widest text-[#c1ff72]`}>
+                {getCategoryName(biller.category)}
+              </p>
+              <div className="w-1 h-1 rounded-full bg-slate-500 opacity-20" />
+              <Shield size={10} className={`${t.text.muted} opacity-40`} />
+           </div>
+        </div>
+
+        {/* Action Indicator */}
+        <div className="pt-4 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
+           <div className="flex -space-x-2">
+              {[1,2,3].map(i => (
+                <div key={i} className={`w-6 h-6 rounded-full border-2 border-white dark:border-[#0a1a15] bg-black/5 dark:bg-white/5 flex items-center justify-center`} style={{ zIndex: 3-i }}>
+                   <div className="w-1.5 h-1.5 rounded-full bg-[#c1ff72] opacity-40" />
                 </div>
-              </div>
-              <div>
-                <h4 className={`${FinledgerTheme.text.primary} font-bold text-lg`}>{biller.name}</h4>
-                {/* <p className={`${FinledgerTheme.text.secondary} text-xs`}>{biller.description}</p> */}
-              </div>
-            </div>
-            <ArrowRight size={18} className="text-slate-500 group-hover:text-emerald-400 transition-colors transform group-hover:translate-x-1" />
-          </div>
-
-          {/* Details */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className={`${FinledgerTheme.text.secondary} text-sm`}>Category</span>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryGradient(biller.category)}/10 text-emerald-400 border border-emerald-500/20`}>
-                {biller.category}
-              </span>
-            </div>
-            
-            {/* <div className="flex items-center justify-between">
-              <span className={`${FinledgerTheme.text.secondary} text-sm`}>Avg. Bill</span>
-              <div className="flex items-center gap-2">
-                <span className={`${FinledgerTheme.text.primary} font-bold text-lg`}>₹{biller.averageBill}</span>
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-            </div> */}
-
-            {/* Quick Action */}
-            <div className="pt-3 border-t border-slate-700/50">
-              <button className={`w-full py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all duration-300`}>
-                Add to My Billers
-              </button>
-            </div>
-          </div>
+              ))}
+           </div>
+           
+           <motion.div
+             whileHover={{ x: 5 }}
+             className={`flex items-center gap-3 h-10 px-5 rounded-xl bg-[#c1ff72]/5 border border-[#c1ff72]/10 text-[10px] font-black uppercase tracking-widest text-[#c1ff72] transition-all group-hover:bg-[#c1ff72] group-hover:text-[#0a1a15]`}
+           >
+              <span>Initialize</span>
+              <Plus size={14} strokeWidth={3} />
+           </motion.div>
         </div>
       </div>
-    </div>
+
+      {/* Subtle Bottom Accent */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#c1ff72]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    </motion.div>
   );
 };
 

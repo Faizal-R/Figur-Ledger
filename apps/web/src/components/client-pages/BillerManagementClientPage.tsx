@@ -1,6 +1,5 @@
 "use client";
 
-import { FinledgerTheme } from "@/theme";
 import BillerManagementHeader from "@/components/features/admin/biller-management/BillerManagementHeader";
 import BillerStatsBar from "@/components/features/admin/biller-management/BillerStatusBar";
 import BillerGridHeader from "@/components/features/admin/biller-management/BillerGridHeader";
@@ -43,7 +42,7 @@ export default function BillerManagementClientPage() {
 
 
   return (
-    <div className={`${FinledgerTheme.background} min-h-screen p-8`}>
+    <div className={` min-h-screen p-8`}>
       <div className="max-w-7xl mx-auto space-y-8">
         <BillerManagementHeader onOpenCreateModal={onOpenCreateModal} />
         <BillerStatsBar billers={billersData} />

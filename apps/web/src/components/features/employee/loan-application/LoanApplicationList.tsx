@@ -8,7 +8,6 @@ import {
   useApproveOrRejectLoanApplication,
   useGetAllLoanApplications,
 } from "@/hooks/api/useLoan";
-import { toast } from "sonner";
 import { useAuthUserStore } from "@/store";
 
 export default function LoanApplicationList() {
@@ -21,7 +20,16 @@ export default function LoanApplicationList() {
   const approveOrRejectLoanApplication = useApproveOrRejectLoanApplication();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-full h-64 rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse border border-black/5 dark:border-white/5"
+          />
+        ))}
+      </div>
+    );
   }
 
   const handleApproveOrRejectLoanApplication = (data: {

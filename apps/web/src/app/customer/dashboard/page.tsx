@@ -1,6 +1,5 @@
+"use client";
 
-"use client"
-import { useEffect, useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -8,15 +7,20 @@ import {
   ArrowDownRight,
   CreditCard,
   DollarSign,
-  PiggyBank,
-  Award,
   ChevronRight,
-  Target,
+  Activity,
+  History,
+  RefreshCw,
+  MoreVertical,
+  Banknote,
+  Plus,
+  ArrowRight
 } from 'lucide-react';
-import { FinledgerTheme } from '@/theme';
-import { IAccount } from '@/types/user-account';
-// import { supabase } from '../lib/supabase';
-// import { Account, Transaction, LoanProduct, UserLoan } from '../types';
+import { useTheme } from '@/context/ThemeContext';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface DashboardStats {
   totalBalance: number;
@@ -26,23 +30,29 @@ interface DashboardStats {
 }
 
 export default function DashboardOverview() {
-  const [accounts, setAccounts] = useState<IAccount[]>([]);
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
-  const [availableLoans, setAvailableLoans] = useState<any[]>([]);
-  const [activeLoans, setActiveLoans] = useState<any[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalBalance: 0,
-    monthlyIncome: 0,
-    monthlyExpenses: 0,
-    savingsRate: 0,
-  });
-  const [creditScore, setCreditScore] = useState(0);
+  const { theme: t, mode } = useTheme();
 
-  useEffect(() => {
-    // loadDashboardData();
-  }, []);
+  const stats: DashboardStats = {
+    totalBalance: 42910,
+    monthlyIncome: 12500,
+    monthlyExpenses: 4800,
+    savingsRate: 61.6,
+  };
+  
+  const creditScore = 784;
 
+  const container = {
+    hidden: { opacity: 0 },
+    animate: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
+    }
+  };
 
+  const item = {
+    hidden: { opacity: 0, y: 15 },
+    animate: { opacity: 1, y: 0 }
+  };
 
   const StatCard = ({
     title,
@@ -54,81 +64,94 @@ export default function DashboardOverview() {
     title: string;
     value: string;
     change: string;
-    icon: any;
+    icon: React.ElementType;
     trend: 'up' | 'down';
   }) => (
-    <div
-      className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 hover:border-emerald-500/50 transition-all group`}
+    <motion.div
+      variants={item}
+      className={cn(
+        "p-6 border transition-all duration-300",
+        t.card.base,
+        t.radius.md,
+        "hover:shadow-md"
+      )}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div
-          className={`p-3 ${FinledgerTheme.radius.md} bg-gradient-to-br ${FinledgerTheme.gradients.subtleEmerald} group-hover:scale-110 transition-transform`}
-        >
-          <Icon className="w-6 h-6 text-emerald-400" />
+      <div className="flex items-center justify-between mb-4">
+        <div className={cn(
+          "w-10 h-10 rounded-xl flex items-center justify-center",
+          mode === 'dark' ? "bg-white/5 text-[#c1ff72]" : "bg-slate-100 text-slate-900"
+        )}>
+          <Icon size={20} />
         </div>
-        <div
-          className={`flex items-center space-x-1 px-2 py-1 ${FinledgerTheme.radius.sm} ${
-            trend === 'up' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-          }`}
-        >
-          {trend === 'up' ? (
-            <ArrowUpRight size={14} />
-          ) : (
-            <ArrowDownRight size={14} />
-          )}
-          <span className="text-xs font-semibold">{change}</span>
+        <div className={cn(
+          "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold",
+          trend === 'up' ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600"
+        )}>
+          {trend === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+          <span>{change}</span>
         </div>
       </div>
-      <h3 className={`text-sm ${FinledgerTheme.text.muted} mb-1`}>{title}</h3>
-      <p className={`text-2xl font-bold ${FinledgerTheme.text.primary}`}>{value}</p>
-    </div>
+      
+      <div>
+        <p className={cn("text-xs font-semibold mb-1", t.text.muted)}>{title}</p>
+        <p className={cn("text-2xl font-bold tracking-tight", t.text.heading)}>{value}</p>
+      </div>
+    </motion.div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-3xl font-bold ${FinledgerTheme.text.primary} mb-2`}>
-            Welcome Back!
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="animate"
+      className="space-y-8 pb-20"
+    >
+      {/* 1. Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200 dark:border-white/5">
+        <motion.div variants={item} className="space-y-1">
+          <h1 className={cn("text-3xl font-bold tracking-tight", t.text.heading)}>
+            Good evening, <span className="text-[#4caf50]">Alex</span>
           </h1>
-          <p className={FinledgerTheme.text.secondary}>
-            Here's what's happening with your finances today
+          <p className={cn("text-sm font-medium opacity-60", t.text.muted)}>
+            Here's what's happening with your money today.
           </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div
-            className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-4 flex items-center space-x-3`}
-          >
-            <Award className="w-8 h-8 text-emerald-400" />
-            <div>
-              <p className={`text-xs ${FinledgerTheme.text.muted}`}>Credit Score</p>
-              <p className={`text-2xl font-bold ${FinledgerTheme.text.primary}`}>
-                {creditScore}
-              </p>
-            </div>
-          </div>
-        </div>
+        </motion.div>
+
+        <motion.div variants={item} className="flex items-center gap-3">
+           <div className={cn("px-4 py-2 border rounded-xl flex items-center gap-3", t.card.base)}>
+              <span className={cn("text-[10px] font-bold uppercase tracking-wider opacity-50", t.text.muted)}>Credit Score</span>
+              <span className={cn("text-lg font-bold", t.text.heading)}>{creditScore}</span>
+           </div>
+           <button className={cn(
+             "h-11 px-6 rounded-xl font-bold text-sm flex items-center gap-2 transition-all",
+             t.button.onyx
+           )}>
+             <Plus size={18} />
+             <span>Add Funds</span>
+           </button>
+        </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 2. Primary Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Balance"
-          value={`$${stats.totalBalance.toLocaleString()}`}
-          change="+12.5%"
-          icon={DollarSign}
+          value={`₹${stats.totalBalance.toLocaleString()}`}
+          change="+₹2,400"
+          icon={Banknote}
           trend="up"
         />
         <StatCard
           title="Monthly Income"
-          value={`$${stats.monthlyIncome.toLocaleString()}`}
-          change="+8.2%"
+          value={`₹${stats.monthlyIncome.toLocaleString()}`}
+          change="+₹800"
           icon={TrendingUp}
           trend="up"
         />
         <StatCard
           title="Monthly Expenses"
-          value={`$${stats.monthlyExpenses.toLocaleString()}`}
-          change="-4.1%"
+          value={`₹${stats.monthlyExpenses.toLocaleString()}`}
+          change="-₹400"
           icon={TrendingDown}
           trend="down"
         />
@@ -136,232 +159,144 @@ export default function DashboardOverview() {
           title="Savings Rate"
           value={`${stats.savingsRate.toFixed(1)}%`}
           change="+2.3%"
-          icon={PiggyBank}
+          icon={Activity}
           trend="up"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div
-          className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6`}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-xl font-bold ${FinledgerTheme.text.primary}`}>
-              Your Accounts
-            </h2>
-            <button className={`text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center`}>
-              View All <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="space-y-4">
-            {accounts.map((account) => (
-              <div
-                key={account.id}
-                className={`${FinledgerTheme.card} p-5 ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} hover:border-emerald-500/50 transition-all group cursor-pointer`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`w-12 h-12 ${FinledgerTheme.accent.gradient} ${FinledgerTheme.radius.md} flex items-center justify-center group-hover:scale-110 transition-transform`}
-                    >
-                      <CreditCard className="w-6 h-6 text-slate-900" />
+      {/* 3. Main Content Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Column: Accounts & Transactions */}
+        <div className="lg:col-span-8 space-y-8">
+          
+          {/* Recent Accounts */}
+          <motion.div variants={item} className={cn("border overflow-hidden", t.card.base, t.radius.md)}>
+            <div className="p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+              <h2 className={cn("text-lg font-bold", t.text.heading)}>Your Accounts</h2>
+              <Link href="/customer/accounts" className="text-xs font-bold text-[#4caf50] hover:underline flex items-center gap-1">
+                View All <ChevronRight size={14} />
+              </Link>
+            </div>
+            
+            <div className="p-6 grid md:grid-cols-2 gap-4">
+               {[
+                 { name: 'Main Savings', num: '**** 8842', balance: 34120, type: 'Savings' },
+                 { name: 'Expense Account', num: '**** 1092', balance: 8790, type: 'Current' }
+               ].map((acc, idx) => (
+                 <div 
+                   key={idx}
+                   className={cn(
+                     "p-5 border transition-all cursor-pointer group hover:border-[#c1ff72]/50",
+                     mode === 'dark' ? "bg-white/2 border-white/5" : "bg-slate-50 border-slate-100",
+                     t.radius.sm
+                   )}
+                 >
+                    <div className="flex justify-between items-start mb-6">
+                       <div className={cn(
+                         "w-10 h-10 rounded-xl flex items-center justify-center",
+                         idx === 0 ? "bg-[#c1ff72] text-[#0a1a15]" : "bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400"
+                       )}>
+                          <CreditCard size={20} />
+                       </div>
+                       <span className={cn("text-[10px] font-bold opacity-40 uppercase", t.text.muted)}>{acc.num}</span>
                     </div>
-                    {/* <div>
-                      <p className={`font-semibold ${FinledgerTheme.text.primary}`}>
-                        {account.account_type.charAt(0).toUpperCase() + account.account_type.slice(1)} Account
-                      </p>
-                      <p className={`text-sm ${FinledgerTheme.text.muted}`}>
-                        ****{account.account_number.slice(-4)}
-                      </p>
-                    </div> */}
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-xl font-bold ${FinledgerTheme.text.primary}`}>
-                      ${Number(account.balance).toLocaleString()}
+                    <div>
+                       <p className={cn("text-xs font-bold mb-1", t.text.heading)}>{acc.name}</p>
+                       <p className={cn("text-2xl font-bold tracking-tight", t.text.heading)}>₹{acc.balance.toLocaleString()}</p>
+                    </div>
+                 </div>
+               ))}
+            </div>
+          </motion.div>
+
+          {/* Recent Transactions */}
+          <motion.div variants={item} className={cn("border overflow-hidden", t.card.base, t.radius.md)}>
+            <div className="p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+              <h2 className={cn("text-lg font-bold", t.text.heading)}>Recent Activity</h2>
+              <Link href="/customer/transactions" className="text-xs font-bold text-[#4caf50] hover:underline flex items-center gap-1">
+                Full History <ChevronRight size={14} />
+              </Link>
+            </div>
+            
+            <div className="divide-y divide-slate-200 dark:divide-white/5">
+               {[
+                 { name: 'Amazon Web Services', type: 'debit', amount: 1420, date: 'Feb 24', icon: ArrowUpRight },
+                 { name: 'Salary Credit', type: 'credit', amount: 5000, date: 'Feb 23', icon: ArrowDownRight },
+                 { name: 'Netflix Subscription', type: 'debit', amount: 120, date: 'Feb 22', icon: ArrowUpRight }
+               ].map((tx, idx) => (
+                 <div key={idx} className="flex items-center justify-between p-5 hover:bg-slate-50 dark:hover:bg-white/2 transition-all cursor-pointer">
+                    <div className="flex items-center gap-4">
+                       <div className={cn(
+                         "w-10 h-10 rounded-xl flex items-center justify-center",
+                         tx.type === 'credit' ? "bg-green-500/10 text-green-600" : "bg-slate-100 dark:bg-white/5 text-slate-500"
+                       )}>
+                          <tx.icon size={18} />
+                       </div>
+                       <div>
+                          <p className={cn("text-sm font-bold", t.text.heading)}>{tx.name}</p>
+                          <p className={cn("text-[10px] font-medium opacity-50", t.text.muted)}>{tx.date}</p>
+                       </div>
+                    </div>
+                    <p className={cn(
+                      "text-sm font-bold",
+                      tx.type === 'credit' ? "text-green-600" : t.text.heading
+                    )}>
+                      {tx.type === 'credit' ? '+' : '-'}₹{tx.amount.toLocaleString()}
                     </p>
-                    <p className={`text-xs ${FinledgerTheme.text.muted}`}>{account.currency}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {accounts.length === 0 && (
-              <p className={`text-center py-8 ${FinledgerTheme.text.muted}`}>
-                No accounts found
-              </p>
-            )}
-          </div>
+                 </div>
+               ))}
+            </div>
+          </motion.div>
         </div>
 
-        <div
-          className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6`}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-xl font-bold ${FinledgerTheme.text.primary}`}>
-              Recent Transactions
-            </h2>
-            <button className={`text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center`}>
-              View All <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="space-y-3">
-            {recentTransactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className={`flex items-center justify-between p-4 ${FinledgerTheme.radius.md} hover:bg-slate-800/50 transition-all cursor-pointer`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={`w-10 h-10 ${FinledgerTheme.radius.md} ${
-                      transaction.type === 'credit'
-                        ? 'bg-emerald-500/20'
-                        : 'bg-slate-700'
-                    } flex items-center justify-center`}
-                  >
-                    {transaction.type === 'credit' ? (
-                      <ArrowDownRight className="w-5 h-5 text-emerald-400" />
-                    ) : (
-                      <ArrowUpRight className="w-5 h-5 text-slate-400" />
-                    )}
-                  </div>
-                  <div>
-                    <p className={`font-medium ${FinledgerTheme.text.primary}`}>
-                      {transaction.merchant || transaction.description}
-                    </p>
-                    <p className={`text-xs ${FinledgerTheme.text.muted}`}>
-                      {new Date(transaction.transaction_date).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <p
-                  className={`font-bold ${
-                    transaction.type === 'credit' ? 'text-emerald-400' : FinledgerTheme.text.primary
-                  }`}
-                >
-                  {transaction.type === 'credit' ? '+' : '-'}$
-                  {Number(transaction.amount).toLocaleString()}
-                </p>
+        {/* Right Column: Cards & Progress */}
+        <div className="lg:col-span-4 space-y-8">
+           
+           {/* Quick Action Card */}
+           <motion.div variants={item} className={cn("p-8 relative overflow-hidden text-white", t.radius.md, "bg-slate-900")}>
+              <div className="relative z-10 space-y-6">
+                 <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                   <DollarSign size={20} className="text-[#c1ff72]" />
+                 </div>
+                 <div className="space-y-1">
+                    <h3 className="text-xl font-bold leading-tight">Apply for a Loan</h3>
+                    <p className="text-white/60 text-xs font-medium">Get instant approval for up to ₹5,00,000.</p>
+                 </div>
+                 <Link href="/customer/loans" className={cn(
+                   "w-full h-11 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all",
+                   t.button.primary
+                 )}>
+                   Check Eligibility <ArrowRight size={14} />
+                 </Link>
               </div>
-            ))}
-            {recentTransactions.length === 0 && (
-              <p className={`text-center py-8 ${FinledgerTheme.text.muted}`}>
-                No recent transactions
-              </p>
-            )}
-          </div>
+              <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#c1ff72]/10 blur-3xl rounded-full" />
+           </motion.div>
+
+           {/* Progress / Limits */}
+           <motion.div variants={item} className={cn("p-6 border", t.card.base, t.radius.md)}>
+              <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                    <span className={cn("text-xs font-bold", t.text.heading)}>Credit Usage</span>
+                    <span className={cn("text-xs font-bold", t.text.muted)}>74%</span>
+                 </div>
+                 <div className="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#4caf50] rounded-full w-[74%]" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                       <p className={cn("text-[10px] font-bold uppercase opacity-40 mb-1", t.text.muted)}>Monthly Limit</p>
+                       <p className={cn("text-sm font-bold", t.text.heading)}>₹1,00,000</p>
+                    </div>
+                    <div>
+                       <p className={cn("text-[10px] font-bold uppercase opacity-40 mb-1", t.text.muted)}>Remaining</p>
+                       <p className={cn("text-sm font-bold text-[#4caf50]")}>₹26,000</p>
+                    </div>
+                 </div>
+              </div>
+           </motion.div>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div
-          className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6`}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-xl font-bold ${FinledgerTheme.text.primary}`}>
-              Available Loans For You
-            </h2>
-            <button className={`text-emerald-400 hover:text-emerald-300 text-sm font-medium flex items-center`}>
-              View All <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="space-y-4">
-            {availableLoans.slice(0, 3).map((loan) => (
-              <div
-                key={loan.id}
-                className={`p-5 ${FinledgerTheme.cardRounded} bg-gradient-to-br ${FinledgerTheme.gradients.subtleEmerald} border border-emerald-500/30 hover:border-emerald-500 transition-all group cursor-pointer`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className={`text-lg font-bold ${FinledgerTheme.text.primary} mb-1`}>
-                      {loan.name}
-                    </h3>
-                    <p className={`text-sm ${FinledgerTheme.text.secondary}`}>
-                      {loan.description}
-                    </p>
-                  </div>
-                  <div
-                    className={`px-3 py-1 ${FinledgerTheme.radius.sm} bg-emerald-500/20 text-emerald-400 text-xs font-semibold`}
-                  >
-                    {loan.interest_rate}% APR
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-4">
-                  <div>
-                    <p className={`text-xs ${FinledgerTheme.text.muted}`}>Loan Amount</p>
-                    <p className={`text-sm font-bold ${FinledgerTheme.text.primary}`}>
-                      ${loan.min_amount.toLocaleString()} - ${loan.max_amount.toLocaleString()}
-                    </p>
-                  </div>
-                  <button
-                    className={`${FinledgerTheme.button.primary} px-4 py-2 ${FinledgerTheme.radius.md}`}
-                  >
-                    Apply Now
-                  </button>
-                </div>
-              </div>
-            ))}
-            {availableLoans.length === 0 && (
-              <div className={`text-center py-8 ${FinledgerTheme.text.muted}`}>
-                <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No loans available for your credit score</p>
-                <p className="text-sm mt-1">Work on improving your credit score to unlock more options</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div
-          className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6`}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-xl font-bold ${FinledgerTheme.text.primary}`}>
-              Active Loans
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {activeLoans.map((loan) => (
-              <div
-                key={loan.id}
-                className={`p-5 ${FinledgerTheme.cardRounded} bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-all`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className={`font-semibold ${FinledgerTheme.text.primary}`}>
-                      {loan.loan_product?.name}
-                    </h3>
-                    <p className={`text-xs ${FinledgerTheme.text.muted} mt-1`}>
-                      Status: <span className="text-emerald-400">{loan.status}</span>
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-xs ${FinledgerTheme.text.muted}`}>Remaining</p>
-                    <p className={`text-lg font-bold ${FinledgerTheme.text.primary}`}>
-                      ${Number(loan.remaining_balance || loan.amount).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-xs ${FinledgerTheme.text.muted}`}>Monthly Payment</p>
-                    <p className={`text-sm font-semibold ${FinledgerTheme.text.primary}`}>
-                      ${Number(loan.monthly_payment || 0).toLocaleString()}
-                    </p>
-                  </div>
-                  <button
-                    className={`text-emerald-400 hover:text-emerald-300 text-sm font-medium`}
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
-            {activeLoans.length === 0 && (
-              <div className={`text-center py-8 ${FinledgerTheme.text.muted}`}>
-                <p>No active loans</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,3 +1,4 @@
+import { ITransactionFilters } from "@/components/features/customer/transactions/TransactionCard";
 import { TransactionService } from "@/services/api/TransactionService";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -28,12 +29,13 @@ export const useProcessWithdrawal = () => {
   });
 };
 
-export const useTransactionHistory = (accountId: string) => {
+export const useTransactionHistory = (accountId: string, page: number = 1,filters:ITransactionFilters) => {
   return useQuery({
-    queryKey: ["transaction-history", accountId],
+    queryKey: ["transaction-history", accountId, page,filters],
     queryFn: async () => {
-      return await TransactionService.getTransactionHistory(accountId);
+      return await TransactionService.getTransactionHistory(accountId, page,filters);
     },
+    enabled: !!accountId,
   });
 };
 
@@ -51,7 +53,7 @@ export const useTransferAmount = () => {
       return TransactionService.TransferAmount(
         senderAccountId,
         receiverAccountId,
-        amount
+        amount,
       );
     },
   });

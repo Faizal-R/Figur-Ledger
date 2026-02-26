@@ -7,22 +7,22 @@ import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServ
 import { TransactionStatus, TransactionType } from "@prisma/client";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
+import { ITransactionFilters } from "../../types/ITransactionFilters";
 
 @injectable()
-
 export class TransactionUseCase implements ITransactionUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.TRANSACTION_REPOSITORY)
     private _transactionRepository: ITransactionRepository,
 
     @inject(DI_TOKENS.HTTP.ACCOUNT_SERVICE_CLIENT)
-    private readonly _accountServiceClient: IAccountServiceClient
-  ) { }
+    private readonly _accountServiceClient: IAccountServiceClient,
+  ) {}
 
   async processDeposit(
     accountId: string,
     amount: number,
-    referenceId: string
+    referenceId: string,
   ): Promise<{ balance: number; txId: string }> {
     const idempotencyKey = `DEPOSIT:${referenceId}`;
     const existingTx =
@@ -55,7 +55,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       TransactionType.DEPOSIT,
       null,
       new Date(),
-      new Date()
+      new Date(),
     );
 
     const createdTx = await this._transactionRepository.create(transaction);
@@ -73,7 +73,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       console.log("Transaction marked as SUCCESS");
       console.log(result);
 
-      return { balance: result.data.balance, txId: createdTx.id };
+      return { balance: result.balance, txId: createdTx.id };
     } catch (error: any) {
       await this._transactionRepository.updateById(createdTx.id, {
         status: TransactionStatus.FAILED,
@@ -81,15 +81,15 @@ export class TransactionUseCase implements ITransactionUseCase {
 
       throw new CustomError(
         `Deposit failed: ${error.message || "Unknown error"}`,
-        statusCodes.INTERNAL_SERVER_ERROR
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  async processWithdrawal( 
+  async processWithdrawal(
     accountId: string,
     amount: number,
-    referenceId: string
+    referenceId: string,
   ): Promise<{ balance: number; txId: string }> {
     const idempotencyKey = `WITHDRAWAL:${referenceId}`;
 
@@ -124,13 +124,12 @@ export class TransactionUseCase implements ITransactionUseCase {
       TransactionType.WITHDRAW,
       null,
       new Date(),
-      new Date()
+      new Date(),
     );
 
     const createdTx = await this._transactionRepository.create(transaction);
 
     try {
-
       const result = await this._accountServiceClient.debitAccount({
         accountId,
         amount,
@@ -144,7 +143,7 @@ export class TransactionUseCase implements ITransactionUseCase {
 
       console.log("Transaction marked as SUCCESS");
 
-      return { balance: result.data.balance, txId: createdTx.id };
+      return { balance: result.balance, txId: createdTx.id };
     } catch (error: any) {
       console.error("Error during withdrawal:", error);
       await this._transactionRepository.updateById(createdTx.id, {
@@ -153,15 +152,30 @@ export class TransactionUseCase implements ITransactionUseCase {
 
       throw new CustomError(
         `Withdrawal failed: ${error.message || "Unknown error"}`,
-        statusCodes.INTERNAL_SERVER_ERROR
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
-  
-  async getTransactionHistory(accountId: string): Promise<Transaction[]> {
-    const transactions = await this._transactionRepository.findByAccountId(accountId);
-    console.log("Transaction history: ", transactions);
-    return transactions || [];
+
+  async getTransactionHistory(
+    accountId: string,
+    page: number,
+    filters?: ITransactionFilters,
+  ): Promise<{ transactions: Transaction[]; totalPages: number }> {
+    try {
+      const { transactions, totalPages } =
+        await this._transactionRepository.findByAccountId(
+          accountId,
+          page,
+          filters,
+        );
+      console.log("Transaction history: ", transactions);
+      return { transactions, totalPages };
+    } catch (error: unknown) {
+      throw new CustomError(
+        `Transaction history fetch failed: ${(error as Error).message || "Unknown error"}`,
+        statusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
-  
 }

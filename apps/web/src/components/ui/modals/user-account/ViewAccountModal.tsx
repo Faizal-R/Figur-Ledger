@@ -5,11 +5,23 @@ import {
   Landmark,
   Hash,
   BadgeDollarSign,
-  Info,
+  ShieldCheck,
+  Zap,
+  Activity,
+  History,
+  Calendar,
+  ChevronRight,
+  Cpu,
+  Terminal,
+  IndianRupee,
+  Clock
 } from "lucide-react";
 import { IAccount, KYCData } from "@/types/user-account";
 import { KYCPreview } from "@/components/features/customer/account/KYCPreview";
 import { formatCurrency, formatDate } from "@/utils/formats";
+import { useTheme } from "@/context/ThemeContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ViewAccountModalProps {
   isOpen: boolean;
@@ -24,149 +36,124 @@ export function ViewAccountModal({
   account,
   kycData,
 }: ViewAccountModalProps) {
+  const { theme: t, mode } = useTheme();
+
   if (!isOpen || !account) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-[#1a2536] rounded-2xl shadow-2xl shadow-black/50 border border-slate-800/70 animate-scaleIn ">
-        {/* HEADER */}
-        <div className="sticky top-0  z-50 flex items-center justify-between p-6 bg-[#1a2536] border-b border-slate-800/70">
-          <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              Account Overview
-            </h2>
-            <p className="text-sm text-slate-400 mt-1">
-              Detailed breakdown of your account
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-slate-800/60 transition-colors"
-          >
-            <X className="w-5 h-5 text-slate-400" />
-          </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className={cn(
+          "relative w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl",
+          t.card.base,
+          t.radius.lg
+        )}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/2">
+           <div className="flex items-center gap-3">
+              <div className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shadow-sm",
+                mode === 'dark' ? "bg-[#c1ff72] text-[#0a1a15]" : "bg-slate-900 text-white"
+              )}>
+                 <Landmark size={20} />
+              </div>
+              <div>
+                 <h3 className={cn("text-lg font-bold", t.text.heading)}>Account Details</h3>
+                 <p className={cn("text-[10px] font-bold uppercase tracking-wider opacity-40", t.text.muted)}>
+                    {account.type} Account • {account.id?.slice(-8).toUpperCase()}
+                 </p>
+              </div>
+           </div>
+           <button
+             onClick={onClose}
+             className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400"
+           >
+             <X size={20} />
+           </button>
         </div>
 
-        {/* BODY */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
+          {/* Balance Section */}
+          <div className={cn(
+            "p-8 rounded-3xl border relative overflow-hidden group",
+            mode === 'dark' ? "bg-gradient-to-br from-[#c1ff72]/10 to-transparent border-[#c1ff72]/20" : "bg-slate-900 border-transparent shadow-lg"
+          )}>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+               <div className="space-y-1">
+                  <p className={cn("text-[10px] font-bold uppercase tracking-widest opacity-50", mode === 'dark' ? "text-[#c1ff72]" : "text-white")}>Current Balance</p>
+                  <h4 className={cn("text-4xl font-bold tracking-tight", mode === 'dark' ? "text-white" : "text-white")}>
+                     {formatCurrency(account.balance, account.currency)}
+                  </h4>
+               </div>
+               <div className="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
+                  <span className={cn("text-xs font-bold uppercase tracking-widest", mode === 'dark' ? "text-[#c1ff72]" : "text-[#c1ff72]")}>
+                    {account.status}
+                  </span>
+               </div>
+            </div>
+          </div>
 
-        <div className="p-6 space-y-10">
-          {/* RESPONSIVE SPLIT – FULL WIDTH ON MOBILE */}
-          <div className="flex flex-col gap-6 lg:flex-row lg:gap-6">
-            {/* LEFT BLOCK */}
-            <div className="w-full lg:w-1/2">
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-600/20 to-emerald-400/10 border border-emerald-500/20 shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
-                <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-emerald-400" />
-                  {account.nickname || "—"}
-                </h3>
-                <p className="text-sm text-slate-400 capitalize">
-                  {account.type} Account
-                </p>
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <DetailItem label="Account Number" value={account.accountNumber as string} icon={Hash} t={t} />
+             <DetailItem label="IFSC Code" value={account.ifsc as string} icon={Cpu} t={t} />
+             <DetailItem label="Currency" value={account.currency} icon={IndianRupee} t={t} />
+             <DetailItem label="Account Type" value={account.type.toUpperCase()} icon={CreditCard} t={t} />
+          </div>
 
-                <div className="mt-4">
-                  <p className="text-xs text-slate-400 mb-1">Current Balance</p>
-                  <p className="text-4xl font-bold text-white drop-shadow-sm">
-                    {formatCurrency(account.balance, account.currency)}
-                  </p>
+          {/* System Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-white/5">
+             <div className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-slate-50 dark:bg-white/2 border border-slate-100 dark:border-white/5">
+                <Calendar size={18} className="text-slate-400" />
+                <div>
+                   <p className={cn("text-[9px] font-bold uppercase tracking-wider opacity-40 mb-0.5", t.text.muted)}>Created On</p>
+                   <p className={cn("text-xs font-bold", t.text.heading)}>{formatDate(new Date(account.createdAt))}</p>
                 </div>
-              </div>
-            </div>
-
-            {/* RIGHT BLOCK */}
-            <div className="w-full lg:w-1/2">
-              <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-                <Info className="w-4 h-4 text-emerald-400" /> Account
-                Information
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InfoCard
-                  label="Account Number"
-                  value={account.accountNumber as string}
-                  icon={Hash}
-                  
-                />
-                <InfoCard
-                  label="IFSC Code"
-                  value={account.ifsc as string}
-                  icon={Landmark}
-                />
-                <InfoCard label="Status" value={account.status} icon={Info} />
-                <InfoCard
-                  label="Currency"
-                  value={account.currency}
-                  icon={BadgeDollarSign}
-                />
-              </div>
-            </div>
+             </div>
+             <div className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-slate-50 dark:bg-white/2 border border-slate-100 dark:border-white/5">
+                <Clock size={18} className="text-slate-400" />
+                <div>
+                   <p className={cn("text-[9px] font-bold uppercase tracking-wider opacity-40 mb-0.5", t.text.muted)}>Last Updated</p>
+                   <p className={cn("text-xs font-bold", t.text.heading)}>{formatDate(new Date(account.updatedAt))}</p>
+                </div>
+             </div>
           </div>
 
-          {/* TIMELINE */}
-          <div className="pt-6 border-t border-slate-700/60">
-            <h3 className="text-sm font-semibold text-white mb-4">Timeline</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <TimelineRow
-                label="Created"
-                value={formatDate(new Date(account.createdAt))}
-              />
-              <TimelineRow
-                label="Updated"
-                value={formatDate(new Date(account.updatedAt))}
-              />
-            </div>
-          </div>
-
-          {/* KYC */}
-          <div className="pt-6 border-t border-slate-700/60">
-            <KYCPreview kycData={kycData} />
+          {/* Owner Info */}
+          <div className="pt-4 border-t border-slate-200 dark:border-white/5">
+             <KYCPreview kycData={kycData} />
           </div>
         </div>
 
-        {/* FOOTER */}
-        <div className="p-6 border-t border-slate-800/60 bg-[#19212e] rounded-b-2xl">
-          <button
-            onClick={onClose}
-            className="w-full py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all font-semibold"
-          >
-            Close
-          </button>
+        {/* Footer */}
+        <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/2">
+           <button
+             onClick={onClose}
+             className={cn(
+               "w-full h-12 rounded-xl text-xs font-bold transition-all shadow-sm",
+               mode === 'dark' ? "bg-white/10 text-white hover:bg-white/20" : "bg-slate-900 text-white hover:bg-slate-800"
+             )}
+           >
+             Close Details
+           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
 
-/* COMPONENTS */
-
-function InfoCard({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: any;
-}) {
+function DetailItem({ label, value, icon: Icon, t }: { label: string; value: string; icon: any; t: any }) {
   return (
-    <div className="p-4 bg-[#0f1721] rounded-xl border border-slate-800 hover:border-emerald-500/30 transition-all">
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-4 h-4 text-emerald-400" />
-        <span className="text-xs text-slate-400">{label}</span>
+    <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/2 border border-slate-100 dark:border-white/5 group hover:border-[#c1ff72] transition-colors">
+      <div className="flex items-center gap-2 mb-2">
+        <Icon size={14} className="text-[#4caf50] opacity-60" />
+        <span className={cn("text-[10px] font-bold uppercase tracking-wider opacity-40", t.text.muted)}>{label}</span>
       </div>
-      <p className="text-xs font-medium text-white break-all">{value}</p>
-    </div>
-  );
-}
-
-function TimelineRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="p-4 bg-[#0f1721] rounded-xl border border-slate-700/70">
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="text-sm font-medium text-white">{value}</p>
+      <p className={cn("text-sm font-bold tracking-wider truncate", t.text.heading)}>{value}</p>
     </div>
   );
 }

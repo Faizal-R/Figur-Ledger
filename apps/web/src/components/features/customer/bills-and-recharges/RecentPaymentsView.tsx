@@ -1,39 +1,56 @@
+"use client";
 import React from "react";
-import { CheckCircle, XCircle, Clock, Download, ExternalLink } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { 
+  CheckCircle, XCircle, Clock, Download, 
+  History, ArrowUpRight, Activity, Terminal
+} from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 import { IPayment } from "@/types/IPayment";
 import { IBiller } from "@/types/IBill";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface RecentPaymentsViewProps {
   payments: IPayment[];
 }
 
 const RecentPaymentsView: React.FC<RecentPaymentsViewProps> = ({ payments }) => {
-  const getStatusIcon = (status?: IPayment["status"]) => {
-    switch (status) {
-      case "SUCCESS":
-        return <CheckCircle size={16} className="text-emerald-400" />;
-      case "FAILED":
-        return <XCircle size={16} className="text-red-400" />;
-      case "PENDING":
-      case "PROCESSING":
-        return <Clock size={16} className="text-yellow-400" />;
-      default:
-        return <Clock size={16} className="text-slate-400" />;
-    }
-  };
+  const { theme: t } = useTheme();
 
-  const getStatusColor = (status?: IPayment["status"]) => {
+  const getStatusConfig = (status?: IPayment["status"]) => {
     switch (status) {
       case "SUCCESS":
-        return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+        return {
+          icon: <CheckCircle size={14} className="text-[#c1ff72]" />,
+          text: "COMPLETED",
+          color: "text-[#c1ff72]",
+          bg: "bg-[#c1ff72]/10",
+          border: "border-[#c1ff72]/20"
+        };
       case "FAILED":
-        return "text-red-400 bg-red-500/10 border-red-500/20";
+        return {
+          icon: <XCircle size={14} className="text-red-400" />,
+          text: "TERMINATED",
+          color: "text-red-400",
+          bg: "bg-red-400/10",
+          border: "border-red-400/20"
+        };
       case "PENDING":
       case "PROCESSING":
-        return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20";
+        return {
+          icon: <Clock size={14} className="text-orange-400" />,
+          text: "TRANSMITTING",
+          color: "text-orange-400",
+          bg: "bg-orange-400/10",
+          border: "border-orange-400/20"
+        };
       default:
-        return "text-slate-400 bg-slate-500/10 border-slate-500/20";
+        return {
+          icon: <Activity size={14} className="text-slate-400" />,
+          text: "UNKNOWN",
+          color: "text-slate-400",
+          bg: "bg-slate-500/10",
+          border: "border-slate-500/20"
+        };
     }
   };
 
@@ -43,94 +60,114 @@ const RecentPaymentsView: React.FC<RecentPaymentsViewProps> = ({ payments }) => 
       day: "2-digit",
       month: "short",
       year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
     });
   };
 
   if (!payments.length) {
     return (
-      <div className="text-center py-16">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center">
-          <Clock size={32} className="text-emerald-400" />
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`flex flex-col items-center justify-center py-24 px-8 ${t.card.base} ${t.radius.lg} border border-dashed border-black/10 dark:border-white/10`}
+      >
+        <div className="w-24 h-24 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center mb-8 relative">
+           <div className="absolute inset-0 bg-black/5 blur-xl rounded-full" />
+           <History size={40} className={`${t.text.muted} opacity-40 relative z-10`} />
         </div>
-        <h3 className={`${FinledgerTheme.text.primary} text-xl font-medium mb-2`}>
-          No Recent Payments
-        </h3>
-        <p className={`${FinledgerTheme.text.secondary}`}>
-          Your payment history will appear here
-        </p>
-      </div>
+        <div className="text-center space-y-3 max-w-sm">
+           <h3 className={`text-2xl font-black tracking-tight ${t.text.heading}`}>System Idle</h3>
+           <p className={`text-sm font-medium ${t.text.body} opacity-50`}>
+             No transmission logs detected in the recent activity matrix. Proceed with a transaction to initialize logs.
+           </p>
+        </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="space-y-4">
-      {payments.map((payment) => (
-        <div
-          key={payment._id}
-          className={`${FinledgerTheme.card} ${FinledgerTheme.border} ${FinledgerTheme.radius.lg} p-5 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10 group`}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center">
-                {getStatusIcon(payment.status)}
-              </div>
+      <AnimatePresence mode="popLayout">
+        {payments.map((payment, index) => {
+          const status = getStatusConfig(payment.status);
+          const payee = payment.payeeId as IBiller;
 
-              <div>
-                <h4 className={`${FinledgerTheme.text.primary} font-bold`}>
-                  {(payment.payeeId as IBiller).name}
-                </h4>
-                <p className={`${FinledgerTheme.text.secondary} text-xs`}>
-                  Consumer ID: {payment.referenceId ?? "-"}
-                </p>
-              </div>
-            </div>
-
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                payment.status
-              )}`}
+          return (
+            <motion.div
+              key={payment._id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ x: 8 }}
+              className={`relative overflow-hidden ${t.card.base} ${t.radius.lg} p-6 border border-black/5 dark:border-white/5 shadow-lg group transition-all duration-500 hover:border-[#c1ff72]/20 hover:shadow-2xl`}
             >
-              {payment.status ?? "PENDING"}
-            </span>
-          </div>
+              {/* Decorative Signal Line */}
+              <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-linear-to-b from-transparent via-[#c1ff72]/20 to-transparent group-hover:via-[#c1ff72] transition-colors" />
 
-          <div className="flex items-center justify-between">
-            <div>
-              <p className={`${FinledgerTheme.text.secondary} text-sm mb-1`}>
-                Amount
-              </p>
-              <p className={`${FinledgerTheme.text.primary} text-xl font-bold`}>
-                ₹{payment.amount}
-              </p>
-            </div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                {/* Payee Info */}
+                <div className="flex items-center gap-5">
+                   <div className={`w-16 h-16 rounded-2xl ${t.card.base} border border-black/5 dark:border-white/5 flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform`}>
+                      <Terminal size={28} className="text-[#c1ff72]" />
+                   </div>
+                   <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                         <h4 className={`${t.text.heading} font-black text-xl tracking-tight`}>
+                           {payee?.name || "Service Node"}
+                         </h4>
+                         <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${status.bg} ${status.color} border ${status.border}`}>
+                            {status.text}
+                         </span>
+                      </div>
+                      <p className={`${t.text.muted} text-[10px] font-black uppercase tracking-widest opacity-60`}>
+                        Ref: {payment.referenceId?.slice(0, 16) || "NO_REF_ID"}
+                      </p>
+                   </div>
+                </div>
 
-            <div className="text-right">
-              <p className={`${FinledgerTheme.text.secondary} text-sm mb-1`}>
-                Date
-              </p>
-              <p className={`${FinledgerTheme.text.primary} font-medium`}>
-                {formatDate(payment.completedAt ?? payment.createdAt)}
-              </p>
-            </div>
+                {/* Amount and Meta */}
+                <div className="flex items-center justify-between md:justify-end gap-12 flex-1">
+                   <div className="text-left md:text-right space-y-1">
+                      <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${t.text.muted} opacity-40`}>Total Allocated</p>
+                      <div className="flex items-baseline gap-2 md:justify-end">
+                         <span className={`text-2xl font-black tracking-tighter ${t.text.display}`}>₹{payment.amount}</span>
+                         <span className={`text-[10px] font-black ${t.text.muted}`}>INR</span>
+                      </div>
+                   </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                className={`${FinledgerTheme.button.secondary} p-2 rounded-lg`}
-                title="Download Invoice"
-              >
-                <Download size={18} />
-              </button>
+                   <div className="hidden lg:block text-right space-y-1">
+                      <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${t.text.muted} opacity-40`}>Time Stamp</p>
+                      <p className={`text-xs font-black ${t.text.heading}`}>
+                        {formatDate(payment.completedAt ?? payment.createdAt)}
+                      </p>
+                   </div>
 
-              <button
-                className={`${FinledgerTheme.button.secondary} p-2 rounded-lg`}
-                title="View Details"
-              >
-                <ExternalLink size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
+                   <div className="flex items-center gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`w-12 h-12 rounded-xl border border-black/5 dark:border-white/5 flex items-center justify-center ${t.text.muted} hover:text-[#c1ff72] hover:bg-[#c1ff72]/5 transition-colors`}
+                        title="Download Data"
+                      >
+                        <Download size={18} />
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`w-12 h-12 rounded-xl border border-black/5 dark:border-white/5 flex items-center justify-center ${t.text.muted} hover:text-[#c1ff72] hover:bg-[#c1ff72]/5 transition-colors`}
+                        title="Protocol Trace"
+                      >
+                        <ArrowUpRight size={18} />
+                      </motion.button>
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
     </div>
   );
 };

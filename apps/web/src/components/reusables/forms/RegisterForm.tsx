@@ -10,8 +10,9 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/api/useAuth";
-import { useAuthUserStore } from "@/store";
 import { Roles } from "@/types/role";
+import { useTheme } from "@/context/ThemeContext";
+import { motion } from "framer-motion";
 
 
 export default function RegisterForm() {
@@ -56,7 +57,7 @@ export default function RegisterForm() {
 
   const navigate = useRouter();
   const { register } = useAuth();
-  const { setUser: setUserInStore } = useAuthUserStore();
+  const { theme: t } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,114 +88,120 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full lg:w-1/2 flex items-center justify-center p-5 bg-slate-900">
-      <div className="w-full max-w-md space-y-8 animate-fade-in-left">
-        <div className="lg:hidden text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-emerald-400">
-            Fin<span className="text-emerald-500">Ledger</span>
-          </h1>
-          <p className="text-slate-400">Advanced Banking Platform</p>
-        </div>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={`w-full max-w-md p-8 ${t.card.base} ${t.radius.lg} border border-black/5 dark:border-white/5 shadow-2xl relative overflow-hidden transition-all duration-700 font-jakarta`}
+    >
+      {/* Decorative Orbs */}
+      <div className="absolute top-[-10%] right-[-10%] w-40 h-40 bg-[#c1ff72]/10 blur-3xl rounded-full -z-10" />
 
+      <div className="space-y-6 relative z-10">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight text-white">
-            Create an account
-          </h2>
-          <p className="text-slate-400">Step {step} of 4</p>
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: "40px" }}
+            className="h-1 bg-[#c1ff72] rounded-full"
+          />
+          <h2 className={`text-3xl font-black tracking-tighter ${t.text.display}`}>Create Account.</h2>
+          <p className={`text-sm ${t.text.muted} font-medium`}>
+            Step {step} of 4: Node registration in progress.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* STEP 1: EMAIL + PHONE */}
           {step === 1 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-slate-100">Email</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Email Address</Label>
                 <Input
                   type="email"
-                  placeholder="name@company.com"
+                  placeholder="name@example.com"
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 transition-all"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">Phone Number</Label>
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Phone Number</Label>
                 <Input
                   type="tel"
-                  placeholder="1234567890"
+                  placeholder="+1 (555) 000-0000"
                   value={formData.phone}
                   onChange={(e) =>
                     updateField("phone", e.target.value.replace(/\D/g, ""))
                   }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 transition-all"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
               <Button
                 type="button"
                 onClick={nextStep}
-                className="w-full h-12 bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900 font-semibold shadow-lg shadow-emerald-500/30 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 transition-all"
+                className={`w-full h-12 ${t.button.primary} ${t.radius.md} flex items-center justify-center gap-4 group shadow-xl transition-all`}
               >
-                Next <ArrowRight className="w-4 h-4 ml-2" />
+                <span className="uppercase tracking-[0.3em] text-[11px]">Continue</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           )}
 
           {/* STEP 2: PERSONAL INFO */}
           {step === 2 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-slate-100">First Name</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>First Name</Label>
                 <Input
-                  placeholder="John"
+                  placeholder="What's your name?"
                   value={formData.personalInfo.firstName}
                   onChange={(e) =>
                     updateField("personalInfo.firstName", e.target.value)
                   }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">Last Name</Label>
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Last Name</Label>
                 <Input
-                  placeholder="Doe"
+                  placeholder="Last name"
                   value={formData.personalInfo.lastName}
                   onChange={(e) =>
                     updateField("personalInfo.lastName", e.target.value)
                   }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">Date of Birth</Label>
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Date of Birth</Label>
                 <Input
                   type="date"
                   value={formData.personalInfo.dateOfBirth}
                   onChange={(e) =>
                     updateField("personalInfo.dateOfBirth", e.target.value)
                   }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs opacity-50 focus:opacity-100 ${t.text.heading}`}
                 />
               </div>
 
-              <div className="flex justify-between">
-                <Button
+              <div className="flex justify-between gap-3 mt-4">
+                <button
                   type="button"
                   onClick={prevStep}
-                  variant="ghost"
-                  className="text-slate-400"
+                  className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} hover:text-[#c1ff72] transition-colors flex items-center`}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                </Button>
+                  <ArrowLeft className="w-3 h-3 mr-1" /> Back
+                </button>
                 <Button
                   type="button"
                   onClick={nextStep}
-                  className="bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900"
+                  className={`flex-1 h-12 ${t.button.primary} ${t.radius.md} flex items-center justify-center gap-4 group shadow-xl transition-all`}
                 >
-                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                  <span className="uppercase tracking-[0.3em] text-[11px]">Continue</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
             </div>
@@ -202,74 +209,74 @@ export default function RegisterForm() {
 
           {/* STEP 3: ADDRESS */}
           {step === 3 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-slate-100">Street</Label>
-                <Input
-                  placeholder="Street Address"
-                  value={formData.address.street}
-                  onChange={(e) =>
-                    updateField("address.street", e.target.value)
-                  }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
-                />
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Street Address</Label>
+                  <Input
+                    placeholder="Where do you live?"
+                    value={formData.address.street}
+                    onChange={(e) => updateField("address.street", e.target.value)}
+                    className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>City</Label>
+                  <Input
+                    placeholder="City"
+                    value={formData.address.city}
+                    onChange={(e) => updateField("address.city", e.target.value)}
+                    className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">City</Label>
-                <Input
-                  value={formData.address.city}
-                  onChange={(e) => updateField("address.city", e.target.value)}
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>State / Province</Label>
+                  <Input
+                    placeholder="State"
+                    value={formData.address.state}
+                    onChange={(e) => updateField("address.state", e.target.value)}
+                    className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Zip / Postal Code</Label>
+                  <Input
+                    placeholder="Zip code"
+                    value={formData.address.zipCode}
+                    onChange={(e) => updateField("address.zipCode", e.target.value)}
+                    className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">State</Label>
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Country</Label>
                 <Input
-                  value={formData.address.state}
-                  onChange={(e) => updateField("address.state", e.target.value)}
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-slate-100">Zip Code</Label>
-                <Input
-                  value={formData.address.zipCode}
-                  onChange={(e) =>
-                    updateField("address.zipCode", e.target.value)
-                  }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-slate-100">Country</Label>
-                <Input
+                  placeholder="Select country"
                   value={formData.address.country}
-                  onChange={(e) =>
-                    updateField("address.country", e.target.value)
-                  }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  onChange={(e) => updateField("address.country", e.target.value)}
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
-              <div className="flex justify-between">
-                <Button
+              <div className="flex justify-between gap-3 mt-4">
+                <button
                   type="button"
                   onClick={prevStep}
-                  variant="ghost"
-                  className="text-slate-400"
+                  className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} hover:text-[#c1ff72] transition-colors flex items-center`}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                </Button>
+                  <ArrowLeft className="w-3 h-3 mr-1" /> Back
+                </button>
                 <Button
                   type="button"
                   onClick={nextStep}
-                  className="bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900"
+                  className={`flex-1 h-12 ${t.button.primary} ${t.radius.md} flex items-center justify-center gap-4 group shadow-xl transition-all`}
                 >
-                  Next <ArrowRight className="w-4 h-4 ml-2" />
+                  <span className="uppercase tracking-[0.3em] text-[11px]">Continue</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
             </div>
@@ -277,28 +284,28 @@ export default function RegisterForm() {
 
           {/* STEP 4: PASSWORD + TERMS */}
           {step === 4 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-slate-100">Password</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Password</Label>
                 <Input
                   type="password"
                   placeholder="Create a strong password"
                   value={formData.password}
                   onChange={(e) => updateField("password", e.target.value)}
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-100">Confirm Password</Label>
+              <div className="space-y-1">
+                <Label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>Confirm Password</Label>
                 <Input
                   type="password"
-                  placeholder="Re-enter your password"
+                  placeholder="Repeat your password"
                   value={formData.confirmPassword}
                   onChange={(e) =>
                     updateField("confirmPassword", e.target.value)
                   }
-                  className="h-12 bg-[#18212f] border border-slate-700 text-slate-100"
+                  className={`w-full h-11 px-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 ${t.radius.md} outline-none focus:border-[#c1ff72]/50 focus:bg-white dark:focus:bg-[#0a1a15] transition-all font-bold text-xs ${t.text.heading}`}
                 />
               </div>
 
@@ -309,60 +316,60 @@ export default function RegisterForm() {
                   onCheckedChange={(v) =>
                     updateField("agreeToTerms", v as boolean)
                   }
-                  className="mt-1 border border-slate-700 data-[state=checked]:bg-emerald-400 data-[state=checked]:border-emerald-400"
+                  className="mt-1 border border-black/10 dark:border-white/10 data-[state=checked]:bg-[#c1ff72] data-[state=checked]:border-[#c1ff72]"
                 />
                 <label
                   htmlFor="terms"
-                  className="text-sm text-slate-400 leading-relaxed cursor-pointer"
+                  className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} cursor-pointer leading-tight`}
                 >
                   I agree to the{" "}
                   <Link
                     href="/terms"
-                    className="text-emerald-400 hover:text-emerald-500 transition-colors"
+                    className="text-[#4caf50] hover:text-[#c1ff72] transition-colors"
                   >
-                    Terms of Service
+                    Terms
                   </Link>{" "}
                   and{" "}
                   <Link
                     href="/privacy"
-                    className="text-emerald-400 hover:text-emerald-500 transition-colors"
+                    className="text-[#4caf50] hover:text-[#c1ff72] transition-colors"
                   >
-                    Privacy Policy
+                    Privacy
                   </Link>
                 </label>
               </div>
 
-              <div className="flex justify-between">
-                <Button
+              <div className="flex justify-between gap-3 mt-4">
+                <button
                   type="button"
                   onClick={prevStep}
-                  variant="ghost"
-                  className="text-slate-400"
+                  className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} hover:text-[#c1ff72] transition-colors flex items-center`}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                </Button>
+                  <ArrowLeft className="w-3 h-3 mr-1" /> Back
+                </button>
 
                 <Button
                   type="submit"
-                  className="w-40 h-12 bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900 font-semibold shadow-lg shadow-emerald-500/30 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 transition-all"
+                  className={`flex-1 h-12 ${t.button.primary} ${t.radius.md} flex items-center justify-center gap-4 group shadow-xl transition-all`}
                 >
-                  Create Account
+                  <span className="uppercase tracking-[0.3em] text-[11px]">Create Account</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
             </div>
           )}
         </form>
 
-        <p className="text-center text-sm text-slate-400">
-          Already have an account?{" "}
+        <p className={`text-center text-[11px] font-extrabold ${t.text.muted} uppercase tracking-widest`}>
+          Linked to the node?{" "}
           <Link
             href="/login"
-            className="font-semibold text-emerald-400 hover:text-emerald-500 transition-colors"
+            className="text-[#4caf50] hover:text-[#c1ff72] transition-colors ml-2 underline underline-offset-4 decoration-[#c1ff72]/30"
           >
-            Sign in
+            Authenticate
           </Link>
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }

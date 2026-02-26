@@ -1,7 +1,8 @@
-// components/bills-recharges/components/MainTabs.tsx
+"use client";
 import React from 'react';
 import { Bookmark, History, PlusCircle, Filter } from 'lucide-react';
-import { FinledgerTheme } from '@/theme';
+import { useTheme } from '@/context/ThemeContext';
+import { motion } from 'framer-motion';
 
 interface MainTabsProps {
   activeTab: 'saved' | 'recent';
@@ -20,107 +21,86 @@ const MainTabs: React.FC<MainTabsProps> = ({
   recentCount,
   showAddButton = true
 }) => {
+  const { theme: t } = useTheme();
+
   return (
-    <div className="mb-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        {/* Tab Buttons Container */}
-        <div className="w-full md:w-auto">
-          <div className="inline-flex gap-1 p-1 rounded-xl bg-slate-800/50 border border-slate-700">
-            {/* Saved Billers Tab */}
-            <button
-              onClick={() => onTabChange('saved')}
-              className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 group ${
-                activeTab === 'saved'
-                  ? 'text-white'
-                  : `${FinledgerTheme.text.primary} hover:text-white`
-              }`}
-            >
-              {/* Active Background */}
-              {activeTab === 'saved' && (
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg shadow-emerald-500/30" />
-              )}
-              
-              {/* Hover Background for inactive */}
-              {activeTab !== 'saved' && (
-                <div className="absolute inset-0 bg-slate-700/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              )}
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Tab Selection */}
+        <div className={`p-1.5 ${t.card.base} ${t.radius.lg} border border-black/5 dark:border-white/5 shadow-2xl flex items-center gap-1`}>
+          <button
+            onClick={() => onTabChange('saved')}
+            className={`relative px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-500 flex items-center gap-3 overflow-hidden group`}
+          >
+            {activeTab === 'saved' && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute inset-0 bg-[#0a1a15] dark:bg-[#c1ff72] shadow-xl"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <div className={`relative z-10 flex items-center gap-3 ${activeTab === 'saved' ? 'text-[#c1ff72] dark:text-[#0a1a15]' : t.text.muted}`}>
+              <Bookmark size={16} className={activeTab === 'saved' ? 'text-[#c1ff72] dark:text-[#0a1a15]' : 'opacity-40'} />
+              <span>SAVED ENTITIES</span>
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${activeTab === 'saved' ? 'bg-[#c1ff72]/20 dark:bg-[#0a1a15]/10' : 'bg-black/5 dark:bg-white/5 opacity-40'}`}>
+                {savedCount}
+              </span>
+            </div>
+          </button>
 
-              {/* Content */}
-              <div className="relative z-10 flex items-center gap-2">
-                <Bookmark size={18} className={activeTab === 'saved' ? 'text-white' : 'text-slate-400 group-hover:text-white'} />
-                <span>Saved Billers</span>
-                <span className={`px-2 py-1 text-xs rounded-full transition-colors duration-300 ${
-                  activeTab === 'saved'
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-700 text-slate-400 group-hover:bg-white/20 group-hover:text-white'
-                }`}>
-                  {savedCount}
-                </span>
-              </div>
-            </button>
-
-            {/* Recent Payments Tab */}
-            <button
-              onClick={() => onTabChange('recent')}
-              className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 group ${
-                activeTab === 'recent'
-                  ? 'text-white'
-                  : `${FinledgerTheme.text.primary} hover:text-white`
-              }`}
-            >
-              {/* Active Background */}
-              {activeTab === 'recent' && (
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg shadow-emerald-500/30" />
-              )}
-              
-              {/* Hover Background for inactive */}
-              {activeTab !== 'recent' && (
-                <div className="absolute inset-0 bg-slate-700/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              )}
-
-              {/* Content */}
-              <div className="relative z-10 flex items-center gap-2">
-                <History size={18} className={activeTab === 'recent' ? 'text-white' : 'text-slate-400 group-hover:text-white'} />
-                <span>Recent Payments</span>
-                <span className={`px-2 py-1 text-xs rounded-full transition-colors duration-300 ${
-                  activeTab === 'recent'
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-700 text-slate-400 group-hover:bg-white/20 group-hover:text-white'
-                }`}>
-                  {recentCount}
-                </span>
-              </div>
-            </button>
-          </div>
+          <button
+            onClick={() => onTabChange('recent')}
+            className={`relative px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-500 flex items-center gap-3 overflow-hidden group`}
+          >
+            {activeTab === 'recent' && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute inset-0 bg-[#0a1a15] dark:bg-[#c1ff72] shadow-xl"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <div className={`relative z-10 flex items-center gap-3 ${activeTab === 'recent' ? 'text-[#c1ff72] dark:text-[#0a1a15]' : t.text.muted}`}>
+              <History size={16} className={activeTab === 'recent' ? 'text-[#c1ff72] dark:text-[#0a1a15]' : 'opacity-40'} />
+              <span>TRANSMISSION LOG</span>
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${activeTab === 'recent' ? 'bg-[#c1ff72]/20 dark:bg-[#0a1a15]/10' : 'bg-black/5 dark:bg-white/5 opacity-40'}`}>
+                {recentCount}
+              </span>
+            </div>
+          </button>
         </div>
 
-        {/* Right Side Actions */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        {/* Global Controls */}
+        <div className="flex items-center gap-4 w-full md:w-auto">
           {showAddButton && onAddNew && (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onAddNew}
-              className={`${FinledgerTheme.button.primary} px-4 py-2.5 flex items-center gap-2 flex-1 md:flex-none justify-center`}
+              className={`flex-1 md:flex-none h-14 px-8 rounded-2xl bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl transition-all duration-500 hover:shadow-[#c1ff72]/10`}
             >
               <PlusCircle size={18} />
-              Add Biller
-            </button>
+              <span>Register Node</span>
+            </motion.button>
           )}
           
-          <button 
-            className={`${FinledgerTheme.button.secondary} px-4 py-2.5 flex items-center gap-2 flex-1 md:flex-none justify-center`}
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`flex-1 md:flex-none h-14 px-8 rounded-2xl ${t.card.base} border border-black/5 dark:border-white/5 text-[10px] font-black uppercase tracking-[0.3em] ${t.text.heading} flex items-center justify-center gap-3 shadow-lg hover:border-[#c1ff72]/20 transition-all duration-500`}
           >
-            <Filter size={18} />
-            Filter
-          </button>
+            <Filter size={18} className="text-[#c1ff72]" />
+            <span>Archive Filter</span>
+          </motion.button>
         </div>
       </div>
 
-      {/* Active Tab Indicator Line */}
-      <div className="relative h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div
-          className={`absolute top-0 h-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-500 ease-in-out ${
-            activeTab === 'saved' ? 'w-1/2 left-0' : 'w-1/2 left-1/2'
-          }`}
+      {/* Connectivity Visualization */}
+      <div className="relative h-px w-full bg-black/5 dark:bg-white/5 overflow-hidden">
+        <motion.div 
+          initial={{ x: "-100%" }}
+          animate={{ x: "100%" }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+          className="absolute top-0 h-full w-1/3 bg-linear-to-r from-transparent via-[#c1ff72]/30 to-transparent"
         />
       </div>
     </div>

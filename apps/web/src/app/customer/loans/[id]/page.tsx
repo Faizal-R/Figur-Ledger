@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetAllLoanEmis } from "@/hooks/api/useLoan";
-import { FinledgerTheme } from "@/theme";
+import { FigurLedgerTheme } from "@/theme";
 import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -37,14 +37,14 @@ export default function LoanDetailsPage() {
   const nextEmi = schedules.find(s => s.status === "PENDING");
 
   return (
-    <div className={`min-h-screen ${FinledgerTheme.background} p-6 space-y-8`}>
+    <div className={`min-h-screen ${FigurLedgerTheme.background} p-6 space-y-8`}>
 
       {/* ================= Loan Overview ================= */}
-      <div className={`${FinledgerTheme.card} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border} p-6 sticky top-4 z-10`}>
+      <div className={`${FigurLedgerTheme.card} ${FigurLedgerTheme.radius.lg} ${FigurLedgerTheme.border} p-6 sticky top-4 z-10`}>
         <div className="flex flex-wrap gap-6 justify-between items-center">
           <div>
-            <h2 className={`text-xl font-semibold ${FinledgerTheme.text.primary}`}>Active Loan</h2>
-            <p className={FinledgerTheme.text.secondary}>Loan ID • LN-20491</p>
+            <h2 className={`text-xl font-semibold ${FigurLedgerTheme.text.primary}`}>Active Loan</h2>
+            <p className={FigurLedgerTheme.text.secondary}>Loan ID • LN-20491</p>
           </div>
 
           <div className="flex gap-10">
@@ -58,13 +58,13 @@ export default function LoanDetailsPage() {
 
       {/* ================= Next EMI ================= */}
       {/* {nextEmi && (
-        <div className={`${FinledgerTheme.gradients.subtleEmerald} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border} p-6 flex justify-between items-center`}>
+        <div className={`${FigurLedgerTheme.gradients.subtleEmerald} ${FigurLedgerTheme.radius.lg} ${FigurLedgerTheme.border} p-6 flex justify-between items-center`}>
           <div>
-            <p className={FinledgerTheme.text.secondary}>Next EMI Due</p>
+            <p className={FigurLedgerTheme.text.secondary}>Next EMI Due</p>
             <p className="text-2xl font-bold text-emerald-400">
               ₹{nextEmi.totalAmount}
             </p>
-            <p className={FinledgerTheme.text.muted}>
+            <p className={FigurLedgerTheme.text.muted}>
               {new Date(nextEmi.dueDate).toDateString()}
             </p>
           </div>
@@ -76,8 +76,8 @@ export default function LoanDetailsPage() {
       {/* )} */}
 
       {/* ================= Repayment Timeline ================= */}
-      <div className={`${FinledgerTheme.card} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border} p-6`}>
-        <h3 className={`text-lg font-semibold mb-6 ${FinledgerTheme.text.primary}`}>
+      <div className={`${FigurLedgerTheme.card} ${FigurLedgerTheme.radius.lg} ${FigurLedgerTheme.border} p-6`}>
+        <h3 className={`text-lg font-semibold mb-6 ${FigurLedgerTheme.text.primary}`}>
           Repayment Schedule
         </h3>
 
@@ -104,11 +104,11 @@ export default function LoanDetailsPage() {
                 {s.scheduleNumber}
               </div>
 
-              <span className={`mt-2 text-sm ${FinledgerTheme.text.secondary}`}>
+              <span className={`mt-2 text-sm ${FigurLedgerTheme.text.secondary}`}>
                 {new Date(s.dueDate).toLocaleDateString()}
               </span>
 
-              <span className={`text-sm font-semibold ${FinledgerTheme.text.primary}`}>
+              <span className={`text-sm font-semibold ${FigurLedgerTheme.text.primary}`}>
                 ₹{s.totalAmount}
               </span>
             </div>
@@ -119,8 +119,8 @@ export default function LoanDetailsPage() {
       {/* ================= EMI Drawer ================= */}
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex justify-end z-50">
-          <div className={`${FinledgerTheme.card} w-full sm:w-[420px] h-full p-6`}>
-            <h3 className={`text-xl font-semibold ${FinledgerTheme.text.primary}`}>
+          <div className={`${FigurLedgerTheme.card} w-full sm:w-[420px] h-full p-6`}>
+            <h3 className={`text-xl font-semibold ${FigurLedgerTheme.text.primary}`}>
               EMI #{selected.scheduleNumber}
             </h3>
 
@@ -134,7 +134,7 @@ export default function LoanDetailsPage() {
 
             <button
               onClick={() => setSelected(null)}
-              className={`mt-8 w-full ${FinledgerTheme.button.secondary}`}
+              className={`mt-8 w-full ${FigurLedgerTheme.button.secondary}`}
             >
               Close
             </button>
