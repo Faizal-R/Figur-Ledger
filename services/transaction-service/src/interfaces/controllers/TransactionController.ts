@@ -7,6 +7,7 @@ import { DI_TOKENS } from "../../infra/di/types";
 import { statusCodes } from "@figur-ledger/shared";
 import { ITransferUseCase } from "../../use-cases/useCases/interfaces/ITransferUseCase";
 import { ITransactionFilters } from "../../types/ITransactionFilters";
+import { TransactionMessages } from "../../infra/constants/TransactionMessages";
 
 @injectable()
 export class TransactionController implements ITransactionController {
@@ -25,7 +26,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "accountId is required",
+        TransactionMessages.ACCOUNT_ID_REQUIRED,
       );
     }
 
@@ -34,7 +35,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "referenceId is required",
+        TransactionMessages.REFERENCE_ID_REQUIRED,
       );
     }
 
@@ -45,7 +46,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Deposit amount must be a number greater than 0",
+        TransactionMessages.INVALID_AMOUNT,
       );
     }
 
@@ -63,7 +64,7 @@ export class TransactionController implements ITransactionController {
       res,
       statusCodes.CREATED,
       true,
-      "Deposit initiated successfully",
+      TransactionMessages.DEPOSIT_SUCCESS,
       result,
     );
   });
@@ -75,7 +76,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "accountId is required",
+        TransactionMessages.ACCOUNT_ID_REQUIRED,
       );
     }
 
@@ -84,7 +85,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "referenceId is required",
+        TransactionMessages.REFERENCE_ID_REQUIRED,
       );
     }
 
@@ -95,7 +96,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Withdrawal amount must be a number greater than 0",
+        TransactionMessages.INVALID_AMOUNT,
       );
     }
 
@@ -113,7 +114,7 @@ export class TransactionController implements ITransactionController {
       res,
       statusCodes.CREATED,
       true,
-      "Withdrawal initiated successfully",
+      TransactionMessages.WITHDRAWAL_SUCCESS,
       result,
     );
   });
@@ -128,7 +129,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "AccountId is required",
+        TransactionMessages.ACCOUNT_ID_REQUIRED,
       );
     }
     const pageNumber = page ? Number(page) : 1;
@@ -143,7 +144,7 @@ export class TransactionController implements ITransactionController {
       res,
       statusCodes.ACCEPTED,
       true,
-      "Transaction history fetched successfully",
+      TransactionMessages.HISTORY_FETCH_SUCCESS,
       { transactions, totalPages },
     );
   });
@@ -162,7 +163,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "senderAccountId is required",
+        TransactionMessages.SENDER_ACCOUNT_REQUIRED,
       );
     }
 
@@ -171,7 +172,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "receiverAccountId is required",
+        TransactionMessages.RECEIVER_ACCOUNT_REQUIRED,
       );
     }
 
@@ -182,7 +183,7 @@ export class TransactionController implements ITransactionController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Transfer amount must be a number greater than 0",
+        TransactionMessages.INVALID_AMOUNT,
       );
     }
 
@@ -202,7 +203,7 @@ export class TransactionController implements ITransactionController {
       res,
       statusCodes.CREATED,
       true,
-      "Amount Transfered to the Account Successfully",
+      TransactionMessages.TRANSFER_SUCCESS,
       result,
     );
   });

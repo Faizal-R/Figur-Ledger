@@ -1,9 +1,10 @@
 import { createResponse, tryCatch } from "@figur-ledger/handlers";
 import { statusCodes } from "@figur-ledger/shared";
+import { PaymentMessages } from "../../constants/PaymentMessages";
 import { Request, Response } from "express";
 import { generateUtilityBill, TBillCategory } from "../../utils/billGenerator";
 import { IBillController } from "../interfaces/IBillController";
-import {  injectable } from "inversify";
+import { injectable } from "inversify";
 @injectable()
 export class BillController implements IBillController {
   constructor() {}
@@ -15,16 +16,16 @@ export class BillController implements IBillController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Category query parameter is required",
+        PaymentMessages.CATEGORY_REQUIRED,
       );
     }
-    const bill= generateUtilityBill (category as TBillCategory);
+    const bill = generateUtilityBill(category as TBillCategory);
     createResponse(
       res,
       statusCodes.SUCCESS,
       true,
-      "Utility bill generated successfully",
-      bill
+      PaymentMessages.BILL_GENERATED,
+      bill,
     );
   });
 }

@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import { DI_TOKENS } from "../../di/types";
 import { IPaymentService } from "../../services/interfaces/IPaymentService";
 import { statusCodes } from "@figur-ledger/shared";
+import { PaymentMessages } from "../../constants/PaymentMessages";
 @injectable()
 export class PaymentController implements IPaymentController {
   constructor(
@@ -13,17 +14,19 @@ export class PaymentController implements IPaymentController {
   ) {}
 
   initiateBillPayment = tryCatch(async (req: Request, res: Response) => {
-    const {paymentData,billDetails} = req.body;
-    console.log("reqBody",req.body)
+    const { paymentData, billDetails } = req.body;
+    console.log("reqBody", req.body);
 
-    const processedPayment =
-      await this._paymentService.initiateBillPayment(paymentData,billDetails);
+    const processedPayment = await this._paymentService.initiateBillPayment(
+      paymentData,
+      billDetails,
+    );
 
     createResponse(
       res,
       statusCodes.CREATED,
       true,
-      "Payment Successfully Completed",
+      PaymentMessages.PAYMENT_COMPLETED,
       processedPayment,
     );
   });
@@ -39,7 +42,7 @@ export class PaymentController implements IPaymentController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Payment History Fetched Successfully",
+      PaymentMessages.PAYMENT_HISTORY_FETCHED,
       paymentHistory,
     );
   });

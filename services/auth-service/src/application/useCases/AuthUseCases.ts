@@ -15,6 +15,8 @@ import { RabbitPublisher } from "@figur-ledger/messaging-sdk";
 import { generateOTP } from "../helpers/generateOtp";
 import { RedisKeys } from "../../infrastructure/constants/RedisKeys";
 import { AuthUser } from "../../domain/entities/AuthUser";
+import { AuthMessages } from "../../infrastructure/constants/AuthMessages";
+import { CommonMessages } from "@figur-ledger/shared";
 
 @injectable()
 export default class AuthUseCases implements IAuthUseCases {
@@ -23,12 +25,12 @@ export default class AuthUseCases implements IAuthUseCases {
     private _authUserRepository: IAuthUserRepository,
     @inject(DI_TOKENS.SERVICES.HASH_SERVICE) private _hashService: IHashService,
     @inject(DI_TOKENS.SERVICES.JWT_TOKEN_SERVICE)
-    private _tokenService: IJwtTokenService
+    private _tokenService: IJwtTokenService,
   ) {}
 
   async login(
     email: string,
-    password: string
+    password: string,
   ): Promise<{
     user: AuthUserResponseDTO;
     accessToken: string;
@@ -42,16 +44,16 @@ export default class AuthUseCases implements IAuthUseCases {
         !(await this._hashService.compare(password, user.password))
       ) {
         throw new CustomError(
-          "Invalid logging credentials",
-          statusCodes.BAD_REQUEST
+          AuthMessages.INVALID_CREDENTIALS,
+          statusCodes.BAD_REQUEST,
         );
       }
 
       if (user.status === "locked") {
         console.warn(`Login blocked: Account locked -> UserID: ${user.id}`);
         throw new CustomError(
-          "Your account is temporarily locked. Contact support.",
-          statusCodes.FORBIDDEN
+          AuthMessages.ACCOUNT_LOCKED,
+          statusCodes.FORBIDDEN,
         );
       }
 
@@ -73,24 +75,24 @@ export default class AuthUseCases implements IAuthUseCases {
       console.error("Login Internal Error:", error);
 
       throw new CustomError(
-        "We are unable to process your request at the moment. Please try again later.",
-        statusCodes.INTERNAL_SERVER_ERROR
+        CommonMessages.INTERNAL_SERVER_ERROR,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
   async register(
-    payload: RegisterRequestDTO
+    payload: RegisterRequestDTO,
   ): Promise<{ email: string; name: string }> {
     try {
       // 2. Check if user already exists
       const existingUser = await this._authUserRepository.findByEmail(
-        payload.email
+        payload.email,
       );
       if (existingUser) {
         throw new CustomError(
-          "User already exists with this email",
-          statusCodes.BAD_REQUEST
+          AuthMessages.USER_EXISTS_EMAIL,
+          statusCodes.BAD_REQUEST,
         );
       }
 
@@ -100,22 +102,22 @@ export default class AuthUseCases implements IAuthUseCases {
       });
       if (existingPhone) {
         throw new CustomError(
-          "User already exists with this phone number",
-          statusCodes.BAD_REQUEST
+          AuthMessages.USER_EXISTS_PHONE,
+          statusCodes.BAD_REQUEST,
         );
       }
 
       // 4. Check for ongoing temporary registration
       const tempUser = await redis.get(
-        RedisKeys.TEMP_REGISTRATION(payload.email)
+        RedisKeys.TEMP_REGISTRATION(payload.email),
       );
       if (tempUser) {
         const tempData = JSON.parse(tempUser);
         const remainingMs = tempData.expiresIn - Date.now();
         const timeLeft = Math.ceil(remainingMs / (1000 * 60)); // minutes left
         throw new CustomError(
-          `Registration already in progress. Please check your email or try again in ${timeLeft} minutes.`,
-          statusCodes.BAD_REQUEST
+          AuthMessages.REGISTRATION_IN_PROGRESS,
+          statusCodes.BAD_REQUEST,
         );
       }
 
@@ -128,7 +130,7 @@ export default class AuthUseCases implements IAuthUseCases {
           jti: this._tokenService.generateTokenId(),
           scope: Roles.CUSTOMER,
         },
-        verificationTokenExpiry
+        verificationTokenExpiry,
       );
 
       const tempRegistrationData = {
@@ -143,14 +145,14 @@ export default class AuthUseCases implements IAuthUseCases {
       await redis.setex(
         RedisKeys.TEMP_REGISTRATION(payload.email),
         24 * 60 * 60,
-        JSON.stringify(tempRegistrationData)
+        JSON.stringify(tempRegistrationData),
       );
 
       const otp = generateOTP();
       await redis.setex(
         RedisKeys.VERIFICATION_CODE(payload.email),
         60 * 10,
-        otp
+        otp,
       );
 
       // // 6. Send verification email
@@ -159,7 +161,7 @@ export default class AuthUseCases implements IAuthUseCases {
         JSON.stringify({
           email: payload.email,
           otp,
-        })
+        }),
       );
 
       return {
@@ -170,15 +172,15 @@ export default class AuthUseCases implements IAuthUseCases {
       if (error instanceof CustomError) throw error;
       console.error("Registration error:", error);
       throw new CustomError(
-        "Registration failed. Please try again.",
-        statusCodes.INTERNAL_SERVER_ERROR
+        AuthMessages.REGISTRATION_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
   async verifyOtp(
     email: string,
-    otp: string
+    otp: string,
   ): Promise<{
     accessToken: string;
     refreshToken: string;
@@ -189,15 +191,15 @@ export default class AuthUseCases implements IAuthUseCases {
       console.log(existingOtp);
       if (!existingOtp) {
         throw new CustomError(
-          "The OTP has expired. Please request a new one.",
-          statusCodes.BAD_REQUEST
+          AuthMessages.OTP_EXPIRED,
+          statusCodes.BAD_REQUEST,
         );
       }
 
       if (existingOtp !== otp) {
         throw new CustomError(
-          "The OTP you entered is incorrect. Please try again.",
-          statusCodes.BAD_REQUEST
+          AuthMessages.INCORRECT_OTP,
+          statusCodes.BAD_REQUEST,
         );
       }
 
@@ -235,14 +237,14 @@ export default class AuthUseCases implements IAuthUseCases {
         JSON.stringify({
           ...parsedData.tempUser,
           authUserId: createdAuthUser.id,
-        })
+        }),
       );
-      
+
       RabbitPublisher(
         "create.credit-profile",
         JSON.stringify({
           userId: createdAuthUser.id,
-        })
+        }),
       );
 
       return {
@@ -254,13 +256,13 @@ export default class AuthUseCases implements IAuthUseCases {
       if (error instanceof CustomError) throw error;
       console.error("OTP verification error:", error);
       throw new CustomError(
-        "Failed to verify OTP. Please try again later.",
-        statusCodes.INTERNAL_SERVER_ERROR
+        AuthMessages.OTP_VERIFICATION_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
   async refreshAccessToken(
-    refreshToken: string
+    refreshToken: string,
   ): Promise<{ accessToken: string }> {
     try {
       const payload = this._tokenService.verifyRefreshToken(refreshToken);
@@ -277,23 +279,23 @@ export default class AuthUseCases implements IAuthUseCases {
         switch (error.code) {
           case TokenErrorCode.REFRESH_TOKEN_EXPIRED:
             throw new CustomError(
-              "Your session has expired. Please sign in again.",
+              CommonMessages.UNAUTHORIZED,
               401,
-              TokenErrorCode.REFRESH_TOKEN_EXPIRED
+              TokenErrorCode.REFRESH_TOKEN_EXPIRED,
             );
 
           case TokenErrorCode.REFRESH_TOKEN_INVALID:
             throw new CustomError(
-              "Your session is invalid. Please log in again.",
+              AuthMessages.SESSION_INVALID,
               401,
-              TokenErrorCode.REFRESH_TOKEN_INVALID
+              TokenErrorCode.REFRESH_TOKEN_INVALID,
             );
         }
       }
       throw new CustomError(
-        "Unable to refresh your session right now. Please try again.",
+        AuthMessages.REFRESH_FAILED,
         400,
-        TokenErrorCode.REFRESH_TOKEN_FAILED
+        TokenErrorCode.REFRESH_TOKEN_FAILED,
       );
     }
   }

@@ -9,6 +9,8 @@ import {
   loginSchema,
   RegisterWithConfirmSchema,
 } from "../validations/AuthUserSchema";
+import { AuthMessages } from "../../infrastructure/constants/AuthMessages";
+import { CommonMessages } from "@figur-ledger/shared";
 
 import { RegisterRequestDTO } from "../../application/dto/request/RegisterRequestDTO";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../config/cookieConfig";
@@ -78,7 +80,7 @@ export default class AuthController implements IAuthController {
 
     res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
-    createResponse(res, statusCodes.SUCCESS, true, "LoggedInSuccessful", {
+    createResponse(res, statusCodes.SUCCESS, true, AuthMessages.LOGIN_SUCCESS, {
       accessToken,
       user,
     });
@@ -123,7 +125,7 @@ export default class AuthController implements IAuthController {
       res,
       statusCodes.CREATED,
       true,
-      "Registration initiated. Proceed with email verification.",
+      AuthMessages.REGISTRATION_INITIATED,
       tempRegisteredUser,
     );
   });
@@ -151,7 +153,7 @@ export default class AuthController implements IAuthController {
       res,
       statusCodes.SUCCESS,
       true,
-      "User Logged out Successfully",
+      AuthMessages.LOGOUT_SUCCESS,
     );
   });
 
@@ -182,7 +184,7 @@ export default class AuthController implements IAuthController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Email and OTP are required",
+        AuthMessages.EMAIL_OTP_REQUIRED,
       );
     }
 
@@ -191,7 +193,7 @@ export default class AuthController implements IAuthController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Invalid OTP format",
+        AuthMessages.INVALID_OTP_FORMAT,
       );
     }
 
@@ -209,7 +211,7 @@ export default class AuthController implements IAuthController {
       res,
       statusCodes.SUCCESS,
       true,
-      "OTP verified successfully",
+      AuthMessages.OTP_VERIFIED,
       {
         accessToken,
         user,
@@ -226,7 +228,7 @@ export default class AuthController implements IAuthController {
         res,
         statusCodes.UNAUTHORIZED,
         false,
-        "Session expired. Please log in again.",
+        CommonMessages.UNAUTHORIZED,
       );
     }
     const { accessToken } =
@@ -236,7 +238,7 @@ export default class AuthController implements IAuthController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Access token refreshed successfully",
+      AuthMessages.ACCESS_TOKEN_REFRESHED,
       { accessToken },
     );
   });

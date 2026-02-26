@@ -5,6 +5,7 @@ import { tryCatch, createResponse } from "@figur-ledger/handlers";
 import { DI_TOKENS } from "../../di/types";
 import { IBillerService } from "../../services/interfaces/IBillerService";
 import { statusCodes } from "@figur-ledger/shared";
+import { PaymentMessages } from "../../constants/PaymentMessages";
 @injectable()
 export class BillerController implements IBillerController {
   constructor(
@@ -19,7 +20,7 @@ export class BillerController implements IBillerController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Billers fetched successfully",
+      PaymentMessages.BILLERS_FETCHED,
       billers,
     );
   });
@@ -43,7 +44,7 @@ export class BillerController implements IBillerController {
       res,
       statusCodes.CREATED,
       true,
-      "Biller created successfully",
+      PaymentMessages.BILLER_CREATED,
       createdBiller,
     );
   });
@@ -63,7 +64,7 @@ export class BillerController implements IBillerController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Biller saved successfully",
+      PaymentMessages.BILLER_SAVED,
       savedBiller,
     );
   });
@@ -84,7 +85,7 @@ export class BillerController implements IBillerController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Saved billers fetched successfully",
+      PaymentMessages.SAVED_BILLERS_FETCHED,
       savedBillers,
     );
   });

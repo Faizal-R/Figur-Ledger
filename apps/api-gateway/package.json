@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@figur-ledger/shared": "^1.0.0",
     "@figur-ledger/types": "^1.0.0",
     "express-http-proxy": "^2.1.2",
     "express-rate-limit": "^8.1.0",

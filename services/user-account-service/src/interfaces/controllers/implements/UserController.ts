@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interfaces/IUserController";
 import { statusCodes } from "@figur-ledger/shared";
+import { UserMessages } from "./UserMessages";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserUseCase } from "../../../interator/useCases/interfaces/IUserUseCase";
@@ -21,7 +22,7 @@ export class UserController implements IUserController {
         res,
         statusCodes.BAD_GATEWAY,
         false,
-        "User Id is required",
+        UserMessages.USER_ID_REQUIRED,
         null,
       );
     }
@@ -31,7 +32,7 @@ export class UserController implements IUserController {
       res,
       statusCodes.SUCCESS,
       true,
-      "User Profile fetched successfully",
+      UserMessages.PROFILE_FETCHED,
       userProfile,
     );
   });
@@ -42,7 +43,7 @@ export class UserController implements IUserController {
         res,
         statusCodes.BAD_GATEWAY,
         false,
-        "User Id is required",
+        UserMessages.USER_ID_REQUIRED,
         null,
       );
       return;
@@ -69,7 +70,7 @@ export class UserController implements IUserController {
       res,
       statusCodes.SUCCESS,
       true,
-      "User Profile updated successfully",
+      UserMessages.PROFILE_UPDATED,
       updatedProfile,
     );
   });
@@ -81,7 +82,7 @@ export class UserController implements IUserController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Email, Phone, AuthUserId and PersonalInfo are required",
+        UserMessages.REQUIRED_FIELDS_MISSING,
         null,
       );
       return;
@@ -96,7 +97,7 @@ export class UserController implements IUserController {
       res,
       statusCodes.CREATED,
       true,
-      "User created successfully",
+      UserMessages.USER_CREATED,
       createdUser,
     );
   });

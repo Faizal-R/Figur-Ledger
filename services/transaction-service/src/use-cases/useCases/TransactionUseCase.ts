@@ -8,6 +8,7 @@ import { TransactionStatus, TransactionType } from "@prisma/client";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
 import { ITransactionFilters } from "../../types/ITransactionFilters";
+import { TransactionMessages } from "../../infra/constants/TransactionMessages";
 
 @injectable()
 export class TransactionUseCase implements ITransactionUseCase {
@@ -36,7 +37,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       }
 
       if (existingTx.status === "PENDING") {
-        throw new Error("Transaction already in progress");
+        throw new Error(TransactionMessages.TX_IN_PROGRESS);
       }
 
       if (existingTx.status === "FAILED") {
@@ -80,7 +81,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       });
 
       throw new CustomError(
-        `Deposit failed: ${error.message || "Unknown error"}`,
+        TransactionMessages.DEPOSIT_FAILED,
         statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
@@ -104,7 +105,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       }
 
       if (existingTx.status === "PENDING") {
-        throw new Error("Transaction already in progress");
+        throw new Error(TransactionMessages.TX_IN_PROGRESS);
       }
 
       if (existingTx.status === "FAILED") {
@@ -151,7 +152,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       });
 
       throw new CustomError(
-        `Withdrawal failed: ${error.message || "Unknown error"}`,
+        TransactionMessages.WITHDRAWAL_FAILED,
         statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
@@ -173,7 +174,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       return { transactions, totalPages };
     } catch (error: unknown) {
       throw new CustomError(
-        `Transaction history fetch failed: ${(error as Error).message || "Unknown error"}`,
+        TransactionMessages.HISTORY_FETCH_FAILED,
         statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
