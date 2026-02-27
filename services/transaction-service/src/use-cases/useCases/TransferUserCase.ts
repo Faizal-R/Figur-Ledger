@@ -12,16 +12,14 @@ export class TransferUseCase implements ITransferUseCase {
     private _transactionRepo: ITransactionRepository,
 
     @inject(DI_TOKENS.HTTP.ACCOUNT_SERVICE_CLIENT)
-    private accountClient: IAccountServiceClient
+    private accountClient: IAccountServiceClient,
   ) {}
 
   async execute(input: {
     senderAccountId: string;
     receiverAccountId: string;
     amount: number;
-   
   }) {
-    
     // const existing = await this._transactionRepo.findByIdempotencyKey(
     //   input.idempotencyKey
     // );
@@ -31,58 +29,65 @@ export class TransferUseCase implements ITransferUseCase {
     const transaction = new Transaction(
       crypto.randomUUID(),
       crypto.randomUUID(),
-       crypto.randomUUID(),
+      crypto.randomUUID(),
       input.senderAccountId,
       input.receiverAccountId,
       input.amount,
-       "INR",
+      "INR",
       "PENDING",
       "TRANSFER",
-      null,
+      null, // senderBalanceAfter
+      null, // receiverBalanceAfter
+      null, // failureReason
       new Date(),
-      new Date()
+      new Date(),
     );
 
     await this._transactionRepo.create(transaction);
 
     try {
       // 3. Debit Sender
-   const debitTx=   await this.accountClient.debitAccount({
+      const debitTx = await this.accountClient.debitAccount({
         accountId: input.senderAccountId,
         amount: input.amount,
         transactionId: transaction.id,
       });
-      console.log(
-        "debitTx",debitTx)
+
+      console.log("debitTx", debitTx);
 
       await this._transactionRepo.updateById(transaction.id, {
         status: "DEBIT_SUCCESS",
       });
 
       // 4. Credit Receiver
-    const creditTx=  await this.accountClient.creditAccount({
+      const creditTx = await this.accountClient.creditAccount({
         accountId: input.receiverAccountId,
         amount: input.amount,
         transactionId: transaction.id,
       });
-      console.log("creditTx",creditTx)
+      console.log("creditTx", creditTx);
 
       // 5. Final Success
-    const latestUpdatedTx=  await this._transactionRepo.updateById(transaction.id, {
-        status: "SUCCESS",
-      });
-     console.log("TransactionCompleted",transaction)
-     const notificationMsg={
-      debiterEmail:debitTx.debitedUserEmail,
-      crediterEmail:creditTx.creditedUserEmail,
-      amount:latestUpdatedTx?.amount,
-      currency:"INR",
-      transactionId:latestUpdatedTx?.id,
-      date:latestUpdatedTx?.createdAt
-     }
-     console.log("notify",notificationMsg)
-     RabbitPublisher("transaction.completed",JSON.stringify(notificationMsg))
-  
+      const latestUpdatedTx = await this._transactionRepo.updateById(
+        transaction.id,
+        {
+          status: "SUCCESS",
+          senderBalanceAfter: debitTx.balance,
+          receiverBalanceAfter: creditTx.balance,
+        },
+      );
+      console.log("TransactionCompleted", latestUpdatedTx);
+      const notificationMsg = {
+        debiterEmail: debitTx.debitedUserEmail,
+        crediterEmail: creditTx.creditedUserEmail,
+        amount: latestUpdatedTx?.amount,
+        currency: "INR",
+        transactionId: latestUpdatedTx?.id,
+        date: latestUpdatedTx?.createdAt,
+      };
+      console.log("notify", notificationMsg);
+      RabbitPublisher("transaction.completed", JSON.stringify(notificationMsg));
+
       return transaction;
     } catch (error) {
       // 6. Compensation (Only if debit already happened)
@@ -108,4 +113,3 @@ export class TransferUseCase implements ITransferUseCase {
     }
   }
 }
-

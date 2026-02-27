@@ -20,5 +20,5 @@ export const billRoutes={
 
 export const paymentRoutes={
     PAYMENTS:'/payments',
-    GET_HISTORY:(userId:string)=>`/payments?userId=${userId}`
+    GET_HISTORY:(userId:string,page:number)=>`/payments?userId=${userId}&page=${page}`
 }

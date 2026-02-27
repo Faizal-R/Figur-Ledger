@@ -23,6 +23,8 @@ export class Transaction {
 
     public status: TTransactionStatus,
     public readonly type: TransactionType,
+    public readonly senderBalanceAfter: number| null ,
+    public readonly receiverBalanceAfter: number| null,
 
     public failureReason: string | null,
 

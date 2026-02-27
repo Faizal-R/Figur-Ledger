@@ -47,7 +47,7 @@ export default function AccountSelector({
   const isDark = mode === "dark";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between px-2">
         <h3
           className={`text-[11px] font-black uppercase tracking-[0.3em] ${t.text.muted} opacity-60`}
@@ -72,9 +72,7 @@ export default function AccountSelector({
               key={acc.id}
               whileHover={{
                 y: -5,
-                boxShadow: isDark
-                  ? "0 25px 70px rgba(118,209,0,0.25)"
-                  : undefined,
+               
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {
@@ -86,7 +84,7 @@ export default function AccountSelector({
 
                 isActive
                   ? isDark
-                    ? "bg-[linear-gradient(145deg,#0b1410,#0e1f18)] border border-[#1f3d2b] shadow-[0_20px_60px_rgba(118,209,0,0.15)]"
+                    ? "bg-[linear-gradient(145deg,#0b1410,#0e1f18)] border border-[#1f3d2b] "
                     : "bg-[#76d100] border-transparent shadow-[0_20px_40px_rgba(193,255,114,0.15)]"
                   : "bg-black/5 dark:bg-white/[0.03] border-black/5 dark:border-white/10 hover:border-[#c1ff72]/30",
 

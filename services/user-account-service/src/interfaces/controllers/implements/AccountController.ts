@@ -189,7 +189,7 @@ export class AccountController implements IAccountController {
       return;
     }
 
-    const accountId =
+    const accountId=
       await this._accountUseCase.verifyUserAccount(accountNumber);
 
     createResponse(
@@ -197,9 +197,8 @@ export class AccountController implements IAccountController {
       statusCodes.SUCCESS,
       true,
       AccountMessages.ACCOUNT_VERIFIED,
-      {
-        accountId,
-      },
+
+      accountId,
     );
   });
 }

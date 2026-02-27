@@ -8,12 +8,16 @@ import { useTheme } from "@/context/ThemeContext";
 import { IPayment } from "@/types/IPayment";
 import { IBiller } from "@/types/IBill";
 import { motion, AnimatePresence } from "framer-motion";
+import Pagination from "@/components/ui/pagination";
 
 interface RecentPaymentsViewProps {
   payments: IPayment[];
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-const RecentPaymentsView: React.FC<RecentPaymentsViewProps> = ({ payments }) => {
+const RecentPaymentsView: React.FC<RecentPaymentsViewProps> = ({ payments, currentPage, totalPages, onPageChange }) => {
   const { theme: t } = useTheme();
 
   const getStatusConfig = (status?: IPayment["status"]) => {
@@ -168,6 +172,11 @@ const RecentPaymentsView: React.FC<RecentPaymentsViewProps> = ({ payments }) => 
           );
         })}
       </AnimatePresence>
+     <Pagination
+      currentPage={currentPage}
+      totalPage={totalPages||1}
+      onPageChange={onPageChange}
+     />
     </div>
   );
 };

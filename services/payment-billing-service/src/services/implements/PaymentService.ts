@@ -84,11 +84,12 @@ export class PaymentService implements IPaymentService {
     }
   }
 
-  async getPaymentHistory(userId: string): Promise<IPayment[]> {
+  async getPaymentHistory(userId: string,page:number): Promise<{payments:IPayment[],totalPages:number}> {
     try {
       const paymentHistory =
         await this._paymentRepository.getPaymentHistoryWithBillerDetails(
           userId,
+          page
         );
         console.log(paymentHistory)
       return paymentHistory;

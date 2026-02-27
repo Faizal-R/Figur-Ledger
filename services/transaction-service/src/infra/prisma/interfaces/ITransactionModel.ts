@@ -15,6 +15,9 @@ export interface ITransaction {
   status: TransactionStatus; // "PENDING" | "SUCCESS" | "FAILED"
   type: TransactionType;     // "TRANSFER" | "DEPOSIT" | "WITHDRAW"
 
+  senderBalanceAfter: number;
+  receiverBalanceAfter: number;
+
   failureReason: string | null;
   metadata: Prisma.JsonValue | null;
 

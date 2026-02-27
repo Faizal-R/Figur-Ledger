@@ -31,25 +31,43 @@ import { IPayment } from "@/types/IPayment";
 const BillsRechargesPage: React.FC = () => {
   const { theme: t } = useTheme();
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
-  const [activeMainTab, setActiveMainTab] = useState<"saved" | "recent">("saved");
+  const [activeMainTab, setActiveMainTab] = useState<"saved" | "recent">(
+    "saved",
+  );
+
   const [searchQuery, setSearchQuery] = useState<string>("");
+
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [selectedBiller, setSelectedBiller] = useState<IBiller | null>(null);
-  const [selectedBillerForModal, setSelectedBillerForModal] = useState<ISavedBiller | null>(null);
+  const [selectedBillerForModal, setSelectedBillerForModal] =
+    useState<ISavedBiller | null>(null);
+
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [paymentHistoryCurrentPage, setPaymentHistoryCurrentPage] = useState(1);
 
   const { user } = useAuthUserStore();
 
   const { data: allBillers } = useGetAllBillers(activeCategory);
   const { mutate: saveBiller } = useSaveBiller();
-  const { data: savedBillersData } = useGetSavedBillers(user?.id || "", activeCategory);
+  const { data: savedBillersData } = useGetSavedBillers(
+    user?.id || "",
+    activeCategory,
+  );
   const { data: accounts } = useUserAccounts(user?.id || "");
-  const { data: paymentHistory } = useGetAllPayments(user?.id ?? "");
+  const { data } = useGetAllPayments(user?.id ?? "",paymentHistoryCurrentPage);
+  const paymentHistory = data?.data.payments;
+  const totalPages = data?.data.totalPages;
   const initiateBillPayment = useInitiateBillPayment();
 
-  const totalDue = (savedBillersData?.data || []).reduce((sum, biller) => sum + biller.dueAmount, 0) || 0;
+  const totalDue =
+    (savedBillersData?.data || []).reduce(
+      (sum, biller) => sum + biller.dueAmount,
+      0,
+    ) || 0;
   const upcomingBills = (savedBillersData?.data || []).filter((biller) => {
-    const daysUntilDue = Math.floor((new Date(biller.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const daysUntilDue = Math.floor(
+      (new Date(biller.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    );
     return daysUntilDue <= 7 && daysUntilDue > 0;
   }).length;
 
@@ -62,9 +80,12 @@ const BillsRechargesPage: React.FC = () => {
     setActiveCategory(categoryId);
   };
 
-  const { data: billDetail } = useGetBills(selectedBillerForModal?.category || "", {
-    enabled: !!selectedBillerForModal,
-  });
+  const { data: billDetail } = useGetBills(
+    selectedBillerForModal?.category || "",
+    {
+      enabled: !!selectedBillerForModal,
+    },
+  );
 
   const handleOpenBillerDetails = (biller: ISavedBiller) => {
     setSelectedBillerForModal(biller);
@@ -79,11 +100,14 @@ const BillsRechargesPage: React.FC = () => {
       billerId: selectedBiller._id,
       category: selectedBiller.category,
       consumerId,
-      alias: alias || `${selectedBiller.name} (${consumerId.substring(0, 4)}...)`,
+      alias:
+        alias || `${selectedBiller.name} (${consumerId.substring(0, 4)}...)`,
       lastPaidAmount: 0,
       lastPaidDate: new Date().toISOString().split("T")[0] as string,
       dueAmount: 0,
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] as string,
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0] as string,
     };
 
     saveBiller(newSavedBiller, {
@@ -98,7 +122,11 @@ const BillsRechargesPage: React.FC = () => {
     setSelectedBiller(null);
   };
 
-  const handlePayBill = (biller: ISavedBiller, amount: number, accountId: string) => {
+  const handlePayBill = (
+    biller: ISavedBiller,
+    amount: number,
+    accountId: string,
+  ) => {
     const billerInfo = allBillers?.data.find((b) => b._id === biller.billerId);
     if (!billerInfo) return;
 
@@ -113,16 +141,22 @@ const BillsRechargesPage: React.FC = () => {
       payeeAccountId: billerInfo.collectionAccountId,
     };
 
-    initiateBillPayment.mutate({ paymentData, billDetails: { ...billDetail?.data, savedBillerId: biller._id } }, {
-      onSuccess: () => {
-        toast.success("Payment successful!");
-        setIsDetailsModalOpen(false);
+    initiateBillPayment.mutate(
+      {
+        paymentData,
+        billDetails: { ...billDetail?.data, savedBillerId: biller._id },
       },
-      onError: (error) => {
-        console.error("Payment failed:", error);
-        toast.error("Payment failed. Please try again.");
+      {
+        onSuccess: () => {
+          toast.success("Payment successful!");
+          setIsDetailsModalOpen(false);
+        },
+        onError: (error) => {
+          console.error("Payment failed:", error);
+          toast.error("Payment failed. Please try again.");
+        },
       },
-    });
+    );
   };
 
   const handleViewInvoice = (biller: ISavedBiller) => {
@@ -130,13 +164,14 @@ const BillsRechargesPage: React.FC = () => {
   };
 
   // Filter billers based on search query
-  const filteredBillers = (allBillers?.data || []).filter(biller => 
-    biller.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    biller.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredBillers = (allBillers?.data || []).filter(
+    (biller) =>
+      biller.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      biller.category.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-16 pb-32 max-w-[1600px] mx-auto"
@@ -168,7 +203,7 @@ const BillsRechargesPage: React.FC = () => {
           onTabChange={setActiveMainTab}
           onAddNew={() => setShowAddModal(true)}
           savedCount={savedBillersData?.data?.length || 0}
-          recentCount={(paymentHistory?.data || []).length}
+          recentCount={(paymentHistory || []).length}
           showAddButton={activeMainTab === "saved"}
         />
 
@@ -183,18 +218,29 @@ const BillsRechargesPage: React.FC = () => {
             {activeMainTab === "saved" ? (
               <SavedBillersView
                 billers={savedBillersData?.data || []}
-                onViewInvoice={handleViewInvoice}
+                // onViewInvoice={handleViewInvoice}
                 onOpenDetails={handleOpenBillerDetails}
               />
             ) : (
-              <RecentPaymentsView payments={paymentHistory?.data || []} />
+              <RecentPaymentsView
+                payments={paymentHistory|| []}
+                currentPage={paymentHistoryCurrentPage}
+                onPageChange={(page) => {
+                  setPaymentHistoryCurrentPage(page);
+                  window.scrollTo({
+                    top: 700,
+                    behavior: "smooth",
+                  });
+                }}
+                totalPages={totalPages|| 1}
+              />
             )}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* 4. DISCOVERY MATRIX */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}

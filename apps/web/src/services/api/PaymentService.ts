@@ -37,11 +37,11 @@ export const PaymentService = {
     }
   },
 
-  async getPaymentHistory(userId: string): Promise<ApiResponse<IPayment[]>> {
+  async getPaymentHistory(userId: string,page:number=1): Promise<ApiResponse<{payments:IPayment[],totalPages:number}>> {
   try {
-      return await request<ApiResponse<IPayment[]>>(
+      return await request<ApiResponse<{payments:IPayment[],totalPages:number}>>(
         httpMethods.GET,
-        paymentRoutes.GET_HISTORY(userId),
+        paymentRoutes.GET_HISTORY(userId,page),
       );
     } catch (error) {
       throw parseAxiosError(error, "Failed to fetching payment history");

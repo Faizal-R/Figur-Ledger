@@ -32,10 +32,11 @@ export class PaymentController implements IPaymentController {
   });
 
   getPaymentHistory = tryCatch(async (req: Request, res: Response) => {
-    const { userId } = req.query;
+    const { userId,page } = req.query;
 
-    const paymentHistory = await this._paymentService.getPaymentHistory(
+    const {payments,totalPages} = await this._paymentService.getPaymentHistory(
       userId as string,
+      Number(page)
     );
 
     createResponse(
@@ -43,7 +44,7 @@ export class PaymentController implements IPaymentController {
       statusCodes.SUCCESS,
       true,
       PaymentMessages.PAYMENT_HISTORY_FETCHED,
-      paymentHistory,
+      {payments,totalPages},
     );
   });
 }

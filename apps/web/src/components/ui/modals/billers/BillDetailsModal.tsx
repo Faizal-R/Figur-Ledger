@@ -48,7 +48,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
 }) => {
   const { theme: t } = useTheme();
   const [selectedAccount, setSelectedAccount] = useState<string>("");
-
+ console.log(billDetails)
   useEffect(() => {
     if (accounts?.[0]?.id) {
       setSelectedAccount(accounts[0].id);
@@ -136,7 +136,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
                    ]).map((item, idx) => (
                      <div key={idx} className="flex justify-between items-center py-2 border-b border-black/5 dark:border-white/5 last:border-0">
                        <span className={`text-xs font-bold ${t.text.body} opacity-60`}>{item.description}</span>
-                       <span className={`text-sm font-black ${t.text.heading}`}>₹{item.amount.toLocaleString()}</span>
+                      <span className={`text-sm font-black ${t.text.heading}`}>₹{item.amount}</span>
                      </div>
                    ))}
                    <div className="pt-4 flex justify-between items-center">

@@ -64,10 +64,10 @@ export const useInitiateBillPayment = () => {
   });
 }
 
-export const useGetAllPayments = (userId: string) => {
+export const useGetAllPayments = (userId: string,page:number=1) => {
   return useQuery({
-    queryKey: ["payments", userId],
-    queryFn: () => PaymentService.getPaymentHistory(userId),
+    queryKey: ["payments", userId,page],
+    queryFn: () => PaymentService.getPaymentHistory(userId,page),
     enabled: !!userId, 
   });
 };

@@ -54,7 +54,9 @@ export class TransactionUseCase implements ITransactionUseCase {
       "INR",
       TransactionStatus.PENDING,
       TransactionType.DEPOSIT,
-      null,
+      null, // senderBalanceAfter
+      null, // receiverBalanceAfter
+      null, // failureReason
       new Date(),
       new Date(),
     );
@@ -123,7 +125,9 @@ export class TransactionUseCase implements ITransactionUseCase {
       "INR",
       TransactionStatus.PENDING,
       TransactionType.WITHDRAW,
-      null,
+      null, // senderBalanceAfter
+      null, // receiverBalanceAfter
+      null, // failureReason
       new Date(),
       new Date(),
     );

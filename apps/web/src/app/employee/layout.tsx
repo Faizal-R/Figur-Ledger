@@ -26,7 +26,7 @@ const Employeelayout = ({ children }:{children:React.ReactNode}) => {
       </div>
 
       {/* Content - responsive margin */}
-      <main className="w-full lg:ml-72 p-4 md:p-8 lg:p-12 relative z-0">
+      <main className={cn("w-full lg:ml-72 p-4 md:p-8 lg:p-12 relative z-0", t.meshGradient)}>
         <div className="max-w-7xl mx-auto">
            {children}
         </div>
