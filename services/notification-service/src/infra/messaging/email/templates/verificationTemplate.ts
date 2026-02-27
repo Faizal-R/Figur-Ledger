@@ -1,4 +1,4 @@
-// infrastructure/email/templates/verification.template.ts
+
 
 export class VerificationEmailTemplate {
   static build(email: string, otp: string) {

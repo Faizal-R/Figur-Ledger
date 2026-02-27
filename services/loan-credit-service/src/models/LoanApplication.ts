@@ -1,4 +1,4 @@
-// LoanApplication.schema.ts
+
 import { Schema, model, Types, Document } from "mongoose";
 
 export interface ILoanApplication extends Document {

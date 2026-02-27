@@ -13,7 +13,9 @@ export const accountType={
     CHECKING:"checking",
     BUSINESS:"business",
     CURRENT:"current",
-    SALARY:"salary"
+    SALARY:"salary",
+    BILLER_COLLECTION:"biller_collection",
+    MERCHANT_SETTLEMENT:"merchant_settlement",
 
 }
 export const accountStatus:Record<string,AccountStatus>={

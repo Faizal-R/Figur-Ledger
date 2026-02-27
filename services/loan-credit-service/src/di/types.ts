@@ -22,3 +22,18 @@ export const DI_TOKENS = {
         CREDIT_PROFILE_CONSUMER:Symbol.for("CreditProfileConsumer")
     }
 };
+
+
+function heloo ({data,helo}:{data:string,helo:string}){
+ console.log(data,helo)
+}
+
+
+
+const obj={
+    data:"This is data",
+    helo:'This is heloo'
+}
+
+
+heloo(obj)

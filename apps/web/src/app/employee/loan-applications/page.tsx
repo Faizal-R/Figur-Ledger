@@ -1,5 +1,5 @@
 import LoanApplicationList from "@/components/features/employee/loan-application/LoanApplicationList";
-import { FinledgerTheme } from "@/theme";
+
 import { ILoanApplication } from "@/types/ILoan";
 
 async function getApplications(): Promise<ILoanApplication[]> {
@@ -21,7 +21,7 @@ export default async function EmployeeLoanApplicationsPage() {
   const applications = await getApplications();
 
   return (
-    <div className={`${FinledgerTheme.background} min-h-screen p-6`}>
+    <div className={` min-h-screen p-6`}>
       <div className="max-w-6xl mx-auto space-y-6">
         <h1 className="text-2xl font-semibold text-white">
           Pending Loan Applications

@@ -5,9 +5,13 @@ import { createResponse, tryCatch } from "@figur-ledger/handlers";
 import { statusCodes } from "@figur-ledger/shared";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../di/types";
+import { LoanMessages } from "../constants/LoanMessages";
 @injectable()
 export class LoanEmiController implements ILoanEmiController {
-  constructor(@inject(DI_TOKENS.SERVICES.EMI_SERVICE)private readonly _loanEmiService: IEmiService) {}
+  constructor(
+    @inject(DI_TOKENS.SERVICES.EMI_SERVICE)
+    private readonly _loanEmiService: IEmiService,
+  ) {}
   getAllLoanEmis = tryCatch(async (req: Request, res: Response) => {
     const { applicationId } = req.params;
     const emis =
@@ -16,8 +20,8 @@ export class LoanEmiController implements ILoanEmiController {
       res,
       statusCodes.SUCCESS,
       true,
-      "Fetched emis successfully",
-      emis
+      LoanMessages.EMI_FETCHED,
+      emis,
     );
   });
 }

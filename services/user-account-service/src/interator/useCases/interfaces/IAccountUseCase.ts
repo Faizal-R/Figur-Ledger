@@ -11,12 +11,12 @@ export interface IAccountUseCase {
     accountId: string,
     amount: number,
     transactionId?: string
-  ): Promise<{ balance: number }>;
+  ): Promise<{ balance: number,creditedUserEmail:string }>;
   amountDebited(
     accountId: string,
     amount: number,
     transactionId?: string
-  ): Promise<{ balance: number }>;
+  ): Promise<{ balance: number,debitedUserEmail:string }>;
   refund(
     accountId: string,
     amount: number,

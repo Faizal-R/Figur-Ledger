@@ -1,4 +1,7 @@
+"use client";
 import { ILoanApplication } from "@/types/ILoan";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
 
 export default function LoanApplicationCard({
   application,
@@ -7,58 +10,64 @@ export default function LoanApplicationCard({
   application: ILoanApplication;
   onClick: () => void;
 }) {
+  const { theme: t } = useTheme();
+  
   return (
     <div
       onClick={onClick}
-      className="
-        w-full
-        bg-[#0f1a24]
-        border border-slate-700
-        rounded-xl
-        p-4
-        cursor-pointer
-        hover:border-slate-500
-        transition
-      "
+      className={cn(
+        "w-full p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group",
+        t.card.base,
+        t.radius.lg
+      )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-white leading-tight">
+          <h3 className={cn("text-sm font-bold uppercase tracking-tight", t.text.heading)}>
             Personal Loan
           </h3>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", t.text.muted)}>
             {application.loanProductId}
           </p>
         </div>
 
-        <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-400">
-          {application.status.toLowerCase()}
+        <span className={cn(
+          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+          application.status === "APPROVED" 
+            ? "bg-[#b0f061]/20 text-[#2d5a4c]" 
+            : application.status === "REJECTED"
+            ? "bg-red-500/10 text-red-500"
+            : "bg-orange-500/10 text-orange-500"
+        )}>
+          {application.status}
         </span>
       </div>
 
       {/* Body */}
-      <div className="space-y-1 text-[13px] text-slate-300 mb-4">
-        <p>Amount: ₹{application.requestedAmount.toLocaleString()}</p>
-        <p>APR: {application.annualInterestRate}%</p>
-        <p>Tenure: {application.tenureInMonths} mo</p>
+      <div className={cn("space-y-1 text-sm mb-6", t.text.body)}>
+        <p className="flex justify-between items-center italic">
+          <span className="opacity-60 not-italic">Amount:</span> 
+          <span className="font-bold">₹{application.requestedAmount.toLocaleString()}</span>
+        </p>
+        <p className="flex justify-between items-center italic">
+          <span className="opacity-60 not-italic">APR:</span> 
+          <span className="font-bold">{application.annualInterestRate}%</span>
+        </p>
+        <p className="flex justify-between items-center italic">
+          <span className="opacity-60 not-italic">Tenure:</span> 
+          <span className="font-bold">{application.tenureInMonths} Months</span>
+        </p>
       </div>
 
       {/* Action */}
       <button
-        className="
-          w-full
-          py-2
-          rounded-lg
-          bg-[#1c2a3a]
-          text-sm
-          font-medium
-          text-white
-          hover:bg-[#223449]
-          transition
-        "
+        className={cn(
+          "w-full py-3 rounded-xl uppercase text-[10px] tracking-[0.2em] font-black transition-all",
+          t.button.onyx
+        )}
       >
-        View
+        View Protocol
       </button>
     </div>
   );

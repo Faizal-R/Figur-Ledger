@@ -1,0 +1,22 @@
+{
+  "name": "payment-billing-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@figur-ledger/handlers": "^1.0.0",
+    "@figur-ledger/shared": "^1.0.0",
+    "@figur-ledger/utils": "^1.0.0",
+    "axios": "^1.13.4"
+  }
+}

@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import TanstackQueryProvider from "@/providers/TanstackQueryProvider";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 export default function RootLayout({
   children,
@@ -30,7 +31,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
-          <TanstackQueryProvider>{children}</TanstackQueryProvider>
+          <TanstackQueryProvider>
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
+          </TanstackQueryProvider>
         </AuthProvider>
         <Toaster />
       </body>

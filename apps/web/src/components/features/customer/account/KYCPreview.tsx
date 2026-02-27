@@ -1,102 +1,64 @@
-import { AlertCircle } from 'lucide-react';
+"use client";
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { KYCData } from '@/types/user-account';
+import { useTheme } from '@/context/ThemeContext';
+import { cn } from '@/lib/utils';
 
 interface KYCPreviewProps {
   kycData: KYCData;
 }
 
 export function KYCPreview({ kycData }: KYCPreviewProps) {
+  const { theme: t, mode } = useTheme();
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">KYC Information</h3>
-        {!kycData.isComplete && (
-          <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-400 rounded-md border border-amber-500/20">
-            Incomplete
-          </span>
-        )}
-      </div>
-
-      {!kycData.isComplete && (
-        <div
-          className="flex items-start gap-3 p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg"
-          role="alert"
-          aria-live="polite"
-        >
-          <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+      {!kycData.isComplete ? (
+        <div className="flex items-start gap-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+          <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm text-amber-400 font-medium">KYC Incomplete</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Please complete your KYC verification before creating an account.
+            <p className="text-sm font-bold text-orange-600">KYC Incomplete</p>
+            <p className={cn("text-xs font-medium opacity-70 mt-1", t.text.body)}>
+              Please complete your verification in profile settings before creating an account.
             </p>
           </div>
         </div>
+      ) : (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 w-fit">
+           <CheckCircle2 size={14} className="text-green-600" />
+           <span className="text-[10px] font-bold uppercase tracking-wider text-green-600">Identity Verified</span>
+        </div>
       )}
 
-      <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
-            Full Name
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { label: 'Full Name', val: kycData.fullName },
+          { label: 'Date of Birth', val: kycData.dateOfBirth },
+          { label: 'Email Address', val: kycData.email },
+          { label: 'Phone Number', val: kycData.phoneNumber },
+        ].map((item, idx) => (
+          <div key={idx} className="space-y-1">
+            <label className={cn("block text-[9px] font-bold uppercase tracking-wider opacity-40", t.text.muted)}>
+              {item.label}
+            </label>
+            <div className={cn(
+              "px-4 py-2 rounded-lg border text-sm font-medium",
+              mode === 'dark' ? "bg-white/5 border-white/5 text-slate-300" : "bg-slate-50 border-slate-100 text-slate-700"
+            )}>
+              {item.val}
+            </div>
+          </div>
+        ))}
+        <div className="sm:col-span-2 space-y-1">
+          <label className={cn("block text-[9px] font-bold uppercase tracking-wider opacity-40", t.text.muted)}>
+            Registered Address
           </label>
-          <input
-            type="text"
-            value={kycData.fullName}
-            disabled
-            className="w-full px-3 py-2 bg-[#0f1721] border border-slate-700/50 rounded-lg text-slate-400 text-sm cursor-not-allowed"
-            aria-label="Full Name"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
-            Date of Birth
-          </label>
-          <input
-            type="text"
-            value={kycData.dateOfBirth}
-            disabled
-            className="w-full px-3 py-2 bg-[#0f1721] border border-slate-700/50 rounded-lg text-slate-400 text-sm cursor-not-allowed"
-            aria-label="Date of Birth"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
-            Email Address
-          </label>
-          <input
-            type="email"
-            value={kycData.email}
-            disabled
-            className="w-full px-3 py-2 bg-[#0f1721] border border-slate-700/50 rounded-lg text-slate-400 text-sm cursor-not-allowed"
-            aria-label="Email Address"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            value={kycData.phoneNumber}
-            disabled
-            className="w-full px-3 py-2 bg-[#0f1721] border border-slate-700/50 rounded-lg text-slate-400 text-sm cursor-not-allowed"
-            aria-label="Phone Number"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
-            Address
-          </label>
-          <textarea
-            value={kycData.address}
-            disabled
-            rows={2}
-            className="w-full px-3 py-2 bg-[#0f1721] border border-slate-700/50 rounded-lg text-slate-400 text-sm cursor-not-allowed resize-none"
-            aria-label="Address"
-          />
+          <div className={cn(
+            "px-4 py-2 rounded-lg border text-sm font-medium min-h-[60px]",
+            mode === 'dark' ? "bg-white/5 border-white/5 text-slate-300" : "bg-slate-50 border-slate-100 text-slate-700"
+          )}>
+            {kycData.address}
+          </div>
         </div>
       </div>
     </div>

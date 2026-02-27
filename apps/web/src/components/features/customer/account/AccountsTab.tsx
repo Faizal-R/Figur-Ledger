@@ -4,12 +4,13 @@ import {
   TrendingUp,
   Building2,
   Briefcase,
-  Circle,
-  PlusCircle,
   Eye,
-  HandCoinsIcon,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Plus,
+  Activity
 } from "lucide-react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
 import {
   IAccount as Account,
   AccountType,
@@ -18,12 +19,12 @@ import {
   IUser,
 } from "@/types/user-account";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 import { CreateAccountModal } from "@/components/ui/modals/user-account/CreateAccountModal";
 import { SuccessModal } from "@/components/ui/modals/user-account/AccountCreatedSuccessModal";
 import {
   formatAddress,
-  formatCurrency,
   formatDate,
   formatFullName,
 } from "@/utils/formats";
@@ -35,7 +36,7 @@ import {
   useProcessDeposit,
   useProcessWithdrawal,
 } from "@/hooks/api/useTransaction";
-
+import { cn } from "@/lib/utils";
 
 interface AccountsTabProps {
   accounts: Account[];
@@ -53,27 +54,18 @@ interface AccountsTabProps {
 
 const getAccountIcon = (type: AccountType) => {
   switch (type) {
-    case "checking":
-      return Wallet;
-    case "savings":
-      return TrendingUp;
-    case "business":
-      return Briefcase;
-    default:
-      return Building2;
+    case "checking": return Wallet;
+    case "savings": return TrendingUp;
+    case "business": return Briefcase;
+    default: return Building2;
   }
 };
 
-const getStatusColor = (status: AccountStatus) => {
+const getStatusConfig = (status: AccountStatus) => {
   switch (status) {
-    case "active":
-      return "text-emerald-400";
-    case "frozen":
-      return "text-yellow-400";
-    case "closed":
-      return "text-red-400";
-    default:
-      return "text-slate-400";
+    case "active": return { color: "text-[#b0f061]", bg: "bg-[#b0f061]/10" };
+    case "frozen": return { color: "text-orange-500", bg: "bg-orange-500/10" };
+    default: return { color: "text-slate-500", bg: "bg-slate-500/10" };
   }
 };
 
@@ -83,18 +75,13 @@ export function AccountsTab({
   createAccount,
   handleAccounts,
 }: AccountsTabProps) {
+  const { theme: t, mode } = useTheme();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [viewingAccount, setViewingAccount] = useState<Account | null>(null);
-
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(
-    null
-  );
-
-  const [transactionType, setTransactionType] = useState<
-    "deposit" | "withdraw"
-  >("deposit");
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [transactionType, setTransactionType] = useState<"deposit" | "withdraw">("deposit");
 
   const [successData, setSuccessData] = useState<{
     accountNumber: string;
@@ -132,248 +119,155 @@ export function AccountsTab({
   };
 
   const onHandleDeposit = async (accountId: string, amount: number) => {
-    const referenceId = `dep-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
+    const referenceId = `dep-${Date.now()}`;
     try {
-      const response = await processDeposit.mutateAsync({
-        accountId,
-        amount,
-        referenceId,
-      });
-
-      if (!response.success) {
-        toast(response.message);
-        return;
-      }
-
-      const { balance } = response.data;
-
-      handleAccounts({
-        ...selectedAccount!,
-        balance,
-      });
-
+      const response = await processDeposit.mutateAsync({ accountId, amount, referenceId });
+      if (!response.success) { toast.error(response.message); return; }
+      handleAccounts({ ...selectedAccount!, balance: response.data.balance });
       setIsDepositModalOpen(false);
       setSelectedAccount(null);
-
-      toast.success(
-        `Deposit successful! New balance of ${selectedAccount?.nickname}: ${formatCurrency(
-          balance,
-          "INR"
-        )}`
-      );
-    } catch (err) {
-      toast("Unexpected error while processing deposit.");
-      console.error(err);
-    }
+      toast.success("Deposit successful");
+    } catch (err) { toast.error("Something went wrong"); }
   };
 
- const onHandleWithdraw = (accountId: string, amount: number) => {
-  const currentBalance = selectedAccount?.balance ?? 0;
-
-  // ❌ Invalid amount checks
-  if (!amount || isNaN(amount)) {
-    toast.error("Amount is required.");
-    return;
-  }
-
-  if (amount <= 0) {
-    toast.error("Withdrawal amount must be greater than 0.");
-    return;
-  }
-
-  // ❌ Insufficient balance
-  if (amount > currentBalance) {
-    toast.error("Insufficient balance for this withdrawal.");
-    return;
-  }
-
-  const referenceId = `wd-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-  processWithdrawal.mutate(
-    {
-      accountId,
-      amount,
-      referenceId,
-    },
-    {
+  const onHandleWithdraw = async (accountId: string, amount: number) => {
+    if (amount > (selectedAccount?.balance ?? 0)) { toast.error("Insufficient balance"); return; }
+    
+    const referenceId = `wd-${Date.now()}`;
+    processWithdrawal.mutate({ accountId, amount, referenceId }, {
       onSuccess: (response) => {
-        if (!response.success) {
-          toast(response.message);
-          return;
-        }
-
-        const { balance } = response.data;
-
-        handleAccounts({
-          ...selectedAccount!,
-          balance,
-        });
-
+        if (!response.success) { toast.error(response.message); return; }
+        handleAccounts({ ...selectedAccount!, balance: response.data.balance });
         setIsDepositModalOpen(false);
         setSelectedAccount(null);
+        toast.success("Withdrawal successful");
+      }
+    });
+  };
 
-        toast.success(
-          `Withdrawal successful! New balance of ${selectedAccount?.nickname}: ${formatCurrency(
-            balance,
-            "INR"
-          )}`
-        );
-      },
-
-      onError: (err: any) => {
-        toast.error(
-          err?.message || "Unexpected error while processing withdrawal."
-        );
-        console.error(err);
-      },
-    }
-  );
-};
-
-
-  const totalBalance = accounts.reduce(
-    (sum, account) => sum + account.balance,
-    0
-  );
+  const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
   return (
-    <div className="space-y-6">
-      {/* Summary Card */}
-      <div
-        className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 relative overflow-hidden`}
+    <div className="space-y-12">
+      {/* 1. Summary Card */}
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn("p-10 border relative overflow-hidden group shadow-3xl", t.card.base, t.radius.lg, "border-black/5 dark:border-white/10")}
       >
-        <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl" />
-        <div className="relative">
-          <p className={`text-sm ${FinledgerTheme.text.muted} mb-2`}>
-            Total Balance
-          </p>
-          <p
-            className={`text-4xl font-bold ${FinledgerTheme.text.primary} mb-1`}
-          >
-            {formatCurrency(totalBalance, "USD")}
-          </p>
-          <p className={`text-sm ${FinledgerTheme.text.secondary}`}>
-            Across {accounts.length} account
-            {accounts.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="absolute top-1 right-1 inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900 font-semibold rounded-xl shadow-lg hover:scale-105 transition-all"
-        >
-          <PlusCircle className="w-5 h-5" />
-          Create Account
-        </button>
-      </div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#b0f061]/5 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 relative z-10">
+          <div className="space-y-2">
+             <div className="flex items-center gap-3">
+                <Activity size={14} className="text-[#b0f061]" />
+                <p className={cn("text-[10px] font-black uppercase tracking-[0.4em] opacity-60", t.text.muted)}>Aggregated Liquidity</p>
+             </div>
+             <h2 className={cn("text-6xl font-black tracking-tighter", t.text.display)}>
+                ₹{totalBalance.toLocaleString()}
+             </h2>
+             <p className={cn("text-xs font-medium opacity-40", t.text.muted)}>Managed across {accounts.length} institutional endpoints</p>
+          </div>
 
-      {/* Account List */}
-      <div className="grid grid-cols-1 gap-4">
-        {accounts.map((account) => {
+          <button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className={cn("h-16 px-10 rounded-3xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all flex items-center gap-4", t.button.onyx)}
+          >
+            <Plus size={20} />
+            Initialize Vault
+          </button>
+        </div>
+      </motion.div>
+
+      {/* 2. Account Grid */}
+      <div className="grid grid-cols-1 gap-6">
+        <div className="flex items-center justify-between">
+           <h3 className={cn("text-2xl font-black uppercase tracking-tighter opacity-80", t.text.heading)}>Linked Nodes.</h3>
+        </div>
+
+        {accounts.map((account, idx) => {
           const Icon = getAccountIcon(account.type);
+          const status = getStatusConfig(account.status);
 
           return (
-            <div
+            <motion.div
               key={account.id}
-              className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 relative overflow-hidden group hover:border-emerald-500/50 transition-all`}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: idx * 0.05 }}
+              className={cn(
+                "p-8 border flex flex-col lg:flex-row lg:items-center gap-10 group transition-all duration-500 shadow-xl hover:shadow-2xl",
+                t.card.base,
+                t.radius.lg,
+                "border-black/5 dark:border-white/5 hover:border-[#b0f061]/30"
+              )}
             >
-              <div className="relative flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4 flex-1">
-                  <div
-                    className={`p-3 ${FinledgerTheme.accent.gradient} ${FinledgerTheme.radius.md}`}
-                  >
-                    <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="flex items-center text-white gap-3 mb-2">
-                      <h4 className={`text-lg font-semibold capitalize`}>
-                        {account.type} Account
-                      </h4>
-                      <div className="flex items-center gap-1">
-                        <Circle
-                          className={`w-2 h-2 ${getStatusColor(
-                            account.status
-                          )} fill-current`}
-                        />
-                        <span
-                          className={`text-xs ${getStatusColor(
-                            account.status
-                          )} capitalize`}
-                        >
-                          {account.status}
-                        </span>
-                      </div>
+              <div className="flex items-center gap-6 lg:w-1/3">
+                 <div className={cn(
+                   "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-lg",
+                   mode === 'dark' ? "bg-white/5 text-[#b0f061]" : "bg-black/5 text-[#1a3a32]"
+                 )}>
+                    <Icon size={28} />
+                 </div>
+                 <div>
+                    <div className="flex items-center gap-3 mb-1">
+                       <h4 className={cn("text-xl font-black tracking-tight capitalize", t.text.heading)}>
+                         {account.nickname || `${account.type} Account`}
+                       </h4>
+                       <span className={cn("px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest", status.bg, status.color)}>
+                         {account.status}
+                       </span>
                     </div>
+                    <p className={cn("text-[10px] font-black uppercase tracking-[0.2em] opacity-40", t.text.muted)}>{account.accountNumber}</p>
+                 </div>
+              </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                      <div>
-                        <p className="text-xs text-slate-400 mb-1">
-                          Account Number
-                        </p>
-                        <p className="text-sm text-slate-300 font-mono">
-                          {account.accountNumber}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-400 mb-1">Balance</p>
-                        <p className="text-2xl font-bold text-white">
-                          {formatCurrency(account.balance, account.currency)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-400 mb-1">Currency</p>
-                        <p className="text-sm text-white font-semibold">
-                          {account.currency}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex-1 space-y-1">
+                 <p className={cn("text-[9px] font-black uppercase tracking-widest opacity-40", t.text.muted)}>Available Protocol Assets</p>
+                 <p className={cn("text-3xl font-black tracking-tighter", t.text.heading)}>
+                   ₹{account.balance.toLocaleString()}
+                 </p>
+              </div>
 
-                {/* Actions */}
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => setViewingAccount(account)}
-                    className="p-2 hover:bg-slate-800/50 rounded-md"
-                    title="View Account"
-                  >
-                    <Eye className="w-5 h-5 text-slate-300" />
-                  </button>
-
-                  {/* ✅ DEPOSIT */}
-                  <button
-                    onClick={() => {
+              <div className="flex items-center gap-4 lg:ml-auto">
+                 <button
+                   onClick={() => setViewingAccount(account)}
+                   status-label="Details"
+                   className={cn("h-14 px-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center transition-all hover:bg-black/10 dark:hover:bg-white/10")}
+                 >
+                   <Eye size={20} className={t.text.heading} />
+                 </button>
+                 
+                 <button
+                   onClick={() => {
                       setTransactionType("deposit");
                       setSelectedAccount(account);
                       setIsDepositModalOpen(true);
-                    }}
-                    className="p-2 hover:bg-slate-800/50 rounded-md"
-                    title="Deposit Money"
-                  >
-                    <Wallet className="w-5 h-5 text-slate-300" />
-                  </button>
+                   }}
+                   className={cn("h-14 px-8 rounded-2xl flex items-center gap-3 text-[10px] font-black uppercase tracking-widest transition-all", t.button.onyx)}
+                 >
+                   <ArrowUpCircle size={18} className="text-[#b0f061]" />
+                   <span>Inbound</span>
+                 </button>
 
-                  {/* ✅ WITHDRAW */}
-                  <button
-                    onClick={() => {
+                 <button
+                   onClick={() => {
                       setTransactionType("withdraw");
                       setSelectedAccount(account);
                       setIsDepositModalOpen(true);
-                    }}
-                    className="p-2 hover:bg-slate-800/50 rounded-md"
-                    title="Withdraw Money"
-                  >
-                    <HandCoinsIcon className="w-5 h-5 text-slate-300" />
-                  </button>
-                </div>
+                   }}
+                   className={cn("h-14 px-8 rounded-2xl border flex items-center gap-3 text-[10px] font-black uppercase tracking-widest transition-all", t.card.base, "hover:border-red-500/30 hover:bg-red-500/5 text-red-500")}
+                 >
+                   <ArrowDownCircle size={18} />
+                   <span>Outbound</span>
+                 </button>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
 
-      {/* Modals */}
+      {/* 3. Modals */}
       <CreateAccountModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -381,15 +275,13 @@ export function AccountsTab({
         kycData={kycData}
       />
 
-      {successData && (
-        <SuccessModal
-          isOpen={isSuccessModalOpen}
-          onClose={() => setIsSuccessModalOpen(false)}
-          accountData={successData}
-          onGoToDashboard={() => setIsSuccessModalOpen(false)}
-          onManageAccount={() => setIsSuccessModalOpen(false)}
-        />
-      )}
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        accountData={successData!}
+        onGoToDashboard={() => setIsSuccessModalOpen(false)}
+        onManageAccount={() => setIsSuccessModalOpen(false)}
+      />
 
       <ViewAccountModal
         isOpen={!!viewingAccount}

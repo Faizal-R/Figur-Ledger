@@ -14,15 +14,19 @@ import {
 } from "../../constant/account";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
+import { IUserRepository } from "../../../domain/interfaces/repositories/IUserRepository";
+import { AccountMessages } from "../../../interfaces/controllers/implements/AccountMessages";
 
 @injectable()
 export class AccountUseCase implements IAccountUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.ACCOUNT_REPOSITORY)
-    private readonly _accountRepository: IAccountRepository
+    private readonly _accountRepository: IAccountRepository,
+    @inject(DI_TOKENS.REPOSITORIES.USER_REPOSITORY)
+    private readonly _userRepository: IUserRepository,
   ) {}
   async createAccount(
-    accountPayload: CreateAccountRequestDTO
+    accountPayload: CreateAccountRequestDTO,
   ): Promise<Account> {
     try {
       console.log("accountPayload userId:", accountPayload.userId);
@@ -39,7 +43,7 @@ export class AccountUseCase implements IAccountUseCase {
         currency.INR,
         accountStatus.ACTIVE,
         accountPayload.nickname,
-        DEFAULT_IFSC
+        DEFAULT_IFSC,
       );
       console.log(account);
       const createdAccount = await this._accountRepository.create(account);
@@ -55,12 +59,12 @@ export class AccountUseCase implements IAccountUseCase {
   async getAccountsByUserId(userId: string): Promise<Account[]> {
     try {
       if (!userId) {
-        throw new Error("userId is required");
+        throw new Error(AccountMessages.USER_ID_REQUIRED);
       }
 
       const accounts =
         await this._accountRepository.getAccountsByUserId(userId);
-        console.log("Fetched accounts for userId", { userId, accounts });
+      console.log("Fetched accounts for userId", { userId, accounts });
       return accounts ?? [];
     } catch (error) {
       console.error("Failed to fetch accounts for userId", {
@@ -71,31 +75,34 @@ export class AccountUseCase implements IAccountUseCase {
       throw error instanceof CustomError
         ? error
         : new CustomError(
-            "Unknown error occurred while fetching accounts",
-            statusCodes.INTERNAL_SERVER_ERROR
+            AccountMessages.FETCH_ACCOUNTS_FAILED,
+            statusCodes.INTERNAL_SERVER_ERROR,
           );
     }
   }
 
   async updateAccount(
     accountId: string,
-    accountPayload: Partial<Account>
+    accountPayload: Partial<Account>,
   ): Promise<Account | null> {
     const updatedAccount = await this._accountRepository.update(
       accountId,
-      accountPayload
+      accountPayload,
     );
     return updatedAccount;
   }
 
- async amountCredited(
+  async amountCredited(
     accountId: string,
     amount: number,
-    transactionId?: string
-  ): Promise<{ balance: number }> {
+    transactionId?: string,
+  ): Promise<{ balance: number; creditedUserEmail: string }> {
     const account = await this._accountRepository.findById(accountId);
     if (!account) {
-      throw new CustomError("Account not found", statusCodes.NOT_FOUND);
+      throw new CustomError(
+        AccountMessages.ACCOUNT_NOT_FOUND,
+        statusCodes.NOT_FOUND,
+      );
     }
 
     const newBalance = account.balance + amount;
@@ -106,33 +113,46 @@ export class AccountUseCase implements IAccountUseCase {
 
     if (!updatedAccount) {
       throw new CustomError(
-        "Failed to update account balance",
-        statusCodes.INTERNAL_SERVER_ERROR
+        AccountMessages.UPDATE_BALANCE_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
-    
+    const creditedUser = await this._userRepository.findOne({
+      authUserId: updatedAccount.userId,
+    });
+
+    console.log(creditedUser);
     console.log("Credit applied", {
       accountId,
       transactionId,
       amount,
     });
 
-    return { balance: updatedAccount.balance };
+    return {
+      balance: updatedAccount.balance,
+      creditedUserEmail: creditedUser?.email!,
+    };
   }
 
   async amountDebited(
     accountId: string,
     amount: number,
-    transactionId?: string
-  ): Promise<{ balance: number }> {
+    transactionId?: string,
+  ): Promise<{ balance: number; debitedUserEmail: string }> {
     const account = await this._accountRepository.findById(accountId);
     if (!account) {
-      throw new CustomError("Account not found", statusCodes.NOT_FOUND);
+      throw new CustomError(
+        AccountMessages.ACCOUNT_NOT_FOUND,
+        statusCodes.NOT_FOUND,
+      );
     }
 
     if (account.balance < amount) {
-      throw new CustomError("Insufficient balance", statusCodes.BAD_REQUEST);
+      throw new CustomError(
+        AccountMessages.INSUFFICIENT_BALANCE,
+        statusCodes.BAD_REQUEST,
+      );
     }
 
     const newBalance = account.balance - amount;
@@ -143,75 +163,76 @@ export class AccountUseCase implements IAccountUseCase {
 
     if (!updatedAccount) {
       throw new CustomError(
-        "Failed to update account balance",
-        statusCodes.INTERNAL_SERVER_ERROR
+        AccountMessages.UPDATE_BALANCE_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
+    const debitedUser = await this._userRepository.findOne({
+      authUserId: updatedAccount.userId,
+    });
+    console.log("debitedUser", debitedUser);
     console.log("Debit applied", {
       accountId,
       transactionId,
       amount,
     });
 
-    return { balance: updatedAccount.balance };
+    return {
+      balance: updatedAccount.balance,
+      debitedUserEmail: debitedUser?.email!,
+    };
   }
-
 
   async refund(
     accountId: string,
     amount: number,
-    transactionId?: string
+    transactionId?: string,
   ): Promise<{ balance: number }> {
     return this.amountCredited(accountId, amount, transactionId);
   }
 
-
-async verifyUserAccount(accountNumber: number): Promise<{accountId:string}> {
-  try {
-    if (!accountNumber) {
-      throw new CustomError(
-        "Account number is required",
-        statusCodes.BAD_REQUEST
-      );
-    }
-
-    const account = await this._accountRepository.findOne(
-      {
-        accountNumber
-      }
-      
-    );
-
-    if (!account) {
-      throw new CustomError(
-        "Invalid account number",
-        statusCodes.NOT_FOUND
-      );
-    }
-
-    // if (account.status !== accountStatus.ACTIVE) {
-    //   throw new CustomError(
-    //     "Account is not active",
-    //     statusCodes.BAD_REQUEST
-    //   );
-    // }
-
-    // ✅ SECURITY: Do NOT expose balance in verification
-  return {
-    accountId:account.id
-  }
-  } catch (error) {
-    console.error("Verify account failed", { accountNumber, error });
-
-    throw error instanceof CustomError
-      ? error
-      : new CustomError(
-          "Failed to verify account",
-          statusCodes.INTERNAL_SERVER_ERROR
+  async verifyUserAccount(
+    accountNumber: number,
+  ): Promise<{ accountId: string }> {
+    try {
+      if (!accountNumber) {
+        throw new CustomError(
+          AccountMessages.ACCOUNT_NUMBER_REQUIRED,
+          statusCodes.BAD_REQUEST,
         );
+      }
+
+      const account = await this._accountRepository.findOne({
+        accountNumber,
+      });
+
+      if (!account) {
+        throw new CustomError(
+          AccountMessages.INVALID_ACCOUNT_NUMBER,
+          statusCodes.NOT_FOUND,
+        );
+      }
+
+      // if (account.status !== accountStatus.ACTIVE) {
+      //   throw new CustomError(
+      //     "Account is not active",
+      //     statusCodes.BAD_REQUEST
+      //   );
+      // }
+
+      return {
+        accountId: account.id,
+      };
+    } catch (error) {
+      console.error("Verify account failed", { accountNumber, error });
+
+      throw error instanceof CustomError
+        ? error
+        : new CustomError(
+            AccountMessages.VERIFY_ACCOUNT_FAILED,
+            statusCodes.INTERNAL_SERVER_ERROR,
+          );
+    }
   }
-}
-
-
 }

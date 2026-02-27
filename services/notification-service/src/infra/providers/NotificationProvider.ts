@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { INotificationProvider } from "../../domain/services/INotificationProvider";
+import { INotificationProvider } from "../../domain/interfaces/services/INotificationProvider";
 import { config } from "dotenv";
 config()
 export class NotificationProvider implements INotificationProvider {

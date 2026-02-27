@@ -5,30 +5,34 @@ import { DI_TOKENS } from "../di/types";
 import { tryCatch, createResponse } from "@figur-ledger/handlers";
 import { statusCodes } from "@figur-ledger/shared";
 import { Request, Response } from "express";
+import { LoanMessages } from "../constants/LoanMessages";
 
 @injectable()
 export class LoanProductController implements ILoanProductController {
   constructor(
     @inject(DI_TOKENS.SERVICES.LOAN_PRODUCT_SERVICE)
-    private readonly _loanProductService: ILoanProductService
+    private readonly _loanProductService: ILoanProductService,
   ) {}
 
   createLoanProduct = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
-      const { loanProduct }= req.body;
-      console.log("loanProduct",loanProduct)
+      const { loanProduct } = req.body;
+      console.log("loanProduct", loanProduct);
       //add validation
-      
+
       const createdLoanProduct =
-        await this._loanProductService.createLoanProduct({...loanProduct,isActive:true});
+        await this._loanProductService.createLoanProduct({
+          ...loanProduct,
+          isActive: true,
+        });
       return createResponse(
         res,
         statusCodes.CREATED,
         true,
-        "Loan Product Created Successfully",
-        createdLoanProduct
+        LoanMessages.LOAN_PRODUCT_CREATED,
+        createdLoanProduct,
       );
-    }
+    },
   );
 
   updateLoanProduct = tryCatch(
@@ -42,23 +46,24 @@ export class LoanProductController implements ILoanProductController {
         res,
         statusCodes.CREATED,
         true,
-        "Loan Product Updated Successfully",
-        updatedLoanProduct
+        LoanMessages.LOAN_PRODUCT_UPDATED,
+        updatedLoanProduct,
       );
-    }
+    },
   );
 
   getAllLoanProducts = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
-      const {userId}=req.params;
-      const loanProducts = await this._loanProductService.getAllLoanProducts(userId);
+      const { userId } = req.params;
+      const loanProducts =
+        await this._loanProductService.getAllLoanProducts(userId);
       return createResponse(
         res,
         statusCodes.SUCCESS,
         true,
-        "Loan Products Fetched Successfully",
-        loanProducts
+        LoanMessages.LOAN_PRODUCTS_FETCHED,
+        loanProducts,
       );
-    }
+    },
   );
 }

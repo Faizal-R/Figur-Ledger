@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
 
 interface Summary {
   deposits: number;
@@ -25,22 +26,28 @@ export default function TransactionSummary() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card title="Total Deposits" value={`₹ ${stats.deposits}`} />
-      <Card title="Total Withdrawals" value={`₹ ${stats.withdrawals}`} />
-      <Card title="Pending Transfers" value={`₹ ${stats.pending}`} />
+      <Card title="Volume Inbound" value={`₹${stats.deposits.toLocaleString()}`} />
+      <Card title="Volume Outbound" value={`₹${stats.withdrawals.toLocaleString()}`} />
+      <Card title="Pending Resolution" value={`₹${stats.pending.toLocaleString()}`} />
     </div>
   );
 }
 
 function Card({ title, value }: { title: string; value: string }) {
+  const { theme: t } = useTheme();
   return (
     <div
-      className={`${FinledgerTheme.card} ${FinledgerTheme.cardRounded} ${FinledgerTheme.border} p-6 backdrop-blur-md ${FinledgerTheme.accent.glow}`}
+      className={cn(
+        t.card.base,
+        t.radius.lg,
+        "p-8 border border-black/5 dark:border-white/5 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group"
+      )}
     >
-      <p className={`${FinledgerTheme.text.muted} text-sm mb-2`}>{title}</p>
-      <h3 className={`text-3xl font-bold ${FinledgerTheme.text.primary}`}>
+      <p className={cn("text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-3", t.text.muted)}>{title}</p>
+      <h3 className={cn("text-3xl font-black tracking-tighter transition-all group-hover:text-[#b0f061]", t.text.heading)}>
         {value}
       </h3>
+      <div className="mt-4 h-1 w-0 bg-[#b0f061] group-hover:w-full transition-all duration-500 rounded-full" />
     </div>
   );
 }

@@ -1,4 +1,6 @@
-import { FinledgerTheme } from "@/theme";
+"use client";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
 
 const loans = [
   {
@@ -12,30 +14,46 @@ const loans = [
 ];
 
 export default function ActiveLoans() {
+  const { theme: t } = useTheme();
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-white">Your Loans</h2>
+    <div className="space-y-6">
+      <h2 className={cn("text-2xl font-black uppercase tracking-tighter hover:translate-x-1 transition-transform", t.text.heading)}>Institutional Debt.</h2>
 
       {loans.map((loan) => (
         <div
           key={loan.id}
-          className={`${FinledgerTheme.card} ${FinledgerTheme.border} ${FinledgerTheme.radius.lg} p-6`}
+          className={cn(t.card.base, t.radius.lg, "p-8 border border-black/5 dark:border-white/5 shadow-xl transition-all duration-300 relative overflow-hidden group")}
         >
-          <div className="flex justify-between mb-3">
-            <h3 className="text-white font-semibold">{loan.name}</h3>
-            <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400">
+          {/* Accent Line */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-[#b0f061] opacity-0 group-hover:opacity-100 transition-opacity" />
+          
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h3 className={cn("text-xl font-black tracking-tight", t.text.heading)}>{loan.name}</h3>
+              <p className={cn("text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-1", t.text.muted)}>FACILITY: {loan.id}</p>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-[#b0f061]/20 text-[#2d5a4c]">
               {loan.status}
             </span>
           </div>
 
-          <div className="text-sm text-slate-400 space-y-1">
-            <p>EMI: <span className="text-white">{loan.emi}</span></p>
-            <p>Remaining Tenure: <span className="text-white">{loan.tenure}</span></p>
-            <p>Outstanding: <span className="text-white">{loan.outstanding}</span></p>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 border-t border-black/5 dark:border-white/5 pt-6", t.text.body)}>
+            <div className="space-y-1">
+               <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Monthly Installment</p>
+               <p className="text-xl font-black tracking-tighter">{loan.emi}</p>
+            </div>
+            <div className="space-y-1">
+               <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Duration Remaining</p>
+               <p className="text-xl font-black tracking-tighter">{loan.tenure}</p>
+            </div>
+            <div className="space-y-1">
+               <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Outstanding Protocol</p>
+               <p className="text-xl font-black tracking-tighter">{loan.outstanding}</p>
+            </div>
           </div>
 
-          <button className={`mt-4 w-full py-2 rounded-xl ${FinledgerTheme.button.secondary}`}>
-            View Repayment Schedule
+          <button className={cn(t.button.onyx, "w-full py-4 rounded-2xl uppercase text-[10px] font-black tracking-[0.3em] transition-all")}>
+            Review Amortization Table
           </button>
         </div>
       ))}

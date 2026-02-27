@@ -4,72 +4,74 @@ import { DI_TOKENS } from "../../../di/types";
 import { IAccountUseCase } from "../../../interator/useCases/interfaces/IAccountUseCase";
 import { Account } from "../../../domain/entities/Account";
 import { Request, Response } from "express";
-import { tryCatch,createResponse } from "@figur-ledger/handlers"
+import { tryCatch, createResponse } from "@figur-ledger/handlers";
 import { AccountSchema } from "../../validations/account/AccountSchema";
 
-
 import { statusCodes } from "@figur-ledger/shared";
+import { AccountMessages } from "./AccountMessages";
 @injectable()
 export class AccountController implements IAccountController {
   constructor(
     @inject(DI_TOKENS.USECASES.ACCOUNT_USECASE)
-    private readonly _accountUseCase: IAccountUseCase
+    private readonly _accountUseCase: IAccountUseCase,
   ) {}
 
   createAccount = tryCatch(async (req: Request, res: Response) => {
     // const userId = req.query.userId as string;
-    console.log("req.body",req.body)
+    console.log("req.body", req.body);
     const accountPayload = req.body;
     const validatedAccountPayload = AccountSchema.safeParse(accountPayload);
-    
+
     if (!validatedAccountPayload.success) {
-      console.log(validatedAccountPayload.error.issues)
+      console.log(validatedAccountPayload.error.issues);
       createResponse(
         res,
         statusCodes.BAD_REQUEST,
         false,
         validatedAccountPayload.error.issues[0].message,
-        null
+        null,
       );
       return;
     }
 
-    const createdAccount = await this._accountUseCase.createAccount(validatedAccountPayload.data)
+    const createdAccount = await this._accountUseCase.createAccount(
+      validatedAccountPayload.data,
+    );
     createResponse(
       res,
       statusCodes.CREATED,
       true,
-      "Account opened successfully",
-      createdAccount
+      AccountMessages.ACCOUNT_OPENED,
+      createdAccount,
     );
   });
 
-
-
-
-    updateAccount = tryCatch(async (req: Request, res: Response) => {
-      const accountId = req.params.accountId as string;
-      const accountPayload = req.body;
-      const validatedAccountPayload = AccountSchema.safeParse(accountPayload);
-      if (!validatedAccountPayload.success) {
-        createResponse(
-          res,
-          statusCodes.BAD_REQUEST,
-          false,
-          validatedAccountPayload.error.issues[0].message,
-          null
-        );
-        return;
-      }
-      const updatedAccount = await this._accountUseCase.updateAccount(accountId,validatedAccountPayload.data);
-        createResponse(
-          res,
-          statusCodes.SUCCESS,
-          true,
-          "Account updated successfully",
-          updatedAccount
-        );
-    });
+  updateAccount = tryCatch(async (req: Request, res: Response) => {
+    const accountId = req.params.accountId as string;
+    const accountPayload = req.body;
+    const validatedAccountPayload = AccountSchema.safeParse(accountPayload);
+    if (!validatedAccountPayload.success) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        validatedAccountPayload.error.issues[0].message,
+        null,
+      );
+      return;
+    }
+    const updatedAccount = await this._accountUseCase.updateAccount(
+      accountId,
+      validatedAccountPayload.data,
+    );
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      AccountMessages.ACCOUNT_UPDATED,
+      updatedAccount,
+    );
+  });
 
   getAccountsByUserId = tryCatch(async (req: Request, res: Response) => {
     const userId = req.query.userId as string;
@@ -78,24 +80,23 @@ export class AccountController implements IAccountController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "User Id is required",
-        null
+        AccountMessages.USER_ID_REQUIRED,
+        null,
       );
       return;
     }
 
-    
     const accounts = await this._accountUseCase.getAccountsByUserId(userId);
     createResponse(
       res,
       statusCodes.SUCCESS,
       true,
-      "Accounts fetched successfully",
-       accounts
+      AccountMessages.ACCOUNTS_FETCHED,
+      accounts,
     );
   });
 
-  amountCredited= tryCatch(async (req: Request, res: Response) => {
+  amountCredited = tryCatch(async (req: Request, res: Response) => {
     const accountId = req.params.accountId as string;
     const { amount } = req.body;
 
@@ -104,21 +105,24 @@ export class AccountController implements IAccountController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Amount must be greater than zero",
-        null
+        AccountMessages.INVALID_AMOUNT,
+        null,
       );
       return;
     }
-    const updatedAmount = await this._accountUseCase.amountCredited(accountId, amount);
+    const updatedAmount = await this._accountUseCase.amountCredited(
+      accountId,
+      amount,
+    );
     createResponse(
       res,
       statusCodes.SUCCESS,
       true,
-      "Amount credited successfully",
-      updatedAmount
+      AccountMessages.AMOUNT_CREDITED,
+      updatedAmount,
     );
   });
-  amountDebited= tryCatch(async (req: Request, res: Response) => {
+  amountDebited = tryCatch(async (req: Request, res: Response) => {
     const accountId = req.params.accountId as string;
     const { amount } = req.body;
 
@@ -127,74 +131,74 @@ export class AccountController implements IAccountController {
         res,
         statusCodes.BAD_REQUEST,
         false,
-        "Amount must be greater than zero",
-        null
+        AccountMessages.INVALID_AMOUNT,
+        null,
       );
       return;
     }
-    const updatedAmount = await this._accountUseCase.amountDebited(accountId, amount);
+    const updatedAmount = await this._accountUseCase.amountDebited(
+      accountId,
+      amount,
+    );
     createResponse(
       res,
       statusCodes.SUCCESS,
       true,
-      "Amount Debited successfully",
-      updatedAmount
+      AccountMessages.AMOUNT_DEBITED,
+      updatedAmount,
     );
   });
 
   refundAmount = tryCatch(async (req: Request, res: Response) => {
-  const accountId = req.params.accountId as string;
-  const { amount } = req.body;
+    const accountId = req.params.accountId as string;
+    const { amount } = req.body;
 
-  if (!amount || amount <= 0) {
-    createResponse(
-      res,
-      statusCodes.BAD_REQUEST,
-      false,
-      "Amount must be greater than zero",
-      null
-    );
-    return;
-  }
-
-  const refundedAmount = await this._accountUseCase.refund(accountId, amount);
-
-  createResponse(
-    res,
-    statusCodes.SUCCESS,
-    true,
-    "Amount refunded successfully",
-    refundedAmount
-  );
-});
-
-verifyUserAccount = tryCatch(async (req: Request, res: Response) => {
-  const accountNumber = req.body.accountNumber
-
-  if (!accountNumber) {
-    createResponse(
-      res,
-      statusCodes.BAD_REQUEST,
-      false,
-      "Valid account number is required",
-      null
-    );
-    return;
-  }
-
-  const accountId =
-    await this._accountUseCase.verifyUserAccount(accountNumber);
-
-  createResponse(
-    res,
-    statusCodes.SUCCESS,
-    true,
-    "Account verified successfully",
-    {
-      accountId
+    if (!amount || amount <= 0) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        AccountMessages.INVALID_AMOUNT,
+        null,
+      );
+      return;
     }
-  );
-});
 
+    const refundedAmount = await this._accountUseCase.refund(accountId, amount);
 
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      AccountMessages.AMOUNT_REFUNDED,
+      refundedAmount,
+    );
+  });
+
+  verifyUserAccount = tryCatch(async (req: Request, res: Response) => {
+    const accountNumber = req.body.accountNumber;
+
+    if (!accountNumber) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        AccountMessages.ACCOUNT_NUMBER_REQUIRED,
+        null,
+      );
+      return;
+    }
+
+    const accountId=
+      await this._accountUseCase.verifyUserAccount(accountNumber);
+
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      AccountMessages.ACCOUNT_VERIFIED,
+
+      accountId,
+    );
+  });
 }

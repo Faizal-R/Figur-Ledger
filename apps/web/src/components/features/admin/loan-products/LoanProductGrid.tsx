@@ -1,33 +1,28 @@
 "use client";
 
-import { FinledgerTheme } from "@/theme";
-import { useEffect, useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
+import { useState } from "react";
 import LoanProductModal from "@/components/ui/modals/admin/LoanProductModal";
 
 import {
-  useCreateLoanProduct,
   useGetAllLoanProducts,
 } from "@/hooks/api/useLoan";
-import { toast } from "sonner";
 import { ILoanProduct } from "@/types/ILoan";
+import { cn } from "@/lib/utils";
 
 export default function LoanProductGrid() {
+  const { theme: t } = useTheme();
   const [selected, setSelected] = useState<ILoanProduct | null>(null);
 
   const { data, isLoading, error } = useGetAllLoanProducts();
-  console.log("data", data);
-  const onSaveDraftLoanProduct = (payload: ILoanProduct) => {
-    console.log(payload);
-  };
-
+  
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={`${FinledgerTheme.card} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border}
-            p-6 relative overflow-hidden`}
+            className={cn(t.card.base, t.radius.lg, "p-6 relative overflow-hidden")}
           >
             {/* shimmer overlay */}
             <div
@@ -37,20 +32,20 @@ export default function LoanProductGrid() {
 
             <div className="space-y-4 relative">
               {/* title */}
-              <div className="h-4 w-3/4 rounded bg-slate-700/60" />
+              <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700/60" />
 
               {/* code */}
-              <div className="h-3 w-1/3 rounded bg-slate-700/40" />
+              <div className="h-3 w-1/3 rounded bg-slate-200 dark:bg-slate-700/40" />
 
               {/* details */}
               <div className="space-y-2">
-                <div className="h-3 w-full rounded bg-slate-700/50" />
-                <div className="h-3 w-2/3 rounded bg-slate-700/50" />
-                <div className="h-3 w-1/2 rounded bg-slate-700/50" />
+                <div className="h-3 w-full rounded bg-slate-200 dark:bg-slate-700/50" />
+                <div className="h-3 w-2/3 rounded bg-slate-200 dark:bg-slate-700/50" />
+                <div className="h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-700/50" />
               </div>
 
               {/* button */}
-              <div className="h-9 w-full rounded-xl bg-slate-700/60 mt-4" />
+              <div className="h-9 w-full rounded-xl bg-slate-200 dark:bg-slate-700/60 mt-4" />
             </div>
           </div>
         ))}
@@ -78,22 +73,26 @@ export default function LoanProductGrid() {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {(data.data || []).map((p:ILoanProduct) => (
+        {(data.data || []).map((p: ILoanProduct) => (
           <div
             key={p.code}
-            className={`group relative ${FinledgerTheme.card} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border} p-6 transition hover:-translate-y-1 hover:shadow-xl`}
+            className={cn(
+              "group relative p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
+              t.card.base,
+              t.radius.lg
+            )}
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#b0f061]/5 to-transparent opacity-0 group-hover:opacity-100 transition" />
 
             <div className="relative space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-white">{p.name}</h3>
-                <Status status={p.isActive?"active":"inactive"} />
+                <h3 className={cn("font-bold", t.text.heading)}>{p.name}</h3>
+                <Status status={p.isActive ? "active" : "inactive"} />
               </div>
 
-              <p className="text-xs text-slate-500">{p.code}</p>
+              <p className={cn("text-xs font-bold uppercase tracking-widest", t.text.muted)}>{p.code}</p>
 
-              <div className="text-sm text-slate-300 space-y-1">
+              <div className={cn("text-sm space-y-1", t.text.body)}>
                 <p>
                   Amount: ₹{p.minAmount} – ₹{p.maxAmount}
                 </p>
@@ -106,7 +105,10 @@ export default function LoanProductGrid() {
 
               <button
                 onClick={() => setSelected(p)}
-                className={`${FinledgerTheme.button.secondary} w-full py-2 rounded-xl`}
+                className={cn(
+                  t.button.onyx,
+                  "w-full py-3 rounded-xl uppercase text-[10px] tracking-[0.2em] font-black"
+                )}
               >
                 Manage Product
               </button>
@@ -115,12 +117,11 @@ export default function LoanProductGrid() {
         ))}
       </div>
 
-      {/* 🔥 Edit / Manage Modal */}
+      {/* Edit / Manage Modal */}
       <LoanProductModal
         open={!!selected}
         editing={selected}
         onClose={() => setSelected(null)}
-        // onSaveDraft={onSaveDraftLoanProduct}
         onPublish={() => {}}
       />
     </>
@@ -130,11 +131,12 @@ export default function LoanProductGrid() {
 function Status({ status }: { status: string }) {
   return (
     <span
-      className={`text-xs px-3 py-1 rounded-full ${
+      className={cn(
+        "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
         status === "active"
-          ? "bg-emerald-500/20 text-emerald-400"
-          : "bg-red-500/20 text-red-400"
-      }`}
+          ? "bg-[#b0f061]/20 text-[#2d5a4c]"
+          : "bg-red-500/20 text-red-500"
+      )}
     >
       {status}
     </span>

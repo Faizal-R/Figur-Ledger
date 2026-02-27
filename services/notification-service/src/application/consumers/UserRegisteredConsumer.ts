@@ -1,5 +1,5 @@
 import { RabbitConsumer } from "@figur-ledger/messaging-sdk";
-import { INotificationProvider } from "../../domain/services/INotificationProvider";
+import { INotificationProvider } from "../../domain/interfaces/services/INotificationProvider";
 import { injectable,inject } from "inversify";
 interface UserRegisteredPayload {
   email: string;

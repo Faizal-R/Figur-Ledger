@@ -1,7 +1,7 @@
 import container  from ".";
 
 import { INotificationProvider
- } from "../domain/services/INotificationProvider";
+ } from "../domain/interfaces/services/INotificationProvider";
  import { NotificationProvider } from "../infra/providers/NotificationProvider";
 import { DI_TOKENS } from "./types";
 

@@ -1,5 +1,7 @@
+import { ITransactionFilters } from "@/components/features/customer/transactions/TransactionCard";
 import { TransactionService } from "@/services/api/TransactionService";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useProcessDeposit = () => {
   return useMutation({
@@ -28,16 +30,26 @@ export const useProcessWithdrawal = () => {
   });
 };
 
-export const useTransactionHistory = (accountId: string) => {
+export const useTransactionHistory = (
+  accountId: string,
+  page: number = 1,
+  filters: ITransactionFilters,
+) => {
   return useQuery({
-    queryKey: ["transaction-history", accountId],
+    queryKey: ["transaction-history", accountId, page, filters],
     queryFn: async () => {
-      return await TransactionService.getTransactionHistory(accountId);
+      return await TransactionService.getTransactionHistory(
+        accountId,
+        page,
+        filters,
+      );
     },
+    enabled: !!accountId,
   });
 };
 
 export const useTransferAmount = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       senderAccountId,
@@ -51,8 +63,15 @@ export const useTransferAmount = () => {
       return TransactionService.TransferAmount(
         senderAccountId,
         receiverAccountId,
-        amount
+        amount,
       );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userAccounts"] ,exact:false});
+      toast.success("Transfer completed successfully");
+    },
+    onError: (err: any) => {
+      toast.error("Transfer failed: " + (err.message || "Unknown error"));
     },
   });
 };

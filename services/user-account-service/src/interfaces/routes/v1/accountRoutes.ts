@@ -7,7 +7,7 @@ const router=Router();
 
 const accountController= resolve<IAccountController>(DI_TOKENS.CONTROLLERS.ACCOUNT_CONTROLLER)
 
-router.post('/create',accountController.createAccount)
+router.post('/',accountController.createAccount)
 router.get('/',accountController.getAccountsByUserId)
 router.patch('/:accountId/credit',accountController.amountCredited)
 router.patch('/:accountId/debit',accountController.amountDebited)

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
+import { cn } from "@/lib/utils";
 import { ProfileHeader } from "@/components/reusables/profile/ProfileHeader";
 import { TabNavigation, TabType } from "@/components/features/customer/profile/TabNavigation";
 import { PersonalInfoTab } from "@/components/reusables/profile/ProfileInfoTab";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { useAuthUserStore } from "@/store";
 
 export function ProfilePage() {
+  const { theme: t } = useTheme();
   const { user } = useAuthUserStore();
   const userId = user?.id;
 
@@ -49,7 +51,7 @@ export function ProfilePage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-slate-300 text-lg">
+        <div className={cn("animate-pulse text-lg font-black uppercase tracking-[0.3em]", t.text.muted)}>
           Initializing session...
         </div>
       </div>
@@ -59,7 +61,7 @@ export function ProfilePage() {
   if (userProfileQuery.isLoading || !userState) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-slate-300 text-lg">
+        <div className={cn("animate-pulse text-lg font-black uppercase tracking-[0.3em]", t.text.muted)}>
           Loading profile...
         </div>
       </div>
@@ -68,8 +70,8 @@ export function ProfilePage() {
 
   if (userProfileQuery.isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-400">
-        Failed to load profile.
+      <div className="min-h-screen flex items-center justify-center text-red-500 font-black uppercase tracking-widest">
+        Protocol Failure: Profile Data Inaccessible
       </div>
     );
   }
@@ -122,7 +124,7 @@ export function ProfilePage() {
   };
 
   return (
-    <div className={`min-h-screen ${FinledgerTheme.background} p-6`}>
+    <div className={`min-h-screen p-6`}>
       <div className="max-w-6xl mx-auto">
 
         <ProfileHeader user={userState} />

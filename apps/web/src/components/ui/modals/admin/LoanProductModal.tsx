@@ -1,24 +1,26 @@
 "use client";
 
-import { FinledgerTheme } from "@/theme";
+import { useTheme } from "@/context/ThemeContext";
 import { useState, useEffect } from "react";
 import { ILoanProduct } from "@/types/ILoan";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
+
 const TENURES = [3, 6, 9] as const;
 
 export default function LoanProductModal({
   open,
   onClose,
-  // onSaveDraft,
   onPublish,
   editing,
 }: {
   open: boolean;
   onClose: () => void;
-  // onSaveDraft: (p: ILoanProduct) => void;
   onPublish: (p: ILoanProduct) => void;
   editing: ILoanProduct | null;
 }) {
+  const { theme: t } = useTheme();
   const [form, setForm] = useState<ILoanProduct>({
     code: "",
     name: "",
@@ -49,130 +51,133 @@ export default function LoanProductModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
       <div
-        className={`${FinledgerTheme.card} ${FinledgerTheme.radius.lg} ${FinledgerTheme.border}
-              w-full max-w-lg p-5`}
+        className={cn(
+          t.card.base,
+          t.radius.lg,
+          "w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300"
+        )}
       >
-        <h2 className="text-xl font-semibold text-white mb-4">
-          {editing ? "Edit Draft" : "Create Loan Product"}
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <Input
-            label="Code"
-            value={form.code}
-            onChange={onInputChange}
-            name="code"
-          />
-          <Input
-            label="Name"
-            value={form.name}
-            onChange={onInputChange}
-            name="name"
-          />
-
-          <Input
-            label="Min Amount"
-            type="number"
-            value={form.minAmount}
-            onChange={onInputChange}
-            name="minAmount"
-          />
-          <Input
-            label="Max Amount"
-            type="number"
-            value={form.maxAmount}
-            onChange={onInputChange}
-            name="maxAmount"
-          />
-
-          <Input
-            label="APR %"
-            type="number"
-            value={form.annualInterestRate}
-            onChange={onInputChange}
-            name="annualInterestRate"
-          />
-          <Input
-            label="Minimum Credit Score"
-            type="number"
-            value={form.minCreditScore}
-            onChange={onInputChange}
-            name="minCreditScore"
-          />
+        {/* Header */}
+        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
+          <div>
+            <h2 className={cn("text-2xl font-black uppercase tracking-tighter", t.text.heading)}>
+              {editing ? "Configure" : "Define"} <span className="text-[#4caf50]">Product.</span>
+            </h2>
+            <p className={cn("text-[10px] font-black uppercase tracking-[0.2em] mt-1 opacity-50", t.text.muted)}>
+              Institutional Loan Governance Protocol
+            </p>
+          </div>
+          <button 
+            onClick={onClose}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+          >
+            <X size={20} className={t.text.muted} />
+          </button>
         </div>
 
-        <div>
-          <p className="text-xs text-slate-400 mb-1">Tenures</p>
-          <div className="flex gap-2">
-            {TENURES.map((t: number) => {
-              const selected = form.allowedTenuresInMonths.includes(
-                t as 3 | 6 | 9
-              );
+        <div className="p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Product Code"
+              placeholder="e.g. PL_PREMIUM"
+              value={form.code}
+              onChange={onInputChange}
+              name="code"
+            />
+            <Input
+              label="Friendly Name"
+              placeholder="e.g. Elite Personal Loan"
+              value={form.name}
+              onChange={onInputChange}
+              name="name"
+            />
 
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => {
-                    setForm((prev) => ({
-                      ...prev,
-                      allowedTenuresInMonths: selected
-                        ? prev.allowedTenuresInMonths.filter((x) => x !== t)
-                        : [...prev.allowedTenuresInMonths, t as 3 | 6 | 9],
-                    }));
-                  }}
-                  className={`px-4 py-2 rounded-full border ${
-                    selected
-                      ? "border-emerald-400 bg-emerald-400/10 text-emerald-400"
-                      : "border-slate-700 text-slate-400"
-                  }`}
-                >
-                  {t}M
-                </button>
-              );
-            })}
+            <Input
+              label="Minimum Principal (₹)"
+              type="number"
+              value={form.minAmount}
+              onChange={onInputChange}
+              name="minAmount"
+            />
+            <Input
+              label="Maximum Principal (₹)"
+              type="number"
+              value={form.maxAmount}
+              onChange={onInputChange}
+              name="maxAmount"
+            />
+
+            <Input
+              label="Annual Percentage Rate (%)"
+              type="number"
+              value={form.annualInterestRate}
+              onChange={onInputChange}
+              name="annualInterestRate"
+            />
+            <Input
+              label="Eligibility Credit Threshold"
+              type="number"
+              value={form.minCreditScore}
+              onChange={onInputChange}
+              name="minCreditScore"
+            />
+          </div>
+
+          <div>
+            <p className={cn("text-[10px] font-black uppercase tracking-widest mb-3 opacity-60", t.text.muted)}>Allowed Tenures (Months)</p>
+            <div className="flex flex-wrap gap-3">
+              {TENURES.map((tenure: number) => {
+                const isSelected = form.allowedTenuresInMonths.includes(
+                  tenure as 3 | 6 | 9
+                );
+
+                return (
+                  <button
+                    key={tenure}
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        allowedTenuresInMonths: isSelected
+                          ? prev.allowedTenuresInMonths.filter((x) => x !== tenure)
+                          : [...prev.allowedTenuresInMonths, tenure as 3 | 6 | 9],
+                      }));
+                    }}
+                    className={cn(
+                      "px-6 py-3 rounded-xl border font-black text-xs tracking-widest transition-all duration-300",
+                      isSelected
+                        ? "bg-[#b0f061] border-[#b0f061] text-[#0a1a15] shadow-lg shadow-[#b0f061]/20"
+                        : "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-slate-500 hover:border-[#b0f061]/30"
+                    )}
+                  >
+                    {tenure} MONTHS
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
-        {/* </div> */}
-        <div className="flex items-center justify-between mt-5 pt-3 border-t border-slate-700">
-          {/* Left: Cancel */}
+
+        {/* Footer */}
+        <div className="p-8 border-t border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
           <button
             onClick={onClose}
-            className="text-slate-400 text-sm hover:text-slate-200 transition"
+            className={cn("text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all", t.text.muted)}
           >
-            Cancel
+            Abort Session
           </button>
 
-          {/* Right: Actions */}
-          <div className="flex gap-3">
-            {/* Save Draft */}
-            {/* <button
-              onClick={() => onSaveDraft({ ...form, status: "draft" })}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium
-                 bg-slate-800 border border-slate-700 text-slate-300
-                 hover:bg-slate-700 hover:border-slate-600
-                 shadow-sm hover:shadow-md transition"
-            >
-              Save as Draft
-            </button> */}
-
-            {/* Publish */}
-            <button
-              onClick={() => onPublish(form)}
-              className="relative px-6 py-2.5 rounded-xl text-sm font-semibold
-                 bg-gradient-to-r from-emerald-400 to-emerald-500
-                 text-slate-900
-                 shadow-lg shadow-emerald-500/30
-                 hover:shadow-xl hover:shadow-emerald-500/40
-                 hover:-translate-y-[1px]
-                 active:translate-y-0
-                 transition-all"
-            >
-              Publish Product
-            </button>
-          </div>
+          <button
+            onClick={() => onPublish(form)}
+            className={cn(
+              t.button.primary,
+              "px-10 py-4 rounded-2xl uppercase text-[11px] font-black tracking-[0.3em] shadow-2xl transition-all"
+            )}
+          >
+            Commit Changes
+          </button>
         </div>
       </div>
     </div>
@@ -180,12 +185,17 @@ export default function LoanProductModal({
 }
 
 function Input({ label, ...props }: any) {
+  const { theme: t } = useTheme();
   return (
-    <div>
-      <p className="text-sm text-slate-400 mb-1">{label}</p>
+    <div className="space-y-1.5 focus-within:translate-x-1 transition-transform duration-300">
+      <p className={cn("text-[10px] font-black uppercase tracking-widest opacity-60", t.text.muted)}>{label}</p>
       <input
         {...props}
-        className={`${FinledgerTheme.input.base} p-2.5 rounded-lg w-full text-sm`}
+        className={cn(
+          "w-full px-5 py-3.5 rounded-xl border outline-none font-bold text-sm tracking-tight transition-all duration-300",
+          "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 focus:border-[#b0f061] focus:ring-4 focus:ring-[#b0f061]/10",
+          t.text.heading
+        )}
       />
     </div>
   );

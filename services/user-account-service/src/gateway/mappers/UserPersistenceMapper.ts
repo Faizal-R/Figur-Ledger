@@ -13,17 +13,17 @@ export class UserPersistenceMapper implements IMapper<User, IUserDocument> {
       phone: entity.phone,
       authUserId:entity.authUserId,
       personalInfo: {
-        firstName: entity.personalInfo.firstName,
-        lastName: entity.personalInfo.lastName,
+        firstName: entity.personalInfo.firstName || "",
+        lastName: entity.personalInfo.lastName || "",
         dateOfBirth: entity.personalInfo.dateOfBirth,
       },
       
       address: {
-        street: entity.address.street,
-        city: entity.address.city,
-        state: entity.address.state,
-        zipCode: entity.address.zipCode,
-        country: entity.address.country,
+        street: entity.address?.street || "",
+        city: entity.address?.city || "",
+        state: entity.address?.state || "",
+        zipCode: entity.address?.zipCode || "",
+        country: entity.address?.country || "",
       },
     };
   }

@@ -5,33 +5,31 @@ import { DI_TOKENS } from "../di/types";
 import { ILoanApplicationService } from "../services/interfaces/ILoanApplicationService";
 import { createResponse, tryCatch } from "@figur-ledger/handlers";
 import { statusCodes } from "@figur-ledger/shared";
+import { LoanMessages } from "../constants/LoanMessages";
 @injectable()
 export class LoanApplicationController implements ILoanApplicationController {
   constructor(
     @inject(DI_TOKENS.SERVICES.LOAN_APPLICATION_SERVICE)
-    private _loanApplicationService: ILoanApplicationService
+    private _loanApplicationService: ILoanApplicationService,
   ) {}
   createLoanApplication = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
       const { loanApplication } = req.body;
       console.log("loanApplication", loanApplication);
       const createdLoanApplication =
-        await this._loanApplicationService.createLoanApplication(
-          {
-            ...loanApplication,
-            status: "APPLIED",
-            approvedAmount:loanApplication.requestedAmount,
-     
-          }
-        );
+        await this._loanApplicationService.createLoanApplication({
+          ...loanApplication,
+          status: "APPLIED",
+          approvedAmount: loanApplication.requestedAmount,
+        });
       createResponse(
         res,
         statusCodes.CREATED,
         true,
-        "Loan Application Created Successfully",
-        createdLoanApplication
+        LoanMessages.LOAN_APP_CREATED,
+        createdLoanApplication,
       );
-    }
+    },
   );
   getAllLoanApplications = tryCatch(
     async (req: Request, res: Response): Promise<void> => {
@@ -41,10 +39,10 @@ export class LoanApplicationController implements ILoanApplicationController {
         res,
         statusCodes.SUCCESS,
         true,
-        "Loan Applications Fetched Successfully",
-        loanApplications
+        LoanMessages.LOAN_APPS_FETCHED,
+        loanApplications,
       );
-    }
+    },
   );
 
   approveOrRejectLoanApplication = tryCatch(
@@ -53,16 +51,16 @@ export class LoanApplicationController implements ILoanApplicationController {
       const { applicationData } = req.body;
       const approvedLoanApplication =
         await this._loanApplicationService.approveOrRejectLoanApplication(
-          applicationData
+          applicationData,
         );
       createResponse(
         res,
         statusCodes.SUCCESS,
         true,
-        "Loan Application Approved Successfully",
-        approvedLoanApplication
+        LoanMessages.LOAN_APP_APPROVED,
+        approvedLoanApplication,
       );
-    }
+    },
   );
 
   getAllLoanApplicationsByUserAndStatus = tryCatch(
@@ -74,15 +72,15 @@ export class LoanApplicationController implements ILoanApplicationController {
       const loanApplications =
         await this._loanApplicationService.getAllLoanApplicationsByUserAndStatus(
           userId,
-          status as string
+          status as string,
         );
       createResponse(
         res,
         statusCodes.SUCCESS,
         true,
-        "Loan Applications Fetched Successfully",
-        loanApplications
+        LoanMessages.LOAN_APPS_FETCHED,
+        loanApplications,
       );
-    }
+    },
   );
 }

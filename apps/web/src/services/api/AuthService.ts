@@ -1,7 +1,7 @@
 import request from "@/config/client";
 import { httpMethods } from "@/constant/api/enums/api";
 import { AuthRoutes } from "@/constant/api/routes/authRoutes";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/types/api/api";
 import {
   LoginRequest,
   RegisterRequest,

@@ -8,17 +8,20 @@ import { DI_TOKENS } from "../di/types";
 import { prisma } from "../prisma/PrismaClient";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
+import { LIMITS } from "../config/limit";
+import { ITransactionFilters } from "../../types/ITransactionFilters";
+import { buildQuery } from "../utils/buildQuery";
 
 @injectable()
 export class TransactionRepository implements ITransactionRepository {
   constructor(
     @inject(DI_TOKENS.MAPPERS.TRANSACTION_PERSISTENCE_MAPPER)
-    private readonly mapper: ITransactionPersistenceMapper
+    private readonly mapper: ITransactionPersistenceMapper,
   ) {}
 
-  async create(data:Transaction): Promise<Transaction> {
+  async create(data: Transaction): Promise<Transaction> {
     const record = await prisma.transaction.create({
-      data: this.mapper.toPersistence(data)
+      data: this.mapper.toPersistence(data),
     });
 
     return this.mapper.toDomain(record);
@@ -26,32 +29,44 @@ export class TransactionRepository implements ITransactionRepository {
 
   async findById(id: string): Promise<Transaction | null> {
     const record = await prisma.transaction.findUnique({
-      where: { id }
+      where: { id },
     });
 
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async findByAccountId(accountId: string): Promise<Transaction[]> {
+  async findByAccountId(
+    accountId: string,
+    page: number = 1,
+    filters: ITransactionFilters,
+  ): Promise<{ transactions: Transaction[]; totalPages: number }> {
+    const skip = (page - 1) * LIMITS.default;
+
+    const {where,orderBy}=buildQuery(accountId,filters);
     const records = await prisma.transaction.findMany({
-      where: {
-        OR: [
-          { senderAccountId: accountId },
-          { receiverAccountId: accountId }
-        ]
-      }
+      where,
+      orderBy,
+      skip,
+      take: LIMITS.default,
     });
 
-    return records.map((r) => this.mapper.toDomain(r));
+    const totalCount = await prisma.transaction.count({
+      where,
+    });
+
+    return {
+      transactions: records.map((r) => this.mapper.toDomain(r)),
+      totalPages: Math.ceil(totalCount / LIMITS.default),
+    };
   }
 
   async updateById(
     id: string,
-    data: Partial<Transaction>
+    data: Partial<Transaction>,
   ): Promise<Transaction | null> {
     const record = await prisma.transaction.update({
       where: { id },
-      data: this.mapper.toUpdatePersistence(data)
+      data: this.mapper.toUpdatePersistence(data),
     });
 
     return this.mapper.toDomain(record);
@@ -65,15 +80,20 @@ export class TransactionRepository implements ITransactionRepository {
       return false;
     }
   }
- async findByIdempotencyKey(idempotencyKey: string): Promise<Transaction | null> {
-     try {
-      const record= await prisma.transaction.findUnique({
-         where: { idempotencyKey }
-       });
-        return record ? this.mapper.toDomain(record) : null;
-     } catch (error) {
-      console.log('Error in findByIdempotencyKey:', error);
-      throw new CustomError('Error finding transaction by idempotencyKey',statusCodes.INTERNAL_SERVER_ERROR);
-     }
+  async findByIdempotencyKey(
+    idempotencyKey: string,
+  ): Promise<Transaction | null> {
+    try {
+      const record = await prisma.transaction.findUnique({
+        where: { idempotencyKey },
+      });
+      return record ? this.mapper.toDomain(record) : null;
+    } catch (error) {
+      console.log("Error in findByIdempotencyKey:", error);
+      throw new CustomError(
+        "Error finding transaction by idempotencyKey",
+        statusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -3,7 +3,6 @@ import { Prisma, Transaction as PrismaTransaction } from "@prisma/client";
 import { Transaction } from "../../domain/entities/Transaction";
 import { ITransactionPersistenceMapper } from "./interfaces/ITransactionPersistenceMapper";
 
-
 export class TransactionPersistenceMapper implements ITransactionPersistenceMapper {
   // DB → Domain
   toDomain(raw: PrismaTransaction): Transaction {
@@ -17,21 +16,21 @@ export class TransactionPersistenceMapper implements ITransactionPersistenceMapp
       raw.senderAccountId,
       raw.receiverAccountId,
 
-      Number(raw.amount),        
+      Number(raw.amount),
       raw.currency,
 
       raw.status,
       raw.type,
-
+      raw.senderBalanceAfter ? Number(raw.senderBalanceAfter) : null,
+      raw.receiverBalanceAfter ? Number(raw.receiverBalanceAfter) : null,
       raw.failureReason ?? null,
 
       raw.createdAt,
-      raw.updatedAt
+      raw.updatedAt,
     );
   }
 
-
-  toPersistence(dto:Transaction): Prisma.TransactionCreateInput {
+  toPersistence(dto: Transaction): Prisma.TransactionCreateInput {
     return {
       id: dto.id,
       referenceId: dto.referenceId,
@@ -45,27 +44,42 @@ export class TransactionPersistenceMapper implements ITransactionPersistenceMapp
       type: dto.type,
       status: "PENDING",
 
-      failureReason: dto.failureReason ?? null
-      
+      failureReason: dto.failureReason ?? null,
+      senderBalanceAfter: dto.senderBalanceAfter ?? null,
+      receiverBalanceAfter: dto.receiverBalanceAfter ?? null,
     };
   }
 
- 
-  toUpdatePersistence(
-    partial: Partial<Transaction>
-  ): Prisma.TransactionUpdateInput {
-    return {
-      senderAccountId: partial.senderAccountId,
-      receiverAccountId: partial.receiverAccountId,
-      amount:
-        partial.amount !== undefined
-          ? new Prisma.Decimal(partial.amount)
-          : undefined,
-      currency: partial.currency,
-      status: partial.status,
-      type: partial.type,
-      failureReason: partial.failureReason
-      // updatedAt handled by Prisma @updatedAt
-    };
-  }
+ toUpdatePersistence(
+  partial: Partial<Transaction>,
+): Prisma.TransactionUpdateInput {
+  return {
+    senderAccountId: partial.senderAccountId,
+    receiverAccountId: partial.receiverAccountId,
+
+    amount:
+      partial.amount !== undefined
+        ? new Prisma.Decimal(partial.amount )
+        : undefined,
+
+    senderBalanceAfter:
+      partial.senderBalanceAfter !== undefined
+        ? partial.senderBalanceAfter === null
+          ? null
+          : new Prisma.Decimal(partial.senderBalanceAfter)
+        : undefined,
+
+    receiverBalanceAfter:
+      partial.receiverBalanceAfter !== undefined
+        ? partial.receiverBalanceAfter === null
+          ? null
+          : new Prisma.Decimal(partial.receiverBalanceAfter)
+        : undefined,
+
+    currency: partial.currency,
+    status: partial.status,
+    type: partial.type,
+    failureReason: partial.failureReason,
+  };
+}
 }

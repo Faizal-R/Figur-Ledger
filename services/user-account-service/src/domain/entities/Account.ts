@@ -1,6 +1,6 @@
 import { DateString } from "@figur-ledger/types";
 
-export type AccountType = 'savings' | 'salary' | 'business'|'current';
+export type AccountType = 'savings' | 'salary' | 'business'|'current' | 'biller_collection' | 'merchant_settlement';
 export type AccountStatus = 'active' | 'frozen' | 'closed';
 
 export class Account {

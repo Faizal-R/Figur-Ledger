@@ -26,14 +26,14 @@ const UserSchema = new Schema({
   },
   personalInfo: {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    dateOfBirth: { type: Date, required: true }
+    lastName: { type: String, },
+    dateOfBirth: { type: Date,  }
   },
   address: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zipCode: { type: String, required: true },
+    street: { type: String, },
+    city: { type: String,  },
+    state: { type: String, },
+    zipCode: { type: String,  },
     country: { type: String, default: 'US' }
   }
 }, { 
