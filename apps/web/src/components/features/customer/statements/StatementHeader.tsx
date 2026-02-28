@@ -18,7 +18,7 @@ export default function StatementHeader({ accountInfo }: StatementHeaderProps) {
   const { theme: t } = useTheme();
 
   return (
-    <div className={cn(t.card.base, t.radius.lg, "p-8 overflow-hidden relative")}>
+    <div className={cn(t.card.base, t.radius.lg, "p-6 md:p-8 overflow-hidden relative")}>
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
       

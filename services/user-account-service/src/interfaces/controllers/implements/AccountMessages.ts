@@ -15,4 +15,6 @@ export enum AccountMessages {
   UPDATE_BALANCE_FAILED = "Failed to update account balance",
   VERIFY_ACCOUNT_FAILED = "Failed to verify account",
   INVALID_ACCOUNT_NUMBER = "Invalid account number provided.",
+  ACCOUNT_DETAILS_FETCHED = "Account details fetched successfully",
+  FETCH_ACCOUNT_DETAILS_FAILED = "Failed to fetch account details",
 }

@@ -10,6 +10,6 @@ export interface IAccountController {
   amountDebited(req: Request, res: Response): Promise<void>;
   refundAmount(req: Request, res: Response): Promise<void>;
   verifyUserAccount(req: Request, res: Response): Promise<void>;
-
+  getAccountDetailsById(req: Request, res: Response): Promise<void>;
 
 }

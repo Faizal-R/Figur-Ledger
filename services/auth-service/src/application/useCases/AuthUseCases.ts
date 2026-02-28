@@ -9,7 +9,7 @@ import IHashService from "../../domain/interfaces/services/IHashService";
 import IJwtTokenService from "../../domain/interfaces/services/IJwtTokenService";
 import { IJwtTokenPayload } from "../../types/IJwt";
 import AuthUserDtoProfile from "../profiles/AuthUserDtoProfile";
-import { redis } from "@figur-ledger/shared";
+import {  redis } from "../../infrastructure/config/redis";
 import { RegisterRequestDTO } from "../dto/request/RegisterRequestDTO";
 import { RabbitPublisher } from "@figur-ledger/messaging-sdk";
 import { generateOTP } from "../helpers/generateOtp";

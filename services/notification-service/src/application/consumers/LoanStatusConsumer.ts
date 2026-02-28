@@ -6,7 +6,7 @@ import { LoanStatusEmailTemplate } from "../../infra/messaging/email/templates/L
 import { IUserServiceClient } from "../../domain/interfaces/http/IUserServiceClient";
 
 export type LoanStatusType = "APPROVED" | "REJECTED";
-
+  
 export interface LoanStatusNotificationMsg {
  userId:string;
 

@@ -9,7 +9,7 @@ export enum ServiceName {
   TRANSACTIONS="transactions",
   LOAN_CREDIT="loan-credit",
   PAYMENT_BILLING="payment-billing",
-  
+  REPORT_ANALYTICS="report-analytics",
 }
 
 export const serviceRegistry: Record<ServiceName, ServiceConfig> = {
@@ -47,6 +47,12 @@ export const serviceRegistry: Record<ServiceName, ServiceConfig> = {
   [ServiceName.PAYMENT_BILLING]: {
     name: ServiceName.PAYMENT_BILLING,
     target: process.env.PAYMENT_BILLING_SERVICE_URL || "http://localhost:5006",
+    healthCheckPath: "/health",
+    timeout: 5000,
+  },
+  [ServiceName.REPORT_ANALYTICS]: {
+    name: ServiceName.REPORT_ANALYTICS,
+    target: process.env.REPORT_ANALYTICS_SERVICE_URL || "http://localhost:5007",
     healthCheckPath: "/health",
     timeout: 5000,
   },

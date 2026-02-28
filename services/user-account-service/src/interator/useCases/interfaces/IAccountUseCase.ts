@@ -24,4 +24,5 @@ export interface IAccountUseCase {
   ): Promise<{ balance: number }>;
 
   verifyUserAccount(accountNumber:number):Promise<{accountId:string} >
+  getAccountDetailsById(accountId:string):Promise<Account | null>
 }
