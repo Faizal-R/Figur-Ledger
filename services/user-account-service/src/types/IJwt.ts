@@ -1,9 +1,9 @@
-import { ROLES } from "../domain/enums";
+import { Roles } from '@figur-ledger/shared'
 
 export interface IJwtTokenPayload {
     sub: string;     
     iat?: number;      
     exp?: number;    
     jti: string;   
-    scope:ROLES
+    scope:Roles
   }

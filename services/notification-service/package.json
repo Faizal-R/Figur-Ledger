@@ -1,0 +1,25 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@figur-ledger/messaging-sdk": "^1.0.0",
+    "axios": "^1.13.5",
+    "nodemailer": "^7.0.10",
+    "resend": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.3"
+  }
+}

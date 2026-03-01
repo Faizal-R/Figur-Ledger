@@ -1,0 +1,16 @@
+{
+  "name": "@figur-ledger/messaging-sdk",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.9"
+  },
+
+  "devDependencies": {
+    "@types/amqplib": "^0.10.8"
+  }
+}

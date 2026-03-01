@@ -13,18 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: process.env.FRONTEND_DOMAIN_URL || "http://localhost:5173",
+  origin: process.env.FRONTEND_DOMAIN_URL,
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
 
-app.use(cors(corsOptions));
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:3000",
-//     credentials: true,
-//   })
-// );
+// app.use(cors(corsOptions));
 
 app.use("/api", router);
 

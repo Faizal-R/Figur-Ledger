@@ -1,52 +1,75 @@
 import { inject, injectable } from "inversify";
-import { tryCatch } from "../../../helpers/handlers/tryCatch";
 import { UserDTO } from "../../dto/UserDTO";
 import { IUserUseCase } from "../interfaces/IUserUseCase";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserRepository } from "../../../domain/interfaces/repositories/IUserRepository";
-import { CustomError } from "../../../errors/CustomError";
-import { HTTP_STATUS_CODE } from "../../../domain/enums/HttpStatusCodes";
-import { UserMapper } from "../../mapper/UserMapper";
-import { IUser } from "../../../domain/entities/IUser";
+import { CustomError } from "@figur-ledger/utils";
+import { statusCodes } from "@figur-ledger/shared";
+import { UserDTOMapper } from "../../mapper/UserDTOMapper";
+import { User } from "../../../domain/entities/User";
+import { UserMessages } from "../../../interfaces/controllers/implements/UserMessages";
 @injectable()
 export class UserUseCase implements IUserUseCase {
   constructor(
     @inject(DI_TOKENS.REPOSITORIES.USER_REPOSITORY)
-    private readonly _userRepository: IUserRepository
+    private readonly _userRepository: IUserRepository,
   ) {}
   async getUserProfile(userId: string): Promise<UserDTO> {
     try {
-      const userProfile = await this._userRepository.findById(userId);
+      console.log(userId);
+      const userProfile = await this._userRepository.findOne({
+        authUserId: userId,
+      });
+      console.log(userProfile);
       if (!userProfile) {
         throw new CustomError(
-          "No User Found with this id",
-          HTTP_STATUS_CODE.NOT_FOUND
+          UserMessages.USER_NOT_FOUND,
+          statusCodes.NOT_FOUND,
         );
       }
-      return UserMapper.toEnity(userProfile);
+      return UserDTOMapper.toResponse(userProfile);
     } catch (error) {
       console.log(error);
       if (error instanceof CustomError) {
         throw error;
       }
       throw new CustomError(
-        "An Error Occured while fetching user profile",
-        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
+        UserMessages.FETCH_PROFILE_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
   async updateUserProfile(userId: string, userData: UserDTO): Promise<UserDTO> {
     try {
-      const updatedUserProfile = await this._userRepository.update(
-        userId,
-        userData
-      );
+      const userProfile = await this._userRepository.findOne({
+        authUserId: userId,
+      });
 
-      return UserMapper.toEnity(updatedUserProfile as IUser);
+      const updatedUserProfile = await this._userRepository.update(
+        userProfile?.id as string,
+        userData,
+      );
+      console.log(updatedUserProfile);
+
+      return UserDTOMapper.toResponse(updatedUserProfile as User);
     } catch (error) {
+      console.log(error);
       throw new CustomError(
-        "An Error Occured while updating user profile",
-        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
+        UserMessages.UPDATE_PROFILE_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async createUser(user: User): Promise<User> {
+    try {
+      const createdUser = await this._userRepository.create(user);
+      return createdUser;
+    } catch (error) {
+      console.log(error);
+      throw new CustomError(
+        UserMessages.CREATE_USER_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }

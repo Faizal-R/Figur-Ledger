@@ -1,37 +1,39 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interfaces/IUserController";
-import { tryCatch } from "../../../helpers/handlers/tryCatch";
+import { statusCodes } from "@figur-ledger/shared";
+import { UserMessages } from "./UserMessages";
 import { inject, injectable } from "inversify";
 import { DI_TOKENS } from "../../../di/types";
 import { IUserUseCase } from "../../../interator/useCases/interfaces/IUserUseCase";
-import { createResponse } from "../../../helpers/handlers/response";
-import { HTTP_STATUS_CODE } from "../../../domain/enums/HttpStatusCodes";
+import { createResponse } from "@figur-ledger/handlers";
+
 import { userProfileSchema } from "../../validations/user/UserProfileSchema";
+import { tryCatch } from "@figur-ledger/handlers";
 @injectable()
 export class UserController implements IUserController {
   constructor(
     @inject(DI_TOKENS.USECASES.USER_USECASE)
-    private readonly _userUseCase: IUserUseCase
+    private readonly _userUseCase: IUserUseCase,
   ) {}
   getUserProfile = tryCatch(async (req: Request, res: Response) => {
     const { userId } = req.params;
     if (!userId) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_GATEWAY,
+        statusCodes.BAD_GATEWAY,
         false,
-        "User Id is required",
-        null
+        UserMessages.USER_ID_REQUIRED,
+        null,
       );
     }
     const userProfile = await this._userUseCase.getUserProfile(userId);
 
     createResponse(
       res,
-      HTTP_STATUS_CODE.SUCCESS,
+      statusCodes.SUCCESS,
       true,
-      "User Profile fetched successfully",
-      userProfile
+      UserMessages.PROFILE_FETCHED,
+      userProfile,
     );
   });
   updateUserProfile = tryCatch(async (req: Request, res: Response) => {
@@ -39,36 +41,64 @@ export class UserController implements IUserController {
     if (!userId) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_GATEWAY,
+        statusCodes.BAD_GATEWAY,
         false,
-        "User Id is required",
-        null
+        UserMessages.USER_ID_REQUIRED,
+        null,
       );
       return;
     }
 
     const updateData = req.body;
     const validatedData = userProfileSchema.safeParse(updateData);
+    console.log(validatedData.error?.issues);
     if (!validatedData.success) {
       createResponse(
         res,
-        HTTP_STATUS_CODE.BAD_REQUEST,
+        statusCodes.BAD_REQUEST,
         false,
         validatedData.error.issues[0].message,
-        null
+        null,
       );
       return;
     }
     const updatedProfile = await this._userUseCase.updateUserProfile(
       userId,
-      updateData
+      updateData,
     );
     createResponse(
       res,
-      HTTP_STATUS_CODE.SUCCESS,
+      statusCodes.SUCCESS,
       true,
-      "User Profile updated successfully",
-      updatedProfile
+      UserMessages.PROFILE_UPDATED,
+      updatedProfile,
+    );
+  });
+
+  createUser = tryCatch(async (req: Request, res: Response) => {
+    const { email, phone, authUserId, personalInfo } = req.body;
+    if (!email || !phone || !authUserId || !personalInfo) {
+      createResponse(
+        res,
+        statusCodes.BAD_REQUEST,
+        false,
+        UserMessages.REQUIRED_FIELDS_MISSING,
+        null,
+      );
+      return;
+    }
+    const createdUser = await this._userUseCase.createUser({
+      email,
+      phone,
+      authUserId,
+      personalInfo,
+    });
+    createResponse(
+      res,
+      statusCodes.CREATED,
+      true,
+      UserMessages.USER_CREATED,
+      createdUser,
     );
   });
 }

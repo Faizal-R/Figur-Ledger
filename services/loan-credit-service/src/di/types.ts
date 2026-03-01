@@ -1,0 +1,39 @@
+export const DI_TOKENS = {
+    CONTROLLERS: {
+        LOAN_APPLICATION_CONTROLLER: Symbol.for("LoanApplicationController"),
+        LOAN_PRODUCT_CONTROLLER: Symbol.for("LoanProductController"),
+        CREDIT_PROFILE_CONTROLLER: Symbol.for("CreditProfileController"),
+        LOAN_EMI_CONTROLLER: Symbol.for("LoanEmiController"),
+    },
+    SERVICES: {
+        LOAN_APPLICATION_SERVICE: Symbol.for("LoanApplicationService"),
+        LOAN_PRODUCT_SERVICE: Symbol.for("LoanProductService"),
+        CREDIT_PROFILE_SERVICE: Symbol.for("CreditProfileService"),
+        REPAYMENT_SCHEDULE_SERVICE: Symbol.for("RepaymentScheduleService"),
+        EMI_SERVICE: Symbol.for("EmiService"),
+    },
+    REPOSITORIES: {
+        LOAN_APPLICATION_REPOSITORY: Symbol.for("LoanApplicationRepository"),
+        LOAN_PRODUCT_REPOSITORY: Symbol.for("LoanProductRepository"),
+        CREDIT_PROFILE_REPOSITORY: Symbol.for("CreditProfileRepository"),
+        REPAYMENT_SCHEDULE_REPOSITORY: Symbol.for("RepaymentScheduleRepository"),
+    },
+    CONSUMERS:{
+        CREDIT_PROFILE_CONSUMER:Symbol.for("CreditProfileConsumer")
+    }
+};
+
+
+function heloo ({data,helo}:{data:string,helo:string}){
+ console.log(data,helo)
+}
+
+
+
+const obj={
+    data:"This is data",
+    helo:'This is heloo'
+}
+
+
+heloo(obj)

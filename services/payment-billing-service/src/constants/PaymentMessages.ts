@@ -1,0 +1,15 @@
+export enum PaymentMessages {
+  PAYMENT_COMPLETED = "Payment completed successfully",
+  PAYMENT_HISTORY_FETCHED = "Payment history fetched successfully",
+  PAYMENT_FAILED = "Payment failed. Please try again.",
+  INSUFFICIENT_FUNDS = "Insufficient funds for this payment.",
+  BILL_NOT_FOUND = "Bill details not found.",
+  INVALID_PAYMENT_DATA = "Invalid payment data provided.",
+  CATEGORY_REQUIRED = "Category query parameter is required",
+  BILL_GENERATED = "Utility bill generated successfully",
+  BILLER_FETCHED = "Biller details fetched successfully",
+  BILLERS_FETCHED = "Billers fetched successfully",
+  BILLER_CREATED = "Biller created successfully",
+  BILLER_SAVED = "Biller saved successfully",
+  SAVED_BILLERS_FETCHED = "Saved billers fetched successfully",
+}
