@@ -1,11 +1,12 @@
-/* EXPRESS */
-import { Application } from 'express';
-/* APP */
-import { IRoute } from '../types';
+import { Application } from "express";
+import { verifyAuthToken } from "../middlewares/verifyAuthToken";
+import { checkRoleAccess } from "../middlewares/checkRoleAccess";
+import { IRoute } from "../types";
 
-export const useAuth = ( app: Application, routes: IRoute[]  ) => {
+export const useAuth = (app: Application, routes: IRoute[]) => {
+  routes.forEach((route) => {
+    if (!route.auth) return;
 
-  routes.forEach( route => {
-    app.use(route.url, /* Auth Check Function */)
-  })
-}
+    app.use(route.url, verifyAuthToken, checkRoleAccess(route.roles));
+  });
+};

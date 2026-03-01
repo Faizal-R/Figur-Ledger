@@ -4,17 +4,19 @@ export const DI_TOKENS = {
     ACCOUNT_REPOSITORY: "AccountRepository",
   },
   USECASES: {
-    AUTH_USECASE: "AuthUseCase",
     ACCOUNT_USECASE: "AccountUseCase",
     USER_USECASE: "UserUseCase",
   },
   CONTROLLERS: {
-    AUTH_CONTROLLER: "AuthController",
     ACCOUNT_CONTROLLER: "AccountController",
     USER_CONTROLLER: "UserController",
   },
-  SERVICES: {
-    HASH_SERVICE: "HashService",
-    JWT_TOKEN_SERVICE: "JwtTokenService",
+  MAPPERS:{
+    USER_PERSISTENCE_MAPPER:"UserPersistenceMapper",
+    ACCOUNT_PERSISTENCE_MAPPER:"AccountPersistenceMapper"
   },
+  CONSUMERS:{
+    USER_REGISTERED_CONSUMER:"UserRegisteredConsumer"
+  },
+
 };

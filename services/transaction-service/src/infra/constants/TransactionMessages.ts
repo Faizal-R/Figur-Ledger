@@ -1,0 +1,17 @@
+export enum TransactionMessages {
+  TX_IN_PROGRESS = "Transaction already in progress",
+  DEPOSIT_FAILED = "Deposit failed. Please try again later.",
+  WITHDRAWAL_FAILED = "Withdrawal failed. Please try again later.",
+  HISTORY_FETCH_FAILED = "Transaction history fetch failed. Please try again.",
+  INSUFFICIENT_FUNDS = "Insufficient funds for this transaction.",
+  INVALID_ACCOUNT = "Invalid account details provided.",
+  DEPOSIT_SUCCESS = "Deposit initiated successfully",
+  WITHDRAWAL_SUCCESS = "Withdrawal initiated successfully",
+  TRANSFER_SUCCESS = "Amount transferred successfully",
+  HISTORY_FETCH_SUCCESS = "Transaction history fetched successfully",
+  ACCOUNT_ID_REQUIRED = "Account ID is required",
+  REFERENCE_ID_REQUIRED = "Reference ID is required",
+  SENDER_ACCOUNT_REQUIRED = "Sender account ID is required",
+  RECEIVER_ACCOUNT_REQUIRED = "Receiver account ID is required",
+  INVALID_AMOUNT = "Amount must be a number greater than 0",
+}

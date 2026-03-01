@@ -1,0 +1,19 @@
+{
+  "name": "@figur-ledger/handlers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@figur-ledger/shared": "^1.0.0",
+    "@figur-ledger/types": "^1.0.0",
+    "@figur-ledger/utils": "^1.0.0"
+  }
+}

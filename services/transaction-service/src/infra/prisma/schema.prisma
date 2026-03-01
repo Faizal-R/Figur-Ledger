@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transaction {
+  id                String   @id @default(uuid())
+
+  referenceId       String
+  idempotencyKey    String   @unique
+
+  senderAccountId   String?
+  receiverAccountId String?
+
+  amount            Decimal   
+  currency          String
+
+  status            TransactionStatus @default(PENDING)
+  type              TransactionType
+
+  failureReason     String?
+ 
+  senderBalanceAfter  Decimal?
+  receiverBalanceAfter Decimal?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([referenceId])
+  @@index([senderAccountId])
+  @@index([receiverAccountId])
+  @@index([status])
+  @@index([type])
+}
+
+
+enum TransactionStatus {
+  PENDING
+  DEBIT_SUCCESS
+  CREDIT_SUCCESS
+  SUCCESS
+  ROLLED_BACK
+  FAILED
+  MANUAL_REVIEW
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  TRANSFER
+}
