@@ -1,5 +1,6 @@
-import { DateString } from "@figur-ledger/types";
-import { Roles } from "@figur-ledger/shared";
+
+import { Roles } from "@/types/role";
+type DateString= Date | string
 
 export interface PersonalInfo {
   firstName: string;
