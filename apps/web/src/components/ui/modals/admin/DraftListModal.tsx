@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
-import { LoanProductPayload } from "@/hooks/state/useLoanProductState";
+import { ILoanProduct } from "@/types/ILoan";
 import { Edit3, FileText, X } from "lucide-react";
 
 export default function DraftListModal({
@@ -12,8 +12,8 @@ export default function DraftListModal({
   onClose,
 }: {
   open: boolean;
-  drafts: LoanProductPayload[];
-  onEdit: (d: LoanProductPayload) => void;
+  drafts: ILoanProduct[];
+  onEdit: (d: ILoanProduct) => void;
   onClose: () => void;
 }) {
   const { theme: t } = useTheme();

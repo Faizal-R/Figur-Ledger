@@ -1,20 +1,28 @@
-export interface IBiller extends Document {
- _id:string;
+import React from "react";
+
+export interface IBiller {
+  _id: string;
   name: string;
   category: string;
   collectionAccountId: string;
   validationPattern?: string;
   fixedAmounts: number[];
   isActive: boolean;
-  contact:{
+  contact: {
     email?: string;
     phone?: string;
-  }
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-
-
-export type BillerCategory = 'ELECTRICITY' | 'WATER' | 'INTERNET' | 'MOBILE' | 'CABLE' | 'GAS';
+export type BillerCategory =
+  | "ELECTRICITY"
+  | "WATER"
+  | "INTERNET"
+  | "MOBILE"
+  | "CABLE"
+  | "GAS";
 
 export interface Biller {
   _id: string;
@@ -27,7 +35,7 @@ export interface Biller {
 
 export interface ISavedBiller {
   _id?: string;
-  userId:string;
+  userId: string;
   billerId: string;
   consumerId: string;
   category: string;
@@ -38,11 +46,20 @@ export interface ISavedBiller {
   dueDate: string;
 }
 
-
 export interface Category {
-  id: BillerCategory | 'ALL';
+  id: BillerCategory | "ALL";
   name: string;
   icon: React.ComponentType;
   count: number;
   color: string;
+}
+
+export interface PaymentHistory {
+  id: string;
+  billerName: string;
+  consumerId: string;
+  amount: number;
+  date: string;
+  status: "SUCCESS" | "PENDING" | "FAILED";
+  invoiceUrl?: string;
 }

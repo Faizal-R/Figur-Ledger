@@ -23,10 +23,10 @@ export function OtpVerifyClient({ email }: { email: string }) {
       console.log("otp verified",res)
      
         setUserInStore({
-          email:res.data.user.email,
-          id:res.data.user.id as string,
-          phone:res.data.user.phone,
-          role:res.data.user.role
+          email: res.data.user.email,
+          id: res.data.user.id as string,
+          phone: res.data.user.phone,
+          role: res.data.user.role,
         })
 
        setToken(res.data.accessToken)

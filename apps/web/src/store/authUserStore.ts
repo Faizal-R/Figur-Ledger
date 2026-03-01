@@ -6,12 +6,11 @@ interface AuthUser {
   email: string;
   role: string;
   phone: string;
-  accountId:string
 }
 
 interface AuthStore {
-  token: string | null;         // NOT persisted
-  user: AuthUser | null;        // PERSISTED only
+  token: string | null;
+  user: AuthUser | null;
 
   setToken: (token: string | null) => void;
   setUser: (user: AuthUser | null) => void;
@@ -21,8 +20,8 @@ interface AuthStore {
 export const useAuthUserStore = create<AuthStore>()(
   persist(
     (set) => ({
-      token: null,       // memory only
-      user: null,        // persisted
+      token: null,
+      user: null,
 
       setToken: (token) => set({ token }),
       setUser: (user) => set({ user }),
@@ -32,8 +31,13 @@ export const useAuthUserStore = create<AuthStore>()(
     {
       name: "auth-user-storage",
       partialize: (state) => ({
-        user: state.user,   // only persist the user
+        user: state.user,
       }),
-    }
-  )
+    },
+  ),
 );
+
+export const useAuthUser = () => useAuthUserStore((s) => s.user);
+export const useIsAuthenticated = () => useAuthUserStore((s) => !!s.token);
+export const useAuthLoading = () => false;
+export const useAuthError = () => null;

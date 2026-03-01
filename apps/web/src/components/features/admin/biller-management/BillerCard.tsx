@@ -50,10 +50,13 @@ export default function BillerCard({
     return `${prefix}-${id.slice(-5).toUpperCase()}`;
   };
 
-  const formattedDate = new Date(biller.createdAt).toLocaleDateString(
-    "en-IN",
-    { day: "numeric", month: "short", year: "numeric" }
-  );
+  const formattedDate = biller.createdAt
+    ? new Date(biller.createdAt).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "NOT_SYNCED";
 
   return (
     <motion.div

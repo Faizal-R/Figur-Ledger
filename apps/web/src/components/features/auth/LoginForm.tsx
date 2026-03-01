@@ -32,7 +32,6 @@ const LoginForm = () => {
             id: res.data.user.id as string,
             phone: res.data.user.phone,
             role: res.data.user.role,
-            accountId: res.data.user.accountId
           });
           setToken(res.data.accessToken);
           router.push(`/${res.data.user.role.toLowerCase()}/dashboard`);

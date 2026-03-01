@@ -10,12 +10,17 @@ import {
 } from "@/hooks/api/useLoan";
 import { useAuthUserStore } from "@/store";
 
-export default function LoanApplicationList() {
+export default function LoanApplicationList({
+  applications: initialApplications,
+}: {
+  applications?: ILoanApplication[];
+}) {
   const [selectedApplication, setSelectedApplication] =
     useState<ILoanApplication | null>(null);
   const { user } = useAuthUserStore();
 
-  const { data: applications, isLoading } = useGetAllLoanApplications();
+  const { data: fetchedApplications, isLoading } = useGetAllLoanApplications();
+  const applications = initialApplications || fetchedApplications?.data;
 
   const approveOrRejectLoanApplication = useApproveOrRejectLoanApplication();
 
@@ -49,7 +54,7 @@ export default function LoanApplicationList() {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {applications?.data.map((app) => (
+        {applications?.map((app) => (
           <LoanApplicationCard
             key={app.id}
             application={app}

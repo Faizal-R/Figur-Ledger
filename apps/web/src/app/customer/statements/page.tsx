@@ -12,56 +12,7 @@ import { useGenerateAccountStatement } from "@/hooks/api/useReport";
 import { useUserAccounts } from "@/hooks/api/useProfileAndAccount";
 import { useAuthUserStore } from "@/store";
 
-const STATEMENT = {
-  period: "Feb 01, 2026 — Feb 28, 2026",
-  openingBalance: 1000000,
-  totalCredits: 500000,
-  totalDebits: 250000,
-  closingBalance: 1250000,
-};
 
-const TRANSACTIONS = [
-  {
-    id: "1",
-    date: "Feb 25, 2026",
-    description: "Salary Credit — FIGUR TECH",
-    debit: 0,
-    credit: 500000,
-    balance: 1250000,
-  },
-  {
-    id: "2",
-    date: "Feb 22, 2026",
-    description: "Transfer to Savings",
-    debit: 150000,
-    credit: 0,
-    balance: 750000,
-  },
-  {
-    id: "3",
-    date: "Feb 15, 2026",
-    description: "Amazon India",
-    debit: 25000,
-    credit: 0,
-    balance: 900000,
-  },
-  {
-    id: "4",
-    date: "Feb 10, 2026",
-    description: "Starbucks",
-    debit: 75000,
-    credit: 0,
-    balance: 925000,
-  },
-  {
-    id: "5",
-    date: "Feb 05, 2026",
-    description: "Rent Payment",
-    debit: 100000,
-    credit: 0,
-    balance: 1000000,
-  },
-];
 
 interface StatementParams {
   accountId: string;
@@ -246,16 +197,16 @@ export default function BankStatementsPage() {
             {isGenerated && (
               <StatementTransactions
                 transactions={generatedAccountStatement.transactions.map(
-                  (t) => ({
-                    id: t.id,
-                    date: t.date,
-                    description: t.description,
+                  (tx: any) => ({
+                    id: tx.id,
+                    date: tx.date,
+                    description: tx.description,
                     reference:
                       "FIGR-" +
                       Math.random().toString(36).substr(2, 9).toUpperCase(),
-                    type: t.entryType.toLowerCase() as "debit" | "credit",
-                    amount: t.amount,
-                    balance: t.balance,
+                    type: tx.entryType.toLowerCase() as "debit" | "credit",
+                    amount: tx.amount,
+                    balance: tx.balance,
                   }),
                 )}
                 currency={generatedAccountStatement.account.currency}
