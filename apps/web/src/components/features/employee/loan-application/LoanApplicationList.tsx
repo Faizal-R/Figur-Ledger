@@ -44,7 +44,7 @@ export default function LoanApplicationList({
     const applicationData = {
       applicationId: data.applicationId,
       status: data.status,
-      approvedAmount: selectedApplication?.approvedAmount,
+      approvedAmount: selectedApplication?.approvedAmount || selectedApplication?.requestedAmount,
       approvedBy: user?.id,
     };
     approveOrRejectLoanApplication.mutate(applicationData);
@@ -56,7 +56,7 @@ export default function LoanApplicationList({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {applications?.map((app) => (
           <LoanApplicationCard
-            key={app.id}
+            key={app._id || app.id}
             application={app}
             onClick={() => setSelectedApplication(app)}
           />

@@ -50,7 +50,6 @@ export default function StatementGenerator({ onGenerate, accounts }: StatementGe
   ];
 
   const handleGenerate = () => {
-    alert(selectedAccount)
     onGenerate({
       accountId: selectedAccount,
       type: duration === "custom" ? "custom" : selectionType,

@@ -17,6 +17,7 @@ export interface ILoanProduct {
 
 export interface ILoanApplication {
   id?: string;
+  _id?: string;
 
   userId: string;
 

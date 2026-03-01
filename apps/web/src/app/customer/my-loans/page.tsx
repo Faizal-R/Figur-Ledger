@@ -6,7 +6,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronRight, IndianRupee, Clock, CheckCircle2 } from "lucide-react";
+import { ChevronRight, IndianRupee, Clock } from "lucide-react";
 
 export default function MyLoansPage() {
   const router = useRouter();

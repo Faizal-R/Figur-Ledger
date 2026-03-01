@@ -90,6 +90,8 @@ services:
       - ./services/loan-credit-service/.env
     networks:
       - figur-network
+    depends_on:
+      - transaction-service
 
   payment-billing-service:
     image: 5zziiihhh/figur-payment-billing-service:latest

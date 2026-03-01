@@ -67,6 +67,10 @@ export const useApproveOrRejectLoanApplication = () => {
 
       toast.success(`Loan application ${variables.status} successfully`);
     },
+
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update loan status");
+    },
   });
 };
 

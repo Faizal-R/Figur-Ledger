@@ -3,7 +3,7 @@
 import { ILoanApplication } from "@/types/ILoan";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
-import { X, Check, XCircle, Activity } from "lucide-react";
+import { X, Check, XCircle } from "lucide-react";
 
 export default function LoanDecisionModal({
   application,
@@ -56,7 +56,7 @@ export default function LoanDecisionModal({
 
           <div className="flex gap-6">
             <button
-              onClick={() => onConfirm({ applicationId: application.id as string, status: "REJECTED" })}
+              onClick={() => onConfirm({ applicationId: (application._id || application.id) as string, status: "REJECTED" })}
               className={cn(
                 "flex-1 h-16 rounded-2xl border transition-all duration-300 font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3",
                 "border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500"
@@ -67,7 +67,7 @@ export default function LoanDecisionModal({
             </button>
 
             <button
-              onClick={() => onConfirm({ applicationId: application.id as string, status: "APPROVED" })}
+              onClick={() => onConfirm({ applicationId: (application._id || application.id) as string, status: "APPROVED" })}
               className={cn(
                 t.button.primary,
                 "flex-1 h-16 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3 shadow-2xl"
