@@ -17,7 +17,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 
-# ← these were missing, this is why it crashed
+
 COPY --from=builder /app/packages/shared/dist         ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
 COPY --from=builder /app/packages/types/dist          ./packages/types/dist

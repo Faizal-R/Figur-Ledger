@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/server.js",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
@@ -17,18 +17,22 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@figur-ledger/handlers": "^1.0.0",
     "@figur-ledger/messaging-sdk": "^1.0.0",
     "@figur-ledger/shared": "^1.0.0",
     "@figur-ledger/types": "^1.0.0",
+    "@figur-ledger/utils": "^1.0.0",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",
     "axios": "^1.13.2",
+    "cookie-parser": "^1.4.6",
     "tsx": "^4.21.0"
   },
   "prisma": {
     "schema": "src/infra/prisma/schema.prisma"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "prisma": "^7.0.1"
   }
 }

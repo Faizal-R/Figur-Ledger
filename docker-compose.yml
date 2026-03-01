@@ -1,0 +1,128 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    image: 5zziiihhh/figur-api-gateway:latest
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    container_name: figur-api-gateway
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./apps/api-gateway/.env
+    networks:
+      - figur-network
+    depends_on:
+      - auth-service
+      - user-account-service
+      - notification-service
+      - transaction-service
+      - loan-credit-service
+      - payment-billing-service
+      - report-analytics-service
+
+  auth-service:
+    image: 5zziiihhh/figur-auth-service:latest
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: figur-auth-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./services/auth-service/.env
+    networks:
+      - figur-network
+
+  user-account-service:
+    image: 5zziiihhh/figur-user-account-service:latest
+    build:
+      context: .
+      dockerfile: services/user-account-service/Dockerfile
+    container_name: figur-user-account-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./services/user-account-service/.env
+    networks:
+      - figur-network
+
+  notification-service:
+    image: 5zziiihhh/figur-notification-service:latest
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    container_name: figur-notification-service
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./services/notification-service/.env
+    networks:
+      - figur-network
+    depends_on:
+      - user-account-service
+
+  transaction-service:
+    image: 5zziiihhh/figur-transaction-service:latest
+    build:
+      context: .
+      dockerfile: services/transaction-service/Dockerfile
+    container_name: figur-transaction-service
+    ports:
+      - "5004:5004"
+    env_file:
+      - ./services/transaction-service/.env
+    networks:
+      - figur-network
+    depends_on:
+      - user-account-service
+
+  loan-credit-service:
+    image: 5zziiihhh/figur-loan-credit-service:latest
+    build:
+      context: .
+      dockerfile: services/loan-credit-service/Dockerfile
+    container_name: figur-loan-credit-service
+    ports:
+      - "5005:5005"
+    env_file:
+      - ./services/loan-credit-service/.env
+    networks:
+      - figur-network
+
+  payment-billing-service:
+    image: 5zziiihhh/figur-payment-billing-service:latest
+    build:
+      context: .
+      dockerfile: services/payment-billing-service/Dockerfile
+    container_name: figur-payment-billing-service
+    ports:
+      - "5006:5006"
+    env_file:
+      - ./services/payment-billing-service/.env
+    networks:
+      - figur-network
+    depends_on:
+      - user-account-service
+      - transaction-service
+
+  report-analytics-service:
+    image: 5zziiihhh/figur-report-analytics-service:latest
+    build:
+      context: .
+      dockerfile: services/report-analytics-service/Dockerfile
+    container_name: figur-report-analytics-service
+    ports:
+      - "5007:5007"
+    env_file:
+      - ./services/report-analytics-service/.env
+    networks:
+      - figur-network
+    depends_on:
+      - user-account-service
+      - transaction-service
+
+networks:
+  figur-network:
+    driver: bridge

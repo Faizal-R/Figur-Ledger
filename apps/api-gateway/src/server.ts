@@ -55,3 +55,5 @@ const listen = (app: Application) => {
     console.log(`Gateway Server is running on port ${port}`),
   );
 };
+
+server()
