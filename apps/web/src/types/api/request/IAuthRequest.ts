@@ -1,6 +1,5 @@
-
-import { DateString } from "@figur-ledger/types";
-import {  Roles } from "@figur-ledger/shared";
+type DateString = string |  Date;
+import {  Roles } from "@/types/role";
 
 export interface LoginRequest {
   email: string;
