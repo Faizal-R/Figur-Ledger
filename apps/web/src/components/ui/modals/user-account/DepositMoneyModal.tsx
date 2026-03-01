@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { X, Wallet, ArrowDownCircle, ArrowUpCircle, Zap, Activity, ChevronRight, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { X, Wallet, Zap, Activity, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { formatCurrency } from "@/utils/formats";
 import { IAccount } from "@/types/user-account";
 import { useTheme } from "@/context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export interface IDepositMoneyModalProps {
@@ -40,7 +40,7 @@ export function TransactionMoneyModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className={cn(
-          "relative w-full max-w-md overflow-hidden flex flex-col shadow-3xl",
+          "relative w-full max-w-sm overflow-hidden flex flex-col shadow-3xl",
           mode === 'dark' ? "bg-[#0a0a0b] border border-white/10" : "bg-white border border-slate-200",
           t.radius.lg
         )}
@@ -52,15 +52,15 @@ export function TransactionMoneyModal({
         )} />
         
         {/* Header Section */}
-        <div className="p-6 border-b border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02]">
+        <div className="p-5 border-b border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2">
            <div className="flex items-center justify-between">
               <div className="space-y-1">
-                 <div className="flex items-center gap-3">
+                 <div className="flex items-center gap-2">
                     <div className={cn("w-2 h-2 rounded-full animate-pulse", isDeposit ? "bg-[#c1ff72]" : "bg-red-500")} />
-                    <span className={cn("text-[9px] font-black uppercase tracking-[0.4em] opacity-40", t.text.muted)}>Liquidity Protocol</span>
+                    <span className={cn("text-[9px] font-black uppercase tracking-[0.4em] opacity-40", t.text.muted)}>{isDeposit ? "Deposit" : "Withdraw"} Funds</span>
                  </div>
-                 <h2 className={cn("text-2xl font-black tracking-tighter", t.text.display)}>
-                   {isDeposit ? "Inbound" : "Outbound"} <span className={isDeposit ? "text-[#c1ff72]" : "text-red-500"}>Shift.</span>
+                 <h2 className={cn("text-xl font-black tracking-tighter", t.text.display)}>
+                   Manage <span className={isDeposit ? "text-[#c1ff72]" : "text-red-500"}>Transfer.</span>
                  </h2>
               </div>
               <button
@@ -99,12 +99,12 @@ export function TransactionMoneyModal({
           </div>
 
           {/* Input Vector */}
-          <div className="space-y-3">
+          <div className="space-y-2">
              <div className="flex items-center justify-between">
-                <span className={cn("text-[9px] font-black uppercase tracking-[0.3em] opacity-40", t.text.muted)}>Shift Volume</span>
+                <span className={cn("text-[9px] font-black uppercase tracking-[0.3em] opacity-40", t.text.muted)}>Enter Amount</span>
                 <div className="flex items-center gap-2">
                    <Zap size={10} className="text-[#c1ff72]" />
-                   <span className="text-[9px] font-black text-[#c1ff72]">Real-time Routing</span>
+                   <span className="text-[9px] font-black text-[#c1ff72]">Instant Transfer</span>
                 </div>
              </div>
              
@@ -140,7 +140,7 @@ export function TransactionMoneyModal({
         </div>
 
         {/* Execution Strip */}
-        <div className="p-6 border-t border-black/5 dark:border-white/5 bg-black/[0.04] dark:bg-white/[0.04]">
+        <div className="p-6 border-t border-black/5 dark:border-white/5 bg-black/4 dark:bg-white/4">
           <button
             disabled={isDisabled || (!isDeposit && Number(amount) > (account.balance || 0))}
             onClick={() => {
@@ -164,11 +164,11 @@ export function TransactionMoneyModal({
           >
             {isDeposit ? (
               <>
-                Execute Inflow <ArrowDownLeft size={20} className="group-hover:scale-125 transition-transform" />
+                Deposit Funds <ArrowDownLeft size={18} className="group-hover:scale-125 transition-transform" />
               </>
             ) : (
               <>
-                Execute Outflow <ArrowUpRight size={20} className="group-hover:scale-125 transition-transform" />
+                Withdraw Funds <ArrowUpRight size={18} className="group-hover:scale-125 transition-transform" />
               </>
             )}
             
@@ -177,7 +177,7 @@ export function TransactionMoneyModal({
           </button>
           
           <div className="mt-4 flex items-center justify-center gap-3 opacity-20">
-             <span className="text-[8px] font-black uppercase tracking-[0.5em]">Protocol Settlement: Real-time</span>
+             <span className="text-[8px] font-black uppercase tracking-[0.5em]">Funds will be settled instantly</span>
           </div>
         </div>
       </motion.div>

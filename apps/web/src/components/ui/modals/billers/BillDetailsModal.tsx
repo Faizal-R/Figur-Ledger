@@ -5,7 +5,7 @@ import {
   Download, Bell, Calendar, 
   Receipt,
   History,
-  ShieldCheck, Terminal, Banknote, CheckCircle
+  ShieldCheck, Banknote, CheckCircle
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { ISavedBiller } from "@/types/IBill";
@@ -48,7 +48,6 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
 }) => {
   const { theme: t } = useTheme();
   const [selectedAccount, setSelectedAccount] = useState<string>("");
- console.log(billDetails)
   useEffect(() => {
     if (accounts?.[0]?.id) {
       setSelectedAccount(accounts[0].id);
@@ -85,13 +84,13 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`relative w-full max-w-4xl max-h-[90vh] overflow-hidden ${t.card.base} ${t.radius.md} border border-white/10 shadow-3xl flex flex-col md:flex-row`}
+            className={`relative w-full max-w-3xl max-h-[90vh] overflow-hidden ${t.card.base} ${t.radius.md} border border-white/10 shadow-3xl flex flex-col md:flex-row`}
           >
             {/* Header Signal Line */}
             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#c1ff72] to-transparent opacity-30 z-20" />
 
             {/* LEFT SECTION: Bill Intel */}
-            <div className="w-full md:w-[60%] p-8 border-b md:border-b-0 md:border-r border-white/5 space-y-8 overflow-y-auto custom-scrollbar">
+            <div className="w-full md:w-[60%] p-6 border-b md:border-b-0 md:border-r border-white/5 space-y-6 overflow-y-auto custom-scrollbar">
               <div className="flex justify-between items-start">
                 <div className="flex gap-5">
                    <div className={`w-16 h-16 rounded-2xl bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] flex items-center justify-center shadow-xl`}>
@@ -100,7 +99,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
                    <div>
                       <h2 className={`${t.text.heading} text-2xl font-black tracking-tighter leading-none mb-1`}>{biller.alias}</h2>
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-60`}>CONSUMER_ID: {biller.consumerId}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-60`}>Consumer ID: {biller.consumerId}</span>
                         <div className="w-1 h-1 rounded-full bg-slate-500 opacity-20" />
                         <span className={`text-[10px] font-black uppercase tracking-widest text-[#c1ff72] opacity-80`}>{biller.category}</span>
                       </div>
@@ -111,11 +110,11 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
               {/* Data Grid */}
               <div className="grid grid-cols-2 gap-4">
                  <div className={`p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 space-y-1`}>
-                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Total Allocation</p>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Amount Due</p>
                     <p className={`text-xl font-black tracking-tight ${t.text.display}`}>₹{billDetails?.totalAmount || biller.dueAmount || "0.00"}</p>
                  </div>
                  <div className={`p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 space-y-1`}>
-                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Synchronization Due</p>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Due Date</p>
                     <div className="flex items-center gap-2">
                       <Calendar size={14} className="text-[#c1ff72]" />
                       <p className={`text-sm font-black ${t.text.heading}`}>{billDetails?.dueDate || biller.dueDate}</p>
@@ -127,7 +126,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
               <div className="space-y-4">
                  <div className="flex items-center gap-3">
                     <History size={16} className="text-[#c1ff72]" />
-                    <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Protocol Breakdown</h3>
+                    <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Bill Details</h3>
                  </div>
                  <div className={`space-y-3 p-6 rounded-2xl ${t.card.base} border border-white/5`}>
                    {(billDetails?.breakdown || [
@@ -154,7 +153,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
                    className={`flex-1 h-12 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest ${t.text.heading} hover:bg-[#c1ff72]/5 hover:border-[#c1ff72]/20 transition-all`}
                 >
                    <Download size={16} />
-                   Archive Data
+                   Download Bill
                 </motion.button>
                 <motion.button 
                    whileHover={{ scale: 1.02 }}
@@ -167,10 +166,10 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
             </div>
 
             {/* RIGHT SECTION: Transaction Matrix */}
-            <div className={`w-full md:w-[40%] p-8 bg-black/10 dark:bg-black/40 space-y-8 flex flex-col justify-between`}>
+            <div className={`w-full md:w-[40%] p-6 bg-black/10 dark:bg-black/40 space-y-6 flex flex-col justify-between`}>
               <div className="space-y-8">
                 <div className="flex justify-between items-center">
-                   <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Liquidity Source</h3>
+                   <h3 className={`text-xs font-black uppercase tracking-[0.2em] ${t.text.heading}`}>Pay From</h3>
                    <motion.button 
                       whileHover={{ scale: 1.1, rotate: 90 }}
                       whileTap={{ scale: 0.9 }}
@@ -225,7 +224,7 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
               <div className="space-y-6">
                  <div className="flex items-center gap-3 justify-center mb-2">
                     <ShieldCheck size={14} className="text-[#c1ff72] opacity-40" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Encrypted Execution</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>Secure Payment</span>
                  </div>
                  
                  <motion.button
@@ -239,8 +238,8 @@ const BillDetailsModal: React.FC<BillDetailsModalProps> = ({
                      disabled:opacity-50 disabled:grayscale transition-all
                    `}
                  >
-                   <Terminal size={20} strokeWidth={3} />
-                   <span>Execute Payment</span>
+                   <Banknote size={20} />
+                   <span>Pay Bill Now</span>
                  </motion.button>
               </div>
             </div>

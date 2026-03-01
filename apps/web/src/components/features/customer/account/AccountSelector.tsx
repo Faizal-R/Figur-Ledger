@@ -48,14 +48,7 @@ export default function AccountSelector({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between px-2">
-        <h3
-          className={`text-[11px] font-black uppercase tracking-[0.3em] ${t.text.muted} opacity-60`}
-        >
-          Select Liquidity Source
-        </h3>
-        <div className="h-px flex-1 bg-black/5 dark:bg-white/5 mx-6" />
-      </div>
+      
 
       <div
         className={cn(

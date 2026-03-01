@@ -43,13 +43,13 @@ export default function TransactionViewModal({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className={cn(
-          "relative w-full max-w-md overflow-hidden flex flex-col shadow-2xl",
+          "relative w-full max-w-sm overflow-hidden flex flex-col shadow-2xl",
           t.card.base,
           t.radius.lg
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/2">
+        <div className="p-5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/2">
            <h3 className={cn("text-lg font-bold", t.text.heading)}>Receipt</h3>
            <button
              onClick={onClose}
@@ -59,9 +59,9 @@ export default function TransactionViewModal({
            </button>
         </div>
 
-        <div className="p-6 md:p-8 space-y-8">
+        <div className="p-6 space-y-6">
            {/* Amount Hero */}
-           <div className="text-center space-y-2">
+           <div className="text-center space-y-1">
               <div className={cn(
                 "w-16 h-16 rounded-2xl mx-auto flex items-center justify-center mb-4 transition-transform hover:scale-110",
                 transaction.type === 'WITHDRAW' ? "bg-red-500/10 text-red-500" : "bg-green-500/10 text-green-600"
@@ -111,15 +111,15 @@ export default function TransactionViewModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/2">
+        <div className="p-5 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/2">
            <button
              onClick={onClose}
              className={cn(
-               "w-full h-12 rounded-xl text-xs font-bold transition-all shadow-sm",
+               "w-full h-11 rounded-xl text-xs font-bold transition-all shadow-sm",
                mode === 'dark' ? "bg-white/10 text-white hover:bg-white/20" : "bg-slate-900 text-white hover:bg-slate-800"
              )}
            >
-             Done
+             Close
            </button>
         </div>
       </motion.div>

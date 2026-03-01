@@ -75,38 +75,38 @@ const CreateBillerModal = ({
         className={cn(
           t.card.base,
           t.radius.lg,
-          "w-full max-w-2xl relative overflow-hidden shadow-3xl border border-black/5 dark:border-white/5"
+          "w-full max-w-lg relative overflow-hidden shadow-3xl border border-black/5 dark:border-white/5"
         )}
       >
         {/* Visual Decoration */}
         <div className="absolute top-0 left-0 w-full h-1.5 bg-[#b0f061] shadow-[0_0_20px_#b0f061]" />
         
         {/* Header */}
-        <div className="p-10 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl", t.card.lime)}>
-              <Building2 className={t.text.lime} size={28} />
+        <div className="p-8 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl", t.card.lime)}>
+              <Building2 className={t.text.lime} size={24} />
             </div>
             <div>
-              <h2 className={cn("text-3xl font-black tracking-tighter uppercase", t.text.heading)}>
-                Biller <span className="text-[#b0f061]">Registration.</span>
+              <h2 className={cn("text-2xl font-black tracking-tighter uppercase", t.text.heading)}>
+                Add <span className="text-[#b0f061]">Biller.</span>
               </h2>
               <p className={cn("text-[10px] font-black uppercase tracking-[0.3em] mt-1 opacity-50", t.text.muted)}>
-                Provider Synchronization Protocol
+                Register a new service provider
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-all hover:bg-black/10 dark:hover:bg-white/10", t.text.muted)}
+            className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all hover:bg-black/10 dark:hover:bg-white/10", t.text.muted)}
             disabled={isSubmitting}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={onHandleSubmit} className="p-10 space-y-8">
+        <form onSubmit={onHandleSubmit} className="p-8 space-y-6">
           <AnimatePresence>
             {error && (
               <motion.div 

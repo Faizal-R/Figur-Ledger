@@ -18,7 +18,7 @@ interface CreateAccountModalProps {
   kycData: KYCData;
 }
 
-const ACCOUNT_TYPES: { value: AccountType; label: string; description: string; icon: any }[] = [
+const ACCOUNT_TYPES: { value: AccountType; label: string; description: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
   { value: "savings", label: 'Savings Account', description: 'Earn interest on your savings', icon: TrendingUp },
   { value: 'salary', label: 'Salary Account', description: 'Perfect for monthly payroll', icon: Wallet },
   { value: 'business', label: 'Business Account', description: 'For corporate and trade needs', icon: Building2 },
@@ -74,7 +74,7 @@ export function CreateAccountModal({
       });
       setFormData({ type: '', nickname: '', currency: 'INR', termsAccepted: false, detailsConfirmed: false });
       setErrors({});
-    } catch (err) {
+    } catch {
       setErrors({ submit: 'Failed to create account. Please try again.' });
     } finally {
       setIsSubmitting(false);
@@ -92,16 +92,16 @@ export function CreateAccountModal({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className={cn(
-          "relative w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl",
+          "relative w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col shadow-2xl",
           t.card.base,
           t.radius.lg
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/5">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-white/5">
            <div>
-              <h3 className={cn("text-xl font-bold", t.text.heading)}>Open New Account</h3>
-              <p className={cn("text-xs font-medium opacity-50", t.text.muted)}>Establish your financial base with FigurLedger</p>
+              <h3 className={cn("text-lg font-bold", t.text.heading)}>Open New Account</h3>
+              <p className={cn("text-xs font-medium opacity-50", t.text.muted)}>Select an account type to get started</p>
            </div>
            <button
              onClick={onClose}
@@ -112,7 +112,7 @@ export function CreateAccountModal({
            </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
           {/* Account Type */}
           <div className="space-y-4">
             <label className={cn("text-xs font-bold uppercase tracking-wider opacity-60", t.text.muted)}>Select Account Type</label>
@@ -216,13 +216,13 @@ export function CreateAccountModal({
         </form>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/2 flex gap-3">
+        <div className="p-5 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/2 flex gap-3">
            <button
              type="button"
              onClick={onClose}
              disabled={isSubmitting}
              className={cn(
-               "flex-1 h-12 rounded-xl text-xs font-bold transition-all",
+               "flex-1 h-11 rounded-xl text-xs font-bold transition-all",
                mode === 'dark' ? "bg-white/5 text-white hover:bg-white/10" : "bg-white border border-slate-200 text-slate-900 hover:bg-slate-50"
              )}
            >
@@ -232,7 +232,7 @@ export function CreateAccountModal({
              onClick={handleSubmit}
              disabled={!isFormValid || isSubmitting}
              className={cn(
-               "flex-[2_2_0%] h-12 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm",
+               "flex-[2_2_0%] h-11 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm",
                mode === 'dark' 
                  ? "bg-[#c1ff72] text-[#0a1a15] disabled:opacity-30" 
                  : "bg-slate-900 text-white disabled:opacity-50"
@@ -250,7 +250,7 @@ export function CreateAccountModal({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-red-500 text-white text-[10px] font-bold shadow-lg flex items-center gap-2 z-[60]"
+                className="absolute bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-red-500 text-white text-[10px] font-bold shadow-lg flex items-center gap-2 z-60"
               >
                  <AlertCircle size={14} />
                  {Object.values(errors)[0]}

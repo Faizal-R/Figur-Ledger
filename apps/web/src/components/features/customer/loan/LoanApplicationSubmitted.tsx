@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, ShieldCheck, Clock, Activity } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LoanApplicationSubmitted({
@@ -12,45 +12,34 @@ export default function LoanApplicationSubmitted({
   const { theme: t } = useTheme();
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={cn(
-        t.card.base,
-        t.radius.lg,
-        "w-full max-w-lg p-10 border border-black/5 dark:border-white/10 shadow-3xl overflow-hidden relative"
-      )}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full space-y-6"
     >
-      {/* Decorative pulse background */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#b0f061]/5 blur-[100px] rounded-full -mr-32 -mt-32 animate-pulse" />
-      
-      <div className="text-center relative z-10">
-        <div className="mx-auto w-24 h-24 rounded-3xl bg-[#b0f061]/20 flex items-center justify-center mb-8 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-           <CheckCircle2 size={40} className="text-[#b0f061]" />
+      {/* Success Animation Area */}
+      <div className="text-center">
+        <div className="mx-auto w-16 h-16 rounded-2xl bg-[#b0f061]/20 flex items-center justify-center mb-4 shadow-xl">
+           <CheckCircle2 size={28} className="text-[#b0f061]" />
         </div>
 
-        <h2 className={cn("text-4xl font-black tracking-tighter uppercase mb-4", t.text.display)}>
-          Protocol <span className="text-[#b0f061]">Transmission</span> Success.
+        <h2 className={cn("text-2xl font-black tracking-tighter uppercase mb-2", t.text.display)}>
+          Application <span className="text-[#b0f061]">Submitted.</span>
         </h2>
 
-        <p className={cn("text-sm font-medium leading-relaxed opacity-60 mb-10 max-w-sm mx-auto", t.text.body)}>
-          Your liquidity request has been successfully broadcast to the Ledger Network and is awaiting institutional verification.
+        <p className={cn("text-xs font-semibold opacity-50 mb-6 mx-auto leading-relaxed", t.text.body)}>
+          Your application is now being reviewed.
         </p>
 
-        <div className={cn("grid grid-cols-1 gap-4 text-left mb-10 p-6 rounded-3xl border border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2")}>
+        <div className={cn("grid grid-cols-1 gap-3 text-left mb-6 p-4 rounded-2xl border border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2")}>
            <InfoItem 
-             icon={<Clock size={16} />} 
-             label="Verification Window" 
-             text="Full cryptographic audit complete within 24 operational hours." 
+             icon={<Clock size={14} />} 
+             label="Review" 
+             text="Review within 24 hours." 
            />
            <InfoItem 
-             icon={<ShieldCheck size={16} />} 
-             label="Governance Protocol" 
-             text="System notifications will trigger upon consensus finality." 
-           />
-           <InfoItem 
-             icon={<Activity size={16} />} 
-             label="Asset Lock" 
-             text="Zero principal deduction until institutional disbursement." 
+             icon={<ShieldCheck size={14} />} 
+             label="Updates" 
+             text="We'll notify you soon." 
            />
         </div>
 
@@ -58,26 +47,28 @@ export default function LoanApplicationSubmitted({
           onClick={onClose}
           className={cn(
             t.button.onyx,
-            "w-full h-16 rounded-3xl uppercase text-[11px] font-black tracking-[0.4em] shadow-2xl transition-all hover:scale-[1.02] active:scale-95"
+            "w-full h-11 rounded-xl uppercase text-[10px] font-black tracking-widest shadow-xl transition-all"
           )}
         >
-          Return to Console
+          View Dashboard
         </button>
       </div>
     </motion.div>
   );
 }
 
-function InfoItem({ icon, label, text }: { icon: any; label: string; text: string }) {
+import { ReactNode } from "react";
+
+function InfoItem({ icon, label, text }: { icon: ReactNode; label: string; text: string }) {
   const { theme: t } = useTheme();
   return (
-    <div className="flex gap-5 items-start">
-      <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center shrink-0 mt-1 shadow-sm">
-         <span className="text-[#b0f061]">{icon}</span>
+    <div className="flex gap-4 items-center">
+      <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-white/5 flex items-center justify-center shrink-0 shadow-sm text-[#b0f061]">
+         {icon}
       </div>
       <div>
-         <p className={cn("text-[9px] font-black uppercase tracking-widest opacity-40 mb-1", t.text.muted)}>{label}</p>
-         <p className={cn("text-[13px] font-bold leading-tight opacity-70", t.text.body)}>{text}</p>
+         <p className={cn("text-[8px] font-black uppercase tracking-widest opacity-40", t.text.muted)}>{label}</p>
+         <p className={cn("text-[11px] font-bold opacity-70", t.text.body)}>{text}</p>
       </div>
     </div>
   );

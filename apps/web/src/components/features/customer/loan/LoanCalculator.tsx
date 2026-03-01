@@ -8,11 +8,13 @@ import LoanApplicationSubmitted from "./LoanApplicationSubmitted";
 import { useApplyLoan } from "@/hooks/api/useLoan";
 import { useAuthUserStore } from "@/store";
 
+import { ILoanProduct } from "@/types/ILoan";
+
 export default function LoanCalculator({
   product,
   onClose,
 }: {
-  product: any;
+  product: ILoanProduct;
   onClose: () => void;
 }) {
   const { theme: t } = useTheme();
@@ -27,7 +29,7 @@ export default function LoanCalculator({
   const processingFee = 1000;
   const interest = Math.round((amount * product.annualInterestRate) / 100);
   const totalPayable = amount + interest + processingFee;
-  const emi = Math.round(totalPayable / tenure);
+  const emi = Math.round(totalPayable / tenure!);
 
   function handleConfirmApply(selectedAccountId: string) {
     const payload = {
@@ -38,7 +40,7 @@ export default function LoanCalculator({
       emiAmount: emi,
       totalPayableAmount: totalPayable,
       creditedAccountId: selectedAccountId,
-      userId: user?.id!,
+      userId: user?.id ?? "",
     };
 
     applyLoan.mutate(payload, {
@@ -55,25 +57,25 @@ export default function LoanCalculator({
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="space-y-4">
         {/* EMI Highlight */}
-        <div className={cn("p-8 rounded-4xl border relative overflow-hidden group shadow-2xl", "bg-[#b0f061]/5 border-[#b0f061]/20")}>
+        <div className={cn("p-4 rounded-3xl border relative overflow-hidden group shadow-xl", "bg-[#b0f061]/5 border-[#b0f061]/20")}>
           <div className="absolute top-0 left-0 w-2 h-full bg-[#b0f061] opacity-60" />
-          <p className={cn("text-[10px] font-black uppercase tracking-[0.4em] mb-2 opacity-60", t.text.muted)}>Calculated Monthly EMI</p>
+          <p className={cn("text-[9px] font-black uppercase tracking-[0.4em] mb-1 opacity-60", t.text.muted)}>Estimated EMI</p>
           <div className="flex items-baseline gap-2">
-             <span className={cn("text-5xl font-black tracking-tighter text-[#b0f061]")}>₹{emi.toLocaleString()}</span>
-             <span className={cn("text-xs font-bold opacity-40", t.text.muted)}>/ MONTH</span>
+             <span className={cn("text-3xl font-black tracking-tighter text-[#b0f061]")}>₹{emi.toLocaleString()}</span>
+             <span className={cn("text-[10px] font-bold opacity-40", t.text.muted)}>/ MO</span>
           </div>
         </div>
 
         {/* Amount */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex justify-between items-end">
             <div>
-               <p className={cn("text-[10px] font-black uppercase tracking-widest opacity-60 mb-1", t.text.muted)}>Capital Requested</p>
-               <h4 className={cn("text-3xl font-black tracking-tighter", t.text.heading)}>₹{amount.toLocaleString()}</h4>
+               <p className={cn("text-[9px] font-black uppercase tracking-widest opacity-60 mb-1", t.text.muted)}>Amount Requested</p>
+               <h4 className={cn("text-xl font-black tracking-tighter", t.text.heading)}>₹{amount.toLocaleString()}</h4>
             </div>
-            <span className={cn("text-[10px] font-bold opacity-30", t.text.muted)}>STEP: 1K</span>
+            <span className={cn("text-[9px] font-bold opacity-30", t.text.muted)}>Step: 1K</span>
           </div>
           <input
             type="range"
@@ -87,9 +89,9 @@ export default function LoanCalculator({
         </div>
 
         {/* Tenure */}
-        <div className="space-y-4">
-          <p className={cn("text-[10px] font-black uppercase tracking-widest opacity-60", t.text.muted)}>Amortization Window</p>
-          <div className="flex flex-wrap gap-3">
+        <div className="space-y-2">
+          <p className={cn("text-[9px] font-black uppercase tracking-widest opacity-60", t.text.muted)}>Repayment Window</p>
+          <div className="flex flex-wrap gap-2">
             {product.allowedTenuresInMonths.map((t_month: number) => {
               const isActive = tenure === t_month;
               return (
@@ -97,13 +99,13 @@ export default function LoanCalculator({
                   key={t_month}
                   onClick={() => setTenure(t_month)}
                   className={cn(
-                    "px-8 py-3 rounded-xl border text-[11px] font-black uppercase tracking-widest transition-all duration-300",
+                    "px-4 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all duration-300",
                     isActive
                       ? "bg-[#b0f061] border-[#b0f061] text-[#0a1a15] shadow-lg shadow-[#b0f061]/20"
                       : "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-slate-500 hover:border-[#b0f061]/30"
                   )}
                 >
-                  {t_month} Months
+                  {t_month} Mo.
                 </button>
               );
             })}
@@ -111,32 +113,32 @@ export default function LoanCalculator({
         </div>
 
         {/* Breakdown */}
-        <div className={cn("rounded-3xl p-6 space-y-4 border border-black/5 dark:border-white/5", "bg-black/3 dark:bg-white/3")}>
-          <Row label="Principal Capital" value={`₹${amount.toLocaleString()}`} />
-          <Row label="Calculated Interest" value={`₹${interest.toLocaleString()}`} />
-          <Row label="Origination Fee" value={`₹${processingFee.toLocaleString()}`} />
-          <div className="pt-4 mt-4 border-t border-black/5 dark:border-white/5">
-             <Row label="Total Protocol Liability" value={`₹${totalPayable.toLocaleString()}`} strong />
+        <div className={cn("rounded-2xl p-4 space-y-2.5 border border-black/5 dark:border-white/5", "bg-black/2 dark:bg-white/2")}>
+          <Row label="Loan Amount" value={`₹${amount.toLocaleString()}`} />
+          <Row label="Interest (approx)" value={`₹${interest.toLocaleString()}`} />
+          <Row label="Fee" value={`₹${processingFee.toLocaleString()}`} />
+          <div className="pt-3 mt-3 border-t border-black/5 dark:border-white/5">
+             <Row label="Total Payable" value={`₹${totalPayable.toLocaleString()}`} strong />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between items-center pt-6">
+        <div className="flex justify-between items-center pt-2">
           <button
             onClick={onClose}
-            className={cn("text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all", t.text.muted)}
+            className={cn("text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-slate-500")}
           >
-            Abort Application
+            Cancel
           </button>
 
           <button
             onClick={() => setConfirmOpen(true)}
             className={cn(
                t.button.primary,
-               "px-10 py-4 rounded-2xl uppercase text-[11px] font-black tracking-[0.3em] shadow-2xl transition-all"
+               "px-8 py-3 rounded-xl uppercase text-[10px] font-black tracking-[0.3em] shadow-xl transition-all"
             )}
           >
-            Initialize Loan Protocol
+            Apply Now
           </button>
         </div>
       </div>
@@ -144,7 +146,7 @@ export default function LoanCalculator({
       <LoanApplyConfirmationModal
         open={confirmOpen}
         amount={amount}
-        tenure={tenure}
+        tenure={tenure!}
         onCancel={() => setConfirmOpen(false)}
         onConfirm={handleConfirmApply}
       />

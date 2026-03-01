@@ -28,13 +28,13 @@ export default function LoanApplyModal({
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
+        <div className="p-5 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
           <div>
             <h2 className={cn("text-2xl font-black uppercase tracking-tighter", t.text.heading)}>
-              {product.name} <span className="text-[#b0f061]">Facility.</span>
+              {product.name} <span className="text-[#b0f061]">Loan.</span>
             </h2>
             <p className={cn("text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1", t.text.muted)}>
-              Institutional Liquidity Request
+              Enter Application Details
             </p>
           </div>
           <button 
@@ -45,7 +45,7 @@ export default function LoanApplyModal({
           </button>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           <LoanCalculator product={product} onClose={onClose} />
         </div>
       </div>

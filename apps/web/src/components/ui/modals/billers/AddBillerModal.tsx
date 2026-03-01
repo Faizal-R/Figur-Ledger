@@ -64,19 +64,19 @@ const AddBillerModal: React.FC<AddBillerModalProps> = ({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className={`relative w-full max-w-lg ${t.card.base} ${t.radius.md} border border-white/10 shadow-2xl overflow-hidden`}
+            className={`relative w-full max-w-sm ${t.card.base} ${t.radius.md} border border-white/10 shadow-2xl overflow-hidden`}
           >
             {/* Header Signal */}
             <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-transparent via-[#c1ff72] to-transparent opacity-30" />
             
-            <div className="p-8 space-y-8">
+            <div className="p-6 space-y-6">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                      <div className="w-2 h-2 rounded-full bg-[#c1ff72] animate-pulse" />
-                     <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${t.text.muted}`}>Node Registration</span>
+                     <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${t.text.muted}`}>Add New Biller</span>
                   </div>
-                  <h3 className={`text-3xl font-black tracking-tighter ${t.text.display}`}>Initialize Biller</h3>
+                  <h3 className={`text-2xl font-black tracking-tighter ${t.text.display}`}>Link Biller</h3>
                 </div>
                 <motion.button
                   whileHover={{ rotate: 90, scale: 1.1 }}
@@ -108,7 +108,7 @@ const AddBillerModal: React.FC<AddBillerModalProps> = ({
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>
-                      Consumer ID Protocol
+                      Consumer ID / Account Number
                     </label>
                     <div className="relative group">
                       <Terminal size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#c1ff72] opacity-40 group-focus-within:opacity-100 transition-opacity" />
@@ -132,15 +132,15 @@ const AddBillerModal: React.FC<AddBillerModalProps> = ({
 
                   <div className="space-y-2">
                     <label className={`text-[10px] font-black uppercase tracking-[0.2em] ${t.text.muted} ml-1`}>
-                      Node Alias (Encryption Optional)
+                      Biller Nickname (Optional)
                     </label>
                     <input
                       type="text"
-                      placeholder="E.G. MAIN_RESIDENCE_01"
+                      placeholder="E.G. MY HOME BILL"
                       value={alias}
                       onChange={(e) => setAlias(e.target.value)}
                       className={`
-                        w-full h-14 px-6 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10
+                        w-full h-12 px-6 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10
                         focus:border-[#c1ff72]/30 focus:bg-white dark:focus:bg-black/20 outline-none
                         text-sm font-black tracking-widest ${t.text.heading}
                         rounded-2xl transition-all duration-500 placeholder:text-slate-500/30
@@ -150,20 +150,20 @@ const AddBillerModal: React.FC<AddBillerModalProps> = ({
                 </div>
 
                 {/* Action Matrix */}
-                <div className="flex flex-col gap-4 pt-4">
+                 <div className="flex flex-col gap-4 pt-4">
                    <motion.button
                      whileHover={{ scale: 1.02 }}
                      whileTap={{ scale: 0.98 }}
                      onClick={handleSubmit}
-                     className={`h-14 bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] rounded-2xl font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl transition-all`}
+                     className={`h-12 bg-[#0a1a15] dark:bg-[#c1ff72] text-[#c1ff72] dark:text-[#0a1a15] rounded-2xl font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl transition-all`}
                    >
                      <PlusCircle size={20} />
-                     <span>Establish Connection</span>
+                     <span>Add Biller</span>
                    </motion.button>
                    <div className="flex justify-center items-center gap-3">
-                      <Activity size={14} className="text-[#c1ff72] opacity-40" />
+                      <Activity size={12} className="text-[#c1ff72] opacity-40" />
                       <span className={`text-[9px] font-black uppercase tracking-widest ${t.text.muted} opacity-40`}>
-                        Secure End-to-End Handshake
+                        Your data is encrypted and secure
                       </span>
                    </div>
                 </div>

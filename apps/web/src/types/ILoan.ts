@@ -1,19 +1,16 @@
 export interface ILoanProduct {
   id?: string;
-
+  _id?: string;
   code: string;
-
   name: string;
-
   minAmount: number;
   maxAmount: number;
-  minCreditScore:number;
+  minCreditScore: number;
   annualInterestRate: number;
-
-  allowedTenuresInMonths: Array<3 | 6 | 9>;
-
+  allowedTenuresInMonths: number[];
   isActive: boolean;
-
+  processingTime?: string;
+  features?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -29,7 +26,7 @@ export interface ILoanApplication {
 
   approvedAmount?: number;
 
-  tenureInMonths: 3 | 6 | 9;
+  tenureInMonths: number;
 
   annualInterestRate: number;
 
