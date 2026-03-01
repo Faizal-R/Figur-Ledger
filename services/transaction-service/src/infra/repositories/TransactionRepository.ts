@@ -12,6 +12,7 @@ import { LIMITS } from "../config/limit";
 import { ITransactionFilters } from "../../types/ITransactionFilters";
 import { buildQuery } from "../utils/buildQuery";
 
+
 @injectable()
 export class TransactionRepository implements ITransactionRepository {
   constructor(
@@ -42,7 +43,7 @@ export class TransactionRepository implements ITransactionRepository {
   ): Promise<{ transactions: Transaction[]; totalPages: number }> {
     const skip = (page - 1) * LIMITS.default;
 
-    const {where,orderBy}=buildQuery(accountId,filters);
+    const { where, orderBy } = buildQuery(accountId, filters);
     const records = await prisma.transaction.findMany({
       where,
       orderBy,
@@ -55,7 +56,7 @@ export class TransactionRepository implements ITransactionRepository {
     });
 
     return {
-      transactions: records.map((r) => this.mapper.toDomain(r)),
+      transactions: records.map(r => this.mapper.toDomain(r)),
       totalPages: Math.ceil(totalCount / LIMITS.default),
     };
   }

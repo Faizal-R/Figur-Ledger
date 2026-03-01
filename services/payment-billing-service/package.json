@@ -17,6 +17,10 @@
     "@figur-ledger/handlers": "^1.0.0",
     "@figur-ledger/shared": "^1.0.0",
     "@figur-ledger/utils": "^1.0.0",
-    "axios": "^1.13.4"
+    "axios": "^1.13.4",
+    "cookie-parser": "^1.4.7"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10"
   }
 }

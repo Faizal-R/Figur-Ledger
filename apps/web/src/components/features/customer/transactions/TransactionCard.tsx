@@ -42,7 +42,7 @@ const TABS: { label: string; value: "ALL" | TransactionType }[] = [
   { label: "Withdrawals", value: "WITHDRAW" },
 ];
 
-export interface ITransactionFilters {
+export type ITransactionFilters = {
   startDate: string;
   endDate: string;
   minAmount: string;

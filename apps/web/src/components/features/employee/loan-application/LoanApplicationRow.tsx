@@ -33,7 +33,7 @@ export default function LoanApplicationRow({
 
       <div className={cn("flex justify-between text-[10px] font-black uppercase tracking-widest opacity-60", t.text.muted)}>
         <span>{application.tenureInMonths} months</span>
-        <span>{new Date(application.createdAt).toLocaleDateString()}</span>
+        <span>{new Date(application.createdAt!).toLocaleDateString()}</span>
       </div>
     </div>
   );

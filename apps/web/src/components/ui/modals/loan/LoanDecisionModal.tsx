@@ -49,14 +49,14 @@ export default function LoanDecisionModal({
             <Info label="Amortization Term" value={`${application.tenureInMonths} MONTHS`} />
             <Info label="Protocol APR" value={`${application.annualInterestRate}%`} />
             <div className="pt-4 border-t border-black/5 dark:border-white/5">
-               <Info label="Calculated EMI" value={`₹${application.emiAmount.toLocaleString()}`} />
-               <Info label="Total Liability" value={`₹${application.totalPayableAmount.toLocaleString()}`} />
+               <Info label="Calculated EMI" value={`₹${application.emiAmount?.toLocaleString() ?? "0"}`} />
+               <Info label="Total Liability" value={`₹${application.totalPayableAmount?.toLocaleString() ?? "0"}`} />
             </div>
           </div>
 
           <div className="flex gap-6">
             <button
-              onClick={() => onConfirm({ applicationId: application._id as string, status: "REJECTED" })}
+              onClick={() => onConfirm({ applicationId: application.id as string, status: "REJECTED" })}
               className={cn(
                 "flex-1 h-16 rounded-2xl border transition-all duration-300 font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3",
                 "border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500"
@@ -67,7 +67,7 @@ export default function LoanDecisionModal({
             </button>
 
             <button
-              onClick={() => onConfirm({ applicationId: application._id as string, status: "APPROVED" })}
+              onClick={() => onConfirm({ applicationId: application.id as string, status: "APPROVED" })}
               className={cn(
                 t.button.primary,
                 "flex-1 h-16 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3 shadow-2xl"

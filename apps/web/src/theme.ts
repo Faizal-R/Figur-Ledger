@@ -87,8 +87,7 @@ export const EliteTheme = {
       display: "text-[#0a1a15] font-black tracking-tighter leading-[1.1]",
       heading: "text-[#0a1a15] font-bold tracking-tight",
       body: "text-[#1a2e2a] font-medium leading-relaxed",
-      muted:
-        "#4a635d" === "text-[#4a635d]" ? "text-[#4a635d]" : "text-[#4a635d]", // explicitly darker
+      muted: "text-[#4a635d]", // explicitly darker
       accent: "text-[#0a1a15]",
       lime: "text-[#1a3a32]",
       white: "text-white",
@@ -99,6 +98,7 @@ export const EliteTheme = {
         "bg-[#f4faf4] border border-green-50 shadow-sm hover:shadow-md transition-all duration-300",
       emerald: "bg-[#0a1a15] text-white shadow-xl",
       lime: "bg-[#c1ff72] shadow-md",
+      onyx: "bg-[#0a1a15] text-white shadow-xl",
     },
     button: {
       primary:
@@ -136,6 +136,7 @@ export const EliteTheme = {
       emerald:
         "bg-gradient-to-br from-[#050a09] via-[#0a1a15] to-[#050a09] border border-white/5 shadow-2xl",
       lime: "bg-[#c1ff72] shadow-[0_15px_35px_rgba(193,255,114,0.2)]",
+      onyx: "bg-black border border-white/10 shadow-2xl",
     },
     button: {
       primary:

@@ -235,4 +235,18 @@ export class AccountUseCase implements IAccountUseCase {
           );
     }
   }
+  async getAccountDetailsById(accountId: string): Promise<Account | null> {
+    try {
+      const account = await this._accountRepository.findById(accountId);
+      return account;
+    } catch (error) {
+      console.error("Failed to fetch account details", { accountId, error });
+      throw error instanceof CustomError
+        ? error
+        : new CustomError(
+            AccountMessages.FETCH_ACCOUNT_DETAILS_FAILED,
+            statusCodes.INTERNAL_SERVER_ERROR,
+          );
+    }
+  }
 }

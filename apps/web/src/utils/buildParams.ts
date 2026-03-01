@@ -1,12 +1,12 @@
-import { ITransactionFilters } from "@/components/features/customer/transactions/TransactionCard";
-
-export function buildParams(filters: ITransactionFilters) {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-            params.append(key, value);
-        }
-    });
-    console.log(params.toString());
-    return params.toString();
+export function buildParams<T extends Record<string, unknown>>(
+  filters: T,
+): string {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, String(value));
+    }
+  });
+  console.log(params.toString());
+  return params.toString();
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Roles } from '@figur-ledger/types';
+import { Roles } from '@figur-ledger/shared';
 
 const passwordSchema = z
   .string()

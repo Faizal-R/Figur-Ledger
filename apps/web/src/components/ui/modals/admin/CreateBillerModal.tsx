@@ -10,7 +10,8 @@ import {
   Loader2,
   Sparkles,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  Activity
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";

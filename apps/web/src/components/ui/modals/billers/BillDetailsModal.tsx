@@ -17,7 +17,7 @@ interface BillBreakdownItem {
   amount: number;
 }
 
-interface BillDetailData {
+export interface BillDetailData {
   totalAmount?: number;
   dueDate?: string;
   billNumber?: string;

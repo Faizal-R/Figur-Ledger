@@ -15,8 +15,6 @@ export interface AddressInfo {
   country: string;
 }
 
-
-
 export interface IUser {
   id?: string;
   email: string;
@@ -25,11 +23,17 @@ export interface IUser {
   role: Roles;
   personalInfo: PersonalInfo;
   address: AddressInfo;
+  accountId?: string;
 
   createdAt?: DateString;
 }
 
-export type AccountType = "savings" | "checking" | "business"|"salary"|'current';
+export type AccountType =
+  | "savings"
+  | "checking"
+  | "business"
+  | "salary"
+  | "current";
 export type AccountStatus = "active" | "frozen" | "closed";
 
 export interface IAccount {
@@ -39,22 +43,20 @@ export interface IAccount {
   type: AccountType;
   balance: number;
   currency: string;
-  nickname?:string;
-  ifsc?:string;
+  nickname?: string;
+  ifsc?: string;
   status: AccountStatus;
   createdAt: Date;
   updatedAt: Date;
 }
 
-
 export interface CreateAccountFormData {
-  type: AccountType | '';
+  type: AccountType | "";
   nickname: string;
   currency: string;
   termsAccepted: boolean;
   detailsConfirmed: boolean;
 }
-
 
 export interface KYCData {
   fullName: string;

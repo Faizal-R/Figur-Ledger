@@ -30,6 +30,19 @@ export default function StatementTransactions({ transactions, currency }: Statem
     }).format(amount);
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(date);
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <div className={cn(t.card.base, t.radius.lg, "overflow-hidden shadow-2xl")}>
       {/* Table Header / Toolbar */}
@@ -75,7 +88,7 @@ export default function StatementTransactions({ transactions, currency }: Statem
             {transactions.map((tx) => (
               <tr key={tx.id} className="group hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">
                 <td className="px-6 py-5">
-                  <p className={cn("text-sm font-bold", t.text.heading)}>{tx.date}</p>
+                  <p className={cn("text-sm font-bold", t.text.heading)}>{formatDate(tx.date)}</p>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-4">
@@ -95,7 +108,7 @@ export default function StatementTransactions({ transactions, currency }: Statem
                 <td className="px-6 py-5 text-right">
                   <p className={cn(
                     "text-sm font-black tracking-tighter",
-                    tx.type === 'credit' ? "text-emerald-500" : t.text.heading
+                    tx.type === 'credit' ? "text-emerald-500" : "text-rose-500"
                   )}>
                     {tx.type === 'credit' ? '+' : '-'} {formatCurrency(tx.amount)}
                   </p>

@@ -201,4 +201,15 @@ export class AccountController implements IAccountController {
       accountId,
     );
   });
+  getAccountDetailsById=tryCatch(async(req:Request,res:Response)=>{
+    const accountId=req.params.accountId as string;
+    const account=await this._accountUseCase.getAccountDetailsById(accountId);
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      AccountMessages.ACCOUNT_DETAILS_FETCHED,
+      account,
+    );
+  })
 }

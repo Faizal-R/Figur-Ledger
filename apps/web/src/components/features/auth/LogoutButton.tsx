@@ -20,7 +20,7 @@ export const LogoutButton = ({
 }: LogoutButtonProps) => {
   const router = useRouter();
   // const { logout } = useAuth();
-  const { logout: clearUserFromStore } = useAuthUserStore();
+  const { clearAuth: clearUserFromStore } = useAuthUserStore();
 
   const handleLogout = async () => {
     try {

@@ -82,7 +82,7 @@ export default function LoanDetailsPage() {
         </h3>
 
         <div className="flex gap-14 overflow-x-auto pb-4">
-          {data.data.map((s) => (
+          {data?.data?.map((s) => (
             <div
               key={s.scheduleNumber}
               onClick={() => setSelected(s)}
@@ -105,7 +105,7 @@ export default function LoanDetailsPage() {
               </div>
 
               <span className={`mt-2 text-sm ${FigurLedgerTheme.text.secondary}`}>
-                {new Date(s.dueDate).toLocaleDateString()}
+                {s.dueDate ? new Date(s.dueDate).toLocaleDateString() : 'N/A'}
               </span>
 
               <span className={`text-sm font-semibold ${FigurLedgerTheme.text.primary}`}>
@@ -125,8 +125,8 @@ export default function LoanDetailsPage() {
             </h3>
 
             <div className="mt-6 space-y-4">
-              <DrawerRow label="Due Date" value={new Date(selected.dueDate).toDateString()} />
-              <DrawerRow label="Principal" value={`₹${selected.outstandingPrincipal}`} />
+              <DrawerRow label="Due Date" value={selected.dueDate ? new Date(selected.dueDate).toDateString() : 'N/A'} />
+              <DrawerRow label="Principal" value={`₹${selected.principalAmount}`} />
               <DrawerRow label="Interest" value={`₹${selected.interestAmount}`} />
               <DrawerRow label="Total" value={`₹${selected.totalAmount}`} />
               <DrawerRow label="Status" value={selected.status} />

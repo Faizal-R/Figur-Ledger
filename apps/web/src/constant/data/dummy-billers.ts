@@ -2,28 +2,16 @@
 import { 
   Zap, 
   Droplets, 
-  Wifi, 
-  Smartphone, 
-  Tv, 
+  // Wifi, 
+  // Smartphone, 
+  // Tv, 
   
-  Fuel ,
+  // Fuel ,
   History 
 } from 'lucide-react';
-import { Biller, PaymentHistory, Category } from '@/types/IBill';
+import { Category } from '@/types/IBill';
 
 
-export const DUMMY_RECENT_PAYMENTS: PaymentHistory[] = [
-  {
-    id: 'pay_001',
-    billerName: 'KSEB',
-    consumerId: 'EB9876543210',
-    amount: 1850,
-    date: '2024-05-15',
-    status: 'SUCCESS',
-    invoiceUrl: '#'
-  },
-  // ... Add more payments
-];
 
 export const CATEGORIES: Category[] = [
   { id: 'ALL', name: 'All Billers', icon: History, count: 13, color: 'bg-gradient-to-r from-slate-600 to-slate-700' },

@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@figur-ledger/shared": "^1.0.0",
     "@figur-ledger/types": "^1.0.0",
     "@figur-ledger/utils": "^1.0.0"
   }

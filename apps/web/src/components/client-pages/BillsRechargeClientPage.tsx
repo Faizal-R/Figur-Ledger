@@ -24,7 +24,7 @@ import {
 } from "@/hooks/api/usePaymentAndBillingService";
 import { useAuthUserStore } from "@/store";
 import { toast } from "sonner";
-import BillDetailsModal from "../ui/modals/billers/BillDetailsModal";
+import BillDetailsModal, { BillDetailData } from "../ui/modals/billers/BillDetailsModal";
 import { useUserAccounts } from "@/hooks/api/useProfileAndAccount";
 import { IPayment } from "@/types/IPayment";
 
@@ -278,7 +278,7 @@ const BillsRechargesPage: React.FC = () => {
           }}
           onPayNow={handlePayBill}
           accounts={accounts?.data || []}
-          billDetails={billDetail?.data || null}
+          billDetails={billDetail?.data as BillDetailData || null}
         />
       )}
     </motion.div>

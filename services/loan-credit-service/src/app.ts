@@ -1,5 +1,5 @@
 import express from "express";
-import cookieParser from "cookie-parser";
+
 import cors from "cors";
 import router from "./routes/route";
 import dotenv from 'dotenv'
@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+
 
 const corsOptions = {
     origin: process.env.FRONTEND_DOMAIN_URL,
