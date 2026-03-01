@@ -57,7 +57,7 @@ export default function LoanCalculator({
     <>
       <div className="space-y-8">
         {/* EMI Highlight */}
-        <div className={cn("p-10 rounded-[2rem] border relative overflow-hidden group shadow-2xl", "bg-[#b0f061]/5 border-[#b0f061]/20")}>
+        <div className={cn("p-8 rounded-4xl border relative overflow-hidden group shadow-2xl", "bg-[#b0f061]/5 border-[#b0f061]/20")}>
           <div className="absolute top-0 left-0 w-2 h-full bg-[#b0f061] opacity-60" />
           <p className={cn("text-[10px] font-black uppercase tracking-[0.4em] mb-2 opacity-60", t.text.muted)}>Calculated Monthly EMI</p>
           <div className="flex items-baseline gap-2">
@@ -111,7 +111,7 @@ export default function LoanCalculator({
         </div>
 
         {/* Breakdown */}
-        <div className={cn("rounded-3xl p-8 space-y-4 border border-black/5 dark:border-white/5", "bg-black/[0.03] dark:bg-white/[0.03]")}>
+        <div className={cn("rounded-3xl p-6 space-y-4 border border-black/5 dark:border-white/5", "bg-black/3 dark:bg-white/3")}>
           <Row label="Principal Capital" value={`₹${amount.toLocaleString()}`} />
           <Row label="Calculated Interest" value={`₹${interest.toLocaleString()}`} />
           <Row label="Origination Fee" value={`₹${processingFee.toLocaleString()}`} />

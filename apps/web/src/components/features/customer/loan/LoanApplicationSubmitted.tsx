@@ -17,7 +17,7 @@ export default function LoanApplicationSubmitted({
       className={cn(
         t.card.base,
         t.radius.lg,
-        "w-full max-w-xl p-12 border border-black/5 dark:border-white/10 shadow-3xl overflow-hidden relative"
+        "w-full max-w-lg p-10 border border-black/5 dark:border-white/10 shadow-3xl overflow-hidden relative"
       )}
     >
       {/* Decorative pulse background */}
@@ -36,7 +36,7 @@ export default function LoanApplicationSubmitted({
           Your liquidity request has been successfully broadcast to the Ledger Network and is awaiting institutional verification.
         </p>
 
-        <div className={cn("grid grid-cols-1 gap-4 text-left mb-10 p-8 rounded-3xl border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02]")}>
+        <div className={cn("grid grid-cols-1 gap-4 text-left mb-10 p-6 rounded-3xl border border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2")}>
            <InfoItem 
              icon={<Clock size={16} />} 
              label="Verification Window" 

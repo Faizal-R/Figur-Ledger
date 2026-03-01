@@ -35,11 +35,11 @@ export default function LoanApplyConfirmationModal({
         className={cn(
           t.card.base,
           t.radius.lg,
-          "w-full max-w-2xl shadow-3xl border border-white/5 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
+          "w-full max-w-lg shadow-3xl border border-white/5 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
         )}
       >
         {/* Header */}
-        <div className="p-10 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+        <div className="p-8 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
            <div className="flex items-center gap-4 mb-2">
               <ShieldCheck size={20} className="text-[#b0f061]" />
               <h3 className={cn("text-2xl font-black uppercase tracking-tighter", t.text.heading)}>
@@ -51,8 +51,8 @@ export default function LoanApplyConfirmationModal({
            </p>
         </div>
 
-        <div className="p-10 space-y-10">
-          <div className={cn("rounded-3xl p-8 space-y-4 border border-black/5 dark:border-white/5 bg-black/[0.03] dark:bg-white/[0.03]")}>
+        <div className="p-8 space-y-8">
+          <div className={cn("rounded-3xl p-6 space-y-4 border border-black/5 dark:border-white/5 bg-black/[0.03] dark:bg-white/[0.03]")}>
             <Row label="Capital Principal" value={`₹${amount.toLocaleString()}`} />
             <Row label="Term Duration" value={`${tenure} MONTHS`} />
           </div>
@@ -78,7 +78,7 @@ export default function LoanApplyConfirmationModal({
         </div>
 
         {/* Footer */}
-        <div className="p-10 border-t border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
+        <div className="p-8 border-t border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
           <button
             onClick={onCancel}
             className={cn("text-[10px] font-black uppercase tracking-[0.2em] px-8 py-4 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all", t.text.muted)}

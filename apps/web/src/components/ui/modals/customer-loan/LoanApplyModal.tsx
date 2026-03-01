@@ -24,11 +24,11 @@ export default function LoanApplyModal({
         className={cn(
           t.card.base,
           t.radius.lg,
-          "w-full max-w-xl shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 overflow-hidden animate-in fade-in zoom-in duration-300"
+          "w-full max-w-lg shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 overflow-hidden animate-in fade-in zoom-in duration-300"
         )}
       >
         {/* Header */}
-        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
+        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/5 dark:bg-white/5">
           <div>
             <h2 className={cn("text-2xl font-black uppercase tracking-tighter", t.text.heading)}>
               {product.name} <span className="text-[#b0f061]">Facility.</span>
@@ -45,7 +45,7 @@ export default function LoanApplyModal({
           </button>
         </div>
 
-        <div className="p-10">
+        <div className="p-8">
           <LoanCalculator product={product} onClose={onClose} />
         </div>
       </div>
