@@ -392,11 +392,12 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
                     <div
                       className={cn(
                         "w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                        txn.type === "WITHDRAW"
+                        txn.senderAccountId === accountId
                           ? "bg-red-500/10 text-red-500"
-                          : txn.type === "DEPOSIT"
+                          : txn.receiverAccountId === accountId
                             ? "bg-green-500/10 text-green-600"
                             : "bg-blue-500/10 text-blue-500",
+
                       )}
                     >
                       <Icon type={txn.type} />
@@ -432,14 +433,15 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
                       <p
                         className={cn(
                           "text-lg font-bold tracking-tight",
-                          txn.type === "WITHDRAW"
+                          txn.senderAccountId === accountId
                             ? "text-red-500"
                             : "text-green-600",
                         )}
                       >
-                        {txn.type === "WITHDRAW" ? "-" : "+"}₹
+                        {txn.senderAccountId === accountId ? "-" : "+"}₹
                         {txn.amount.toLocaleString()}
                       </p>
+
                       <p
                         className={cn(
                           "text-[9px] font-bold opacity-30 uppercase tracking-widest",
