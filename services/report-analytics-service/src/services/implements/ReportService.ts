@@ -25,6 +25,7 @@ export class ReportService implements IReportService {
       value: string;
       startDate?: string;
       endDate?: string;
+      page?: string | number;
     },
   ): Promise<any> {
     console.log(accountId);
@@ -47,6 +48,7 @@ export class ReportService implements IReportService {
       accountId,
       start.toISOString(),
       end.toISOString(),
+      Number(statementData.page) || 1,
     );
 
     console.log(data.transactions);
@@ -58,17 +60,18 @@ export class ReportService implements IReportService {
       account.userId,
     );
     console.log(user);
-    
+
     const statement = AccountStatementMapper.toResponse(
       user,
       account,
       data.transactions,
       start.toISOString(),
       end.toISOString(),
+      data.totalPages,
+      Number(statementData.page) || 1,
     );
+
     console.log(statement);
     return statement;
   }
-
-  
 }

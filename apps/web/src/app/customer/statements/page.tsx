@@ -19,7 +19,9 @@ interface StatementParams {
   type: "duration" | "fy" | "custom";
   value: string;
   customRange: { startDate: string; endDate: string };
+  page: number;
 }
+
 
 export default function BankStatementsPage() {
   const { theme: t } = useTheme();
@@ -34,7 +36,9 @@ export default function BankStatementsPage() {
     type: "duration",
     value: "",
     customRange: { startDate: "", endDate: "" },
+    page: 1,
   });
+
 
   const { data: userAccounts } = useUserAccounts(user?.id!);
 
@@ -67,6 +71,13 @@ export default function BankStatementsPage() {
       },
     });
   };
+
+  const handlePageChange = (page: number) => {
+    const newParams = { ...selectedParams, page };
+    handleGenerate(newParams);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
 
   // const statement = generatedAccountStatement?.data;
   // console.log(statement)
@@ -210,7 +221,11 @@ export default function BankStatementsPage() {
                   }),
                 )}
                 currency={generatedAccountStatement.account.currency}
+                currentPage={selectedParams.page}
+                totalPages={generatedAccountStatement.summary.totalPages}
+                onPageChange={handlePageChange}
               />
+
             )}
           </div>
         )}

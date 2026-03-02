@@ -3,6 +3,8 @@
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, ArrowDownLeft, Search, Filter, Download, MoreHorizontal } from "lucide-react";
+import Pagination from "@/components/ui/pagination";
+
 
 interface Transaction {
   id: string;
@@ -17,9 +19,20 @@ interface Transaction {
 interface StatementTransactionsProps {
   transactions: Transaction[];
   currency: string;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-export default function StatementTransactions({ transactions, currency }: StatementTransactionsProps) {
+
+export default function StatementTransactions({ 
+  transactions, 
+  currency,
+  currentPage,
+  totalPages,
+  onPageChange
+}: StatementTransactionsProps) {
+
   const { theme: t } = useTheme();
 
   const formatCurrency = (amount: number) => {
@@ -127,11 +140,16 @@ export default function StatementTransactions({ transactions, currency }: Statem
         </table>
       </div>
       
-      <div className="p-6 border-t border-black/5 dark:border-white/5 flex justify-center">
-        <button className={cn("text-xs font-black uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2", t.text.muted)}>
-          Load More History
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="p-6 border-t border-black/5 dark:border-white/5">
+          <Pagination
+            currentPage={currentPage}
+            totalPage={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
+

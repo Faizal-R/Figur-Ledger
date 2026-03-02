@@ -20,7 +20,10 @@ export interface IAccountStatementResponseDTO {
     totalCredits: number;
     totalDebits: number;
     statementPeriod: string;
+    totalPages: number;
+    currentPage: number;
   };
+
   transactions: {
     id: string;
     date: string;

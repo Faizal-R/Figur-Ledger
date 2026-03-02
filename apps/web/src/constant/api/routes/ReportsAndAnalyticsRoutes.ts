@@ -6,11 +6,13 @@ export const ReportsRoutes = {
     type,
     value,
     customRange,
+    page,
   }: {
     accountId: string;
     type: string;
     value: string;
     customRange: { startDate: string; endDate: string };
+    page: number;
   }) =>
-    `/reports/accounts/${accountId}/statement?${buildParams({ type, value, ...customRange })}`,
+    `/reports/accounts/${accountId}/statement?${buildParams({ type, value, page, ...customRange })}`,
 };

@@ -19,8 +19,10 @@ interface StatementGeneratorProps {
     accountId: string; 
     type: "duration" | "fy"|"custom"; 
     value: string; 
-    customRange: { startDate: string; endDate: string } 
+    customRange: { startDate: string; endDate: string };
+    page: number;
   }) => void;
+
   accounts: IAccount[];
 }
 
@@ -55,7 +57,9 @@ export default function StatementGenerator({ onGenerate, accounts }: StatementGe
       type: duration === "custom" ? "custom" : selectionType,
       value: selectionType === "duration" ? duration : financialYear,
       customRange: duration === "custom" ? customRange : { startDate: "", endDate: "" },
+      page: 1,
     });
+
   };
   useEffect(()=>{
     setSelectedAccount(accounts[0]?.id || "");
@@ -97,9 +101,10 @@ export default function StatementGenerator({ onGenerate, accounts }: StatementGe
               onClick={() => setSelectionType("fy")}
               className={cn(
                 "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all",
-                selectionType === "fy" ? cn("bg-white dark:dark:bg-green-900 shadow-sm shadow-sm", t.radius.full, t.text.heading) : cn("opacity-50", t.text.muted)
+                selectionType === "fy" ? cn("bg-white dark:bg-green-900 shadow-sm", t.radius.full, t.text.heading) : cn("opacity-50", t.text.muted)
               )}
             >
+
               By Finance Year
             </button>
           </div>

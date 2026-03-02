@@ -11,15 +11,24 @@ export class TransactionServiceClient implements ITransactionServiceClient {
     });
   }
 
-  async getTransactions(accountId: string,startDate:string,endDate:string){
+  async getTransactions(
+    accountId: string,
+    startDate: string,
+    endDate: string,
+    page: number = 1,
+  ) {
     try {
-      const res = await this.apiClient?.get(`/transactions/history/${accountId}`,{
-        params:{
-          startDate,
-          endDate,
-          sortBy:"DATE_ASC",
-        }
-      });
+      const res = await this.apiClient?.get(
+        `/transactions/history/${accountId}`,
+        {
+          params: {
+            startDate,
+            endDate,
+            sortBy: "DATE_ASC",
+            page,
+          },
+        },
+      );
       return res?.data;
     } catch (error) {
       throw error;

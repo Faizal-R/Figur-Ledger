@@ -9,8 +9,9 @@ export const ReportService = {
     type: "duration" | "fy" | "custom";
     value: string;
     customRange: { startDate: string; endDate: string };
-  }): Promise<ApiResponse<any>> {
-    return request<ApiResponse<any>>(
+    page: number;
+  }): Promise<ApiResponse<unknown>> {
+    return request<ApiResponse<unknown>>(
       httpMethods.GET,
       ReportsRoutes.GET_GENERATED_ACCOUNT_STATEMENT(params),
     );

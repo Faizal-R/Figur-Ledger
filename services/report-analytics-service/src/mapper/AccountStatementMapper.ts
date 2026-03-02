@@ -7,6 +7,8 @@ export const AccountStatementMapper = {
     transactions: any[],
     startDate: string,
     endDate: string,
+    totalPages: number,
+    currentPage: number,
   ): IAccountStatementResponseDTO {
     return {
       user: {
@@ -42,7 +44,10 @@ export const AccountStatementMapper = {
           .filter((transaction) => transaction.receiverAccountId === account.id)
           .reduce((total, transaction) => total + transaction.amount, 0),
         statementPeriod: `${new Date(startDate).toDateString()} - ${new Date(endDate).toDateString()}`,
+        totalPages,
+        currentPage,
       },
+
       transactions: transactions.map((transaction) => {
         return {
           id: transaction.id,
