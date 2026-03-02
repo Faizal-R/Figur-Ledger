@@ -56,7 +56,7 @@ export class LoanProductController implements ILoanProductController {
     async (req: Request, res: Response): Promise<void> => {
       const { userId } = req.params;
       const loanProducts =
-        await this._loanProductService.getAllLoanProducts(userId);
+        await this._loanProductService.getAllLoanProducts(userId as string);
       return createResponse(
         res,
         statusCodes.SUCCESS,

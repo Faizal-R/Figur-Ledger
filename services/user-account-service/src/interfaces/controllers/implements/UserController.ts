@@ -26,7 +26,7 @@ export class UserController implements IUserController {
         null,
       );
     }
-    const userProfile = await this._userUseCase.getUserProfile(userId);
+    const userProfile = await this._userUseCase.getUserProfile(userId as string);
 
     createResponse(
       res,
@@ -63,7 +63,7 @@ export class UserController implements IUserController {
       return;
     }
     const updatedProfile = await this._userUseCase.updateUserProfile(
-      userId,
+      userId as string,
       updateData,
     );
     createResponse(

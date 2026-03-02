@@ -71,7 +71,7 @@ export class LoanApplicationController implements ILoanApplicationController {
       console.log("status", req.query);
       const loanApplications =
         await this._loanApplicationService.getAllLoanApplicationsByUserAndStatus(
-          userId,
+          userId as string,
           status as string,
         );
       createResponse(

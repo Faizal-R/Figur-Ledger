@@ -15,7 +15,7 @@ export class LoanEmiController implements ILoanEmiController {
   getAllLoanEmis = tryCatch(async (req: Request, res: Response) => {
     const { applicationId } = req.params;
     const emis =
-      await this._loanEmiService.getAllEmisByLoanApplicationId(applicationId);
+      await this._loanEmiService.getAllEmisByLoanApplicationId(applicationId as string);
     createResponse(
       res,
       statusCodes.SUCCESS,

@@ -43,6 +43,7 @@ const TABS: { label: string; value: "ALL" | TransactionType }[] = [
 ];
 
 export type ITransactionFilters = {
+  type: "ALL" | TransactionType;
   startDate: string;
   endDate: string;
   minAmount: string;
@@ -54,6 +55,7 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
 
 
   const [filters, setFilters] = useState<ITransactionFilters>({
+    type: "ALL",
     startDate: "",
     endDate: "",
     minAmount: "",
@@ -73,9 +75,6 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
 
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
   const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"ALL" | TransactionType>("ALL");
-
-  // New Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -83,6 +82,7 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
 
   const resetFilters = () => {
     setFilters({
+      type: "ALL",
       startDate: "",
       endDate: "",
       minAmount: "",
@@ -101,11 +101,14 @@ export default function TransactionTable({ accountId }: { accountId: string }) {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar">
           {TABS.map((tab) => {
-            const active = activeTab === tab.value;
+            const active = filters.type === tab.value;
             return (
               <button
                 key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
+                onClick={() => {
+                  setFilters({ ...filters, type: tab.value });
+                  setCurrentPage(1);
+                }}
                 className={cn(
                   "px-4 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all",
                   active

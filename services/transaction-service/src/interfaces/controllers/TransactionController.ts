@@ -135,7 +135,7 @@ export class TransactionController implements ITransactionController {
     const pageNumber = page ? Number(page) : 1;
     const { transactions, totalPages } =
       await this._transactionUseCases.getTransactionHistory(
-        accountId,
+        accountId as string,
         pageNumber,
         filterQuery as unknown as ITransactionFilters,
       );
