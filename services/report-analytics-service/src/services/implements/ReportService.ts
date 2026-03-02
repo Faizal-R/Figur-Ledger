@@ -70,13 +70,5 @@ export class ReportService implements IReportService {
     return statement;
   }
 
-  async getReportById(id: string): Promise<any> {
-    // Boilerplate: Logic for fetching a report by ID
-    return { id, name: "Sample Report", data: {} };
-  }
-
-  async getAllReports(): Promise<any[]> {
-    // Boilerplate: Logic for fetching all reports
-    return [{ id: "1", name: "Sample Report" }];
-  }
+  
 }

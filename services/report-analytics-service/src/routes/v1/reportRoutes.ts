@@ -8,8 +8,7 @@ const reportController = resolve<IReportController>(
   DI_TOKENS.CONTROLLERS.REPORT_CONTROLLER,
 );
 
-router.get("/accounts/:accountId/statement", reportController.generateReport);
-router.get("/", reportController.getReports);
-router.get("/:id", reportController.getReport);
+router.get("/accounts/:accountId/statement", reportController.getGeneratedStatement);
+
 
 export default router;
