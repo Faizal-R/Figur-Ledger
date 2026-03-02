@@ -10,5 +10,4 @@ export interface Transaction {
   status: TransactionStatus;
   type: TransactionType;
   createdAt: string;
-  entryType: "CREDIT" | "DEBIT";
 }

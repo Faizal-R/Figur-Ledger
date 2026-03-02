@@ -53,29 +53,8 @@ export default function TransactionHeader() {
               <span className={cn("text-[10px] font-black uppercase tracking-widest", t.text.muted)}>Immutable Logic</span>
            </div>
 
-           {/* Tactical Tools */}
-           <div className="flex items-center gap-2 ml-4">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={cn(
-                  "w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center transition-all hover:border-[#b0f061]/30 hover:text-[#b0f061]",
-                  t.text.muted
-                )}
-              >
-                 <Search size={20} />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={cn(
-                  "w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center transition-all hover:border-[#b0f061]/30 hover:text-[#b0f061]",
-                  t.text.muted
-                )}
-              >
-                 <Filter size={20} />
-              </motion.button>
-           </div>
+         
+          
         </div>
       </div>
 
