@@ -1,3 +1,4 @@
+"use client"
 import { useGetAllLoanEmis, useGetAllLoanApplicationsByUserAndStatus } from "@/hooks/api/useLoan";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuthUserStore } from "@/store";
