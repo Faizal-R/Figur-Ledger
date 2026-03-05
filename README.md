@@ -1,135 +1,157 @@
-# Turborepo starter
+# 💎 Figur Ledger
 
-This Turborepo starter is maintained by the Turborepo core team.
+[![Turborepo](https://img.shields.io/badge/built%20with-Turborepo-000000.svg?style=flat-square&logo=turborepo)](https://turbo.build/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.x-black.svg?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![Microservices](https://img.shields.io/badge/Architecture-Microservices-orange?style=flat-square)](https://microservices.io/)
 
-## Using this example
+**Figur Ledger** is a premium, enterprise-grade financial ledger system built on a modern microservices architecture. Designed for scalability, security, and a superior user experience, it provides a comprehensive suite of banking and financial services—from core account management to complex loan processing and real-time notifications.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
-```
+## 🚀 Vision
 
-## What's inside?
+To provide a robust, transparent, and aesthetically elite financial platform that bridges the gap between complex backend banking logic and a seamless, high-performance user interface.
 
-This Turborepo includes the following packages/apps:
+## 🏗️ System Architecture
 
-### Apps and Packages
+The project is structured as a **Monorepo** managed by **Turborepo**, ensuring efficient builds, shared configurations, and a unified development experience.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Backend Infrastructure
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- **API Gateway:** A centralized entry point (`apps/api-gateway`) handling routing, JWT authentication, rate limiting, and request orchestration.
+- **Domain Microservices:**
+  - **`auth-service`**: Identity management, secure registration, and multi-role authentication.
+  - **`user-account-service`**: Managing user profiles and various types of financial accounts (Savings, Current, etc.).
+  - **`transaction-service`**: The core ledger engine, processing high-integrity financial movements using **PostgreSQL** and **Prisma**.
+  - **`loan-credit-service`**: End-to-end loan lifecycle management, including product definitions, applications, and EMI scheduling.
+  - **`payment-billing-service`**: Facilitating biller management and utility payments.
+  - **`notification-service`**: An event-driven service listening to **RabbitMQ** for real-time email and system alerts.
+  - **`report-analytics-service`**: Data-intensive service for generating deep financial insights and account statements.
 
-### Utilities
+### Frontend Excellence
 
-This Turborepo has some additional tools already setup for you:
+- **`apps/web`**: A state-of-the-art **Next.js** application featuring the **"EliteTheme"**—a dark, glassmorphic design system using **Tailwind CSS**, **Framer Motion**, and **shadcn/ui**.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Shared Packages (`/packages`)
 
-### Build
+- `messaging-sdk`: Standardized RabbitMQ communication patterns.
+- `shared`: Common logic, middleware, and constants.
+- `types`: Unified TypeScript definitions across the entire stack.
+- `ui`: Reusable design system components.
+- `handlers`: Standardized error and response handling.
 
-To build all apps and packages, run the following command:
+---
 
-```
-cd my-turborepo
+## ✨ Key Features
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+### 🏦 For Customers
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+- **Unified Dashboard:** Real-time overview of balances, recent transactions, and loan statuses.
+- **Secure Transactions:** Seamless fund transfers between internal and external accounts.
+- **Loan Marketplace:** Browse loan products, simulate EMIs, and apply with ease.
+- **Billing Center:** Save frequent billers and automate utility payments.
+- **Rich Statements:** Generate and export detailed financial reports in various formats.
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 💼 For Employees
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+- **Loan Review Pipeline:** Comprehensive tools for evaluating and approving/rejecting loan applications.
+- **Customer Support Tools:** Deep visibility into user accounts and transaction histories.
+- **KYC/Profile Management:** Streamlined workflows for user verification and updates.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### 👑 For Administrators
 
-### Develop
+- **System Governance:** Full control over loan product parameters and interest rates.
+- **Biller Management:** Configure and manage the ecosystem of utility providers.
+- **Analytics & Reporting:** High-level insights into system performance and financial health.
 
-To develop all apps and packages, run the following command:
+---
 
-```
-cd my-turborepo
+## 🛠️ Tech Stack
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+| Layer                | Technologies                                                                        |
+| :------------------- | :---------------------------------------------------------------------------------- |
+| **Frontend**         | Next.js 15, React, TypeScript, Tailwind CSS, Framer Motion, TanStack Query, Zustand |
+| **Backend**          | Node.js, Express.js, InversifyJS (DI), Zod                                          |
+| **Data Persistence** | MongoDB (Mongoose), PostgreSQL (Prisma)                                             |
+| **Message Broker**   | RabbitMQ                                                                            |
+| **Infrastructure**   | Docker, Docker Compose, Turborepo                                                   |
+| **Testing/Linting**  | ESLint, Prettier, TypeScript                                                        |
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+---
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚦 Getting Started
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+### Prerequisites
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+- **Node.js**: v18+
+- **Docker & Docker Compose**: For running the microservices and databases.
+- **NPM/PNPM**: For package management.
 
-### Remote Caching
+### Installation & Setup
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+1. **Clone the repository:**
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+   ```bash
+   git clone https://github.com/Faizal-R/Figur-Ledger.git
+   cd Figur-Ledger
+   ```
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+2. **Install dependencies:**
 
-```
-cd my-turborepo
+   ```bash
+   npm install
+   ```
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+3. **Configure Environment:**
+   Each service requires its own `.env` file. Follow the `.env.example` in each `/services/*` and `/apps/api-gateway` directory.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+   ```bash
+   # Example for Auth Service
+   cp services/auth-service/.env.example services/auth-service/.env
+   ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+4. **Launch with Docker:**
+   Spin up the entire ecosystem (databases, broker, and services):
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+   ```bash
+   docker-compose up --build -d
+   ```
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+5. **Run the Web App Locally:**
+   ```bash
+   npm run dev --workspace=web
+   ```
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+---
 
-## Useful Links
+## 📖 Development Commands
 
-Learn more about the power of Turborepo:
+- `npm run dev`: Run all services and apps in development mode.
+- `npm run build`: Build all projects in the monorepo.
+- `npm run lint`: Run linting across the entire codebase.
+- `npm run format`: Standardize code formatting.
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## ⚖️ License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<p align="center">
+  Built with ❤️ by the Figur Ledger Team
+</p>
