@@ -5,9 +5,11 @@ import { corsOptions } from "./lib/cors";
 import { useApiProxy } from "./utils/proxy";
 import { useAuth } from "./utils/auth";
 import { limiter } from "./lib/rate-limiter";
-import { routes } from "./config/routes";
+import { ApiGateWayRoutes, routes } from "./config/routes";
 import morgan from "morgan";
-import { CommonMessages } from "@figur-ledger/shared";
+import { CommonMessages, statusCodes } from "@figur-ledger/shared";
+import { errorResponse, createResponse } from "@figur-ledger/handlers";
+import { ApiGatewayMessages } from "./config/constant";
 
 const app: Application = express();
 
@@ -30,20 +32,24 @@ const middlewares = (app: Application) => {
 export const server = () => {
   middlewares(app);
 
-  app.get("/health", (req, res) => {
-    res.status(200).json({
-      status: "OK",
-      service: "api-gateway",
-      timestamp: new Date().toISOString(),
-    });
+  app.get(ApiGateWayRoutes.HEALTH_CHECK, (req, res) => {
+    return createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      ApiGatewayMessages.HEALTH_CHECK_SUCCESS,
+      {
+        status: "OK",
+        service: "api-gateway",
+        timestamp: new Date().toISOString(),
+      },
+    );
   });
 
   // Global error handler
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error(err);
-    return res.status(500).json({
-      message: CommonMessages.INTERNAL_SERVER_ERROR,
-    });
+    return errorResponse(res, err);
   });
 
   listen(app);
@@ -56,4 +62,4 @@ const listen = (app: Application) => {
   );
 };
 
-server()
+server();

@@ -2,6 +2,12 @@ import { Roles } from "@figur-ledger/shared";
 import { IRoute } from "../types";
 import { serviceRegistry, ServiceName } from "./serviceRegistry";
 
+
+export const ApiGateWayRoutes={
+  HEALTH_CHECK: "/health",
+}
+
+
 export const routes: IRoute[] = 
 [
   {
@@ -84,6 +90,10 @@ export const routes: IRoute[] =
 
 
 ];
+
+
+
+
 
 
 
