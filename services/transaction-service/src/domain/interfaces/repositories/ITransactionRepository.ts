@@ -19,4 +19,6 @@ export interface ITransactionRepository {
   ): Promise<Transaction | null>;
 
   deleteById(id: string): Promise<boolean>;
+  getGlobalStats(): Promise<{ count: number; volume: number }>;
+  getTransactionVolume(period: "daily" | "monthly" | "yearly"): Promise<{ date: string; volume: number }[]>;
 }

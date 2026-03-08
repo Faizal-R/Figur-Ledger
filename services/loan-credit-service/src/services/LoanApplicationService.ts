@@ -139,4 +139,12 @@ export class LoanApplicationService implements ILoanApplicationService {
       throw error;
     }
   }
+
+  async getLoanStats(): Promise<any> {
+    try {
+      return await this._loanApplicationRepository.getLoanStats();
+    } catch (error) {
+      throw error;
+    }
+  }
 }

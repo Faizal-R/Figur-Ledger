@@ -8,4 +8,5 @@ export enum UserMessages {
   FETCH_PROFILE_FAILED = "An error occurred while fetching your profile. Please try again.",
   UPDATE_PROFILE_FAILED = "An error occurred while updating your profile. Please try again.",
   CREATE_USER_FAILED = "An error occurred while creating your account. Please try again.",
+  STATS_FETCHED = "User statistics fetched successfully",
 }

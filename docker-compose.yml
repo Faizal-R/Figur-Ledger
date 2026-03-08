@@ -124,6 +124,8 @@ services:
     depends_on:
       - user-account-service
       - transaction-service
+      - loan-credit-service
+      - payment-billing-service
 
 networks:
   figur-network:

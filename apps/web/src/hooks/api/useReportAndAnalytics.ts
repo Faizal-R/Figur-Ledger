@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ReportService } from "@/services/api/ReportService";
+import { ReportService } from "@/services/api/ReportAndAnalyticsService";
 
 // export const useGetGeneratedAccountStatement = (params: {
 //   accountId: string;
@@ -33,4 +33,11 @@ export const useGenerateAccountStatement = () => {
     generate: mutate,
     isLoading: isPending,
   };
+};
+
+export const useGetAdminDashboardAnalytics = (type: "monthly" | "yearly" = "monthly") => {
+  return useQuery({
+    queryKey: ["admin-dashboard-analytics", type],
+    queryFn: () => ReportService.getAnalytics(type),
+  });
 };

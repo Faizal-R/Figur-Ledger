@@ -34,4 +34,15 @@ export class TransactionServiceClient implements ITransactionServiceClient {
       throw error;
     }
   }
+
+  async getGlobalTransactionStats(type: string) {
+    try {
+      const res = await this.apiClient?.get(`/transactions/analytics/stats`, {
+        params: { type },
+      });
+      return res?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

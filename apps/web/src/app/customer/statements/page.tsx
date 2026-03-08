@@ -8,7 +8,7 @@ import StatementHeader from "@/components/features/customer/statements/Statement
 import StatementSummary from "@/components/features/customer/statements/StatementSummary";
 import StatementTransactions from "@/components/features/customer/statements/StatementTransactions";
 import StatementGenerator from "@/components/features/customer/statements/StatementGenerator";
-import { useGenerateAccountStatement } from "@/hooks/api/useReport";
+import { useGenerateAccountStatement } from "@/hooks/api/useReportAndAnalytics";
 import { useUserAccounts } from "@/hooks/api/useProfileAndAccount";
 import { useAuthUserStore } from "@/store";
 

@@ -73,4 +73,15 @@ export class UserUseCase implements IUserUseCase {
       );
     }
   }
+
+  async getUserStats(): Promise<any> {
+    try {
+      return await this._userRepository.getUserStats();
+    } catch (error) {
+      throw new CustomError(
+        "Failed to fetch user stats",
+        statusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

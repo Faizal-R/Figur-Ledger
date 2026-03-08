@@ -8,4 +8,5 @@ export interface IBaseRepository<T> {
   delete(id: string): Promise<T | null>;
   find(query?: FilterQuery<T>, limit?: number,sort?:FilterQuery<T>): Promise<T[]|[]>;
   findOne(query: FilterQuery<T>): Promise<T | null>; 
+  count(query?: FilterQuery<T>): Promise<number>;
 }

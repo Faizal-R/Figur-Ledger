@@ -16,6 +16,7 @@ const app: Application = express();
 const middlewares = (app: Application) => {
   app.use((req, res, next) => {
     console.log(`[Gateway] Incoming: ${req.method} ${req.originalUrl}`);
+    console.log("REQUEST URL: ----",req.url)
     next();
   });
   app.use(morgan("dev"));

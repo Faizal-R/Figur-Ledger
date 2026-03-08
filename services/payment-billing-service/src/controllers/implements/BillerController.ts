@@ -89,4 +89,14 @@ export class BillerController implements IBillerController {
       savedBillers,
     );
   });
+  getBillerStats = tryCatch(async (req: Request, res: Response) => {
+    const stats = await this._billerService.getBillerStats();
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "Biller stats fetched successfully",
+      stats,
+    );
+  });
 }

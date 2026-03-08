@@ -13,6 +13,7 @@ router.post('/deposit', transactionController.processDeposit)
 router.post('/withdraw', transactionController.processWithdrawal)
 router.get('/history/:accountId', transactionController.getTransactionHistory)
 router.post('/transfer',transactionController.processTransfer)
+router.get('/analytics/stats', transactionController.getTransactionStats)
 
 
 

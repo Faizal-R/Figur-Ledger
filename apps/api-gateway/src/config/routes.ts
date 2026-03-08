@@ -11,7 +11,7 @@ export const ApiGateWayRoutes={
 export const routes: IRoute[] = 
 [
   {
-    url: "/api/v1/auth/",
+    url: "/api/v1/auth",
     auth: false,
     proxy: {
       target: serviceRegistry[ServiceName.AUTH].target,
@@ -20,7 +20,7 @@ export const routes: IRoute[] =
       proxyReqPathResolver: (req) => `/api/v1/auth${req.url}`
     },
   },{
-    url: "/api/v1/users/",
+    url: "/api/v1/users",
     auth: true,
     roles: [Roles.CUSTOMER,Roles.ADMIN,Roles.EMPLOYEE],
 
@@ -32,7 +32,7 @@ export const routes: IRoute[] =
 
   },
   {
-    url: "/api/v1/accounts/",
+    url: "/api/v1/accounts",
     auth: true,
     roles:[Roles.CUSTOMER],
 
@@ -43,7 +43,7 @@ export const routes: IRoute[] =
     },
   },
   {
-    url: "/api/v1/transactions/",
+    url: "/api/v1/transactions",
     auth: true,
     roles:[Roles.CUSTOMER],
 
@@ -54,7 +54,7 @@ export const routes: IRoute[] =
     },
   },
   {
-    url: "/api/v1/loan/",
+    url: "/api/v1/loan",
     auth: true,
     roles:[Roles.CUSTOMER,Roles.ADMIN,Roles.EMPLOYEE],
 
@@ -65,8 +65,8 @@ export const routes: IRoute[] =
     },
   },
   {
-    url: "/api/v1/payments/",
-    auth: false,
+    url: "/api/v1/payments",
+    auth: true,
     roles:[Roles.CUSTOMER,Roles.ADMIN,Roles.EMPLOYEE],
 
     proxy: {
@@ -76,14 +76,25 @@ export const routes: IRoute[] =
     },
   },
   {
-    url: "/api/v1/reports/",
-    auth: false,
+    url: "/api/v1/reports",
+    auth: true,
     roles:[Roles.CUSTOMER,Roles.ADMIN,Roles.EMPLOYEE],
 
     proxy: {
       target: serviceRegistry[ServiceName.REPORT_ANALYTICS].target,
       timeout: serviceRegistry[ServiceName.REPORT_ANALYTICS].timeout,
       proxyReqPathResolver: (req) => `/api/v1/reports${req.url}`
+    },
+  },
+  {
+    url: "/api/v1/analytics",
+    auth: true,
+    roles:[Roles.ADMIN],
+
+    proxy: {
+      target: serviceRegistry[ServiceName.REPORT_ANALYTICS].target,
+      timeout: serviceRegistry[ServiceName.REPORT_ANALYTICS].timeout,
+      proxyReqPathResolver: (req) => `/api/v1/analytics${req.url}`
     },
   },
 

@@ -11,4 +11,5 @@ const reportController = resolve<IReportController>(
 router.get("/accounts/:accountId/statement", reportController.getGeneratedStatement);
 
 
+
 export default router;

@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/typescript-config/nextjs.json",
+  "extends": "../../packages/typescript-config/nextjs.json",
   "compilerOptions": {
     "plugins": [
       { "name": "next" }
@@ -14,6 +14,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/components/features/customer/transactions/TransactionCard.tsx"  ],
+  ],
   "exclude": ["node_modules"]
 }
+

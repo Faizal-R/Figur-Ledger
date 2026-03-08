@@ -83,4 +83,17 @@ export class LoanApplicationController implements ILoanApplicationController {
       );
     },
   );
+
+  getLoanStats = tryCatch(
+    async (req: Request, res: Response): Promise<void> => {
+      const stats = await this._loanApplicationService.getLoanStats();
+      createResponse(
+        res,
+        statusCodes.SUCCESS,
+        true,
+        LoanMessages.LOANS_STATS_RETRIEVED,
+        stats,
+      );
+    },
+  );
 }

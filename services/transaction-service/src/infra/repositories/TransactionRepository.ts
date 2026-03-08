@@ -56,7 +56,7 @@ export class TransactionRepository implements ITransactionRepository {
     });
 
     return {
-      transactions: records.map(r => this.mapper.toDomain(r)),
+      transactions: records.map((r: any) => this.mapper.toDomain(r)),
       totalPages: Math.ceil(totalCount / LIMITS.default),
     };
   }
@@ -96,5 +96,37 @@ export class TransactionRepository implements ITransactionRepository {
         statusCodes.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async getGlobalStats(): Promise<{ count: number; volume: number }> {
+    const stats = await prisma.transaction.aggregate({
+      _count: { _all: true },
+      _sum: { amount: true },
+    });
+    return {
+      count: stats._count._all,
+      volume: Number(stats._sum.amount) || 0,
+    };
+  }
+
+  async getTransactionVolume(period: "daily" | "monthly" | "yearly"): Promise<{ date: string; volume: number }[] | []> {
+    let dateFormat = "YYYY-MM-DD";
+    if (period === "yearly") dateFormat = "YYYY-MM";
+    // period "monthly" uses "YYYY-MM-DD" default
+    // period "daily" is deprecated but would also use "YYYY-MM-DD" for now
+
+
+    // Truncating based on period
+    const results = await prisma.$queryRawUnsafe<any[]>(`
+      SELECT TO_CHAR("createdAt", '${dateFormat}') as date, SUM(amount) as volume
+      FROM "Transaction"
+      GROUP BY date
+      ORDER BY date ASC
+    `);
+
+    return results.map((r: { date: string; volume: string | number }) => ({
+      date: r.date,
+      volume: Number(r.volume),
+    }));
   }
 }

@@ -15,4 +15,13 @@ export const ReportsRoutes = {
     page: number;
   }) =>
     `/reports/accounts/${accountId}/statement?${buildParams({ type, value, page, ...customRange })}`,
+ 
 };
+
+
+export const AnalyticsRoutes = {
+  GET_ANALYTICS: "/analytics",
+};
+
+
+

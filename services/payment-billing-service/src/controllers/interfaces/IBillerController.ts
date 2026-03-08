@@ -7,4 +7,5 @@ export interface IBillerController {
     getAllBillers(req: Request, res: Response): Promise<void>;
     saveBiller(req: Request, res: Response): Promise<void>;
     getAllSavedBillers(req: Request, res: Response): Promise<void>;
+    getBillerStats(req: Request, res: Response): Promise<void>;
 }

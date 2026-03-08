@@ -101,4 +101,15 @@ export class UserController implements IUserController {
       createdUser,
     );
   });
+
+  getUserStats = tryCatch(async (req: Request, res: Response) => {
+    const stats = await this._userUseCase.getUserStats();
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      UserMessages.STATS_FETCHED,
+      stats,
+    );
+  });
 }

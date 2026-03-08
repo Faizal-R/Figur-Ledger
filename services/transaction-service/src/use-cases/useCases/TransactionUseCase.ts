@@ -2,9 +2,8 @@ import { inject, injectable } from "inversify";
 import { ITransactionUseCase } from "./interfaces/ITransactionUseCase";
 import { DI_TOKENS } from "../../infra/di/types";
 import { ITransactionRepository } from "../../domain/interfaces/repositories/ITransactionRepository";
-import { Transaction } from "../../domain/entities/Transaction";
+import { Transaction, TransactionType, TTransactionStatus } from "../../domain/entities/Transaction";
 import { IAccountServiceClient } from "../../domain/interfaces/http/IAccountServiceClient";
-import { TransactionStatus, TransactionType } from "@prisma/client";
 import { CustomError } from "@figur-ledger/utils";
 import { statusCodes } from "@figur-ledger/shared";
 import { ITransactionFilters } from "../../types/ITransactionFilters";
@@ -52,8 +51,8 @@ export class TransactionUseCase implements ITransactionUseCase {
       accountId, // receiverAccountId
       amount,
       "INR",
-      TransactionStatus.PENDING,
-      TransactionType.DEPOSIT,
+      "PENDING",
+      "DEPOSIT",
       null, // senderBalanceAfter
       null, // receiverBalanceAfter
       null, // failureReason
@@ -71,7 +70,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       console.log("Account credited:", result);
 
       await this._transactionRepository.updateById(createdTx.id, {
-        status: TransactionStatus.SUCCESS,
+        status: "SUCCESS",
       });
       console.log("Transaction marked as SUCCESS");
       console.log(result);
@@ -79,7 +78,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       return { balance: result.balance, txId: createdTx.id };
     } catch (error: any) {
       await this._transactionRepository.updateById(createdTx.id, {
-        status: TransactionStatus.FAILED,
+        status: "FAILED",
       });
 
       throw new CustomError(
@@ -123,8 +122,8 @@ export class TransactionUseCase implements ITransactionUseCase {
       null, // receiverAccountId
       amount,
       "INR",
-      TransactionStatus.PENDING,
-      TransactionType.WITHDRAW,
+      "PENDING",
+      "WITHDRAW",
       null, // senderBalanceAfter
       null, // receiverBalanceAfter
       null, // failureReason
@@ -143,7 +142,7 @@ export class TransactionUseCase implements ITransactionUseCase {
       console.log("Account debited:", result);
 
       await this._transactionRepository.updateById(createdTx.id, {
-        status: TransactionStatus.SUCCESS,
+        status: "SUCCESS",
       });
 
       console.log("Transaction marked as SUCCESS");
@@ -152,7 +151,7 @@ export class TransactionUseCase implements ITransactionUseCase {
     } catch (error: any) {
       console.error("Error during withdrawal:", error);
       await this._transactionRepository.updateById(createdTx.id, {
-        status: TransactionStatus.FAILED,
+        status: "FAILED",
       });
 
       throw new CustomError(
@@ -179,6 +178,23 @@ export class TransactionUseCase implements ITransactionUseCase {
     } catch (error: unknown) {
       throw new CustomError(
         TransactionMessages.HISTORY_FETCH_FAILED,
+        statusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getTransactionStats(period: "daily" | "monthly" | "yearly"): Promise<any> {
+    try {
+      const stats = await this._transactionRepository.getGlobalStats();
+      const volume = await this._transactionRepository.getTransactionVolume(period);
+      return {
+        count: stats.count,
+        totalVolume: stats.volume,
+        volume,
+      };
+    } catch (error: unknown) {
+      throw new CustomError(
+        "Failed to fetch transaction stats",
         statusCodes.INTERNAL_SERVER_ERROR,
       );
     }

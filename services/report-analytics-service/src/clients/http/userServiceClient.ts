@@ -18,4 +18,13 @@ export class UserServiceClient implements IUserServiceClient {
       throw error;
     }
   }
+
+  async getGlobalUserStats() {
+    try {
+      const res = await this.apiClient?.get(`/users/analytics/stats`);
+      return res?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

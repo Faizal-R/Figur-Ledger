@@ -140,4 +140,28 @@ export class BillerService implements IBillerService {
       throw error;
     }
   }
+
+  async getBillerStats(): Promise<any> {
+    try {
+      const [count, billers] = await Promise.all([
+        this._billerRepository.count(),
+        this._billerRepository.find({}, 5, { createdAt: -1 })
+      ]);
+
+      return { 
+        count,
+        list: billers.map(b => ({
+          id: (b as any).billerId,
+          name: (b as any).name,
+          category: (b as any).category,
+          status: (b as any).isActive ? 'ACTIVE' : 'INACTIVE',
+          volume: '₹0', // Volume would require transaction service join, mock for now
+          growth: '+0%'
+        }))
+      };
+    } catch (error) {
+      console.error("Error fetching biller stats:", error);
+      throw error;
+    }
+  }
 }

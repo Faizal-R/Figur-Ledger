@@ -17,4 +17,5 @@ export interface ITransactionUseCase {
     page: number,
     filters?: ITransactionFilters,
   ): Promise<{ transactions: Transaction[]; totalPages: number }>;
+  getTransactionStats(period: "daily" | "monthly" | "yearly"): Promise<any>;
 }

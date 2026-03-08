@@ -12,6 +12,7 @@ router.delete('/:billerId', billerController.deleteBiller);
 router.get('/', billerController.getAllBillers);
 router.post('/save', billerController.saveBiller);
 router.get('/saved', billerController.getAllSavedBillers);
+router.get('/analytics/stats', billerController.getBillerStats);
 
 
 export default router;

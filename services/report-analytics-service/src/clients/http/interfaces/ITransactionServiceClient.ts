@@ -5,4 +5,5 @@ export interface ITransactionServiceClient {
     endDate: string,
     page?: number,
   ): Promise<any>;
+  getGlobalTransactionStats(type: string): Promise<any>;
 }

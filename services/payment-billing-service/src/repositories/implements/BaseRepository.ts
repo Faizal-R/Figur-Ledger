@@ -29,4 +29,8 @@ export abstract class BaseRepository<T extends Document>
   delete(id: string): Promise<T | null> {
     return this.model.findByIdAndDelete(id).exec();
   }
+  
+  count(query?: FilterQuery<T>): Promise<number> {
+    return this.model.countDocuments(query ?? {}).exec();
+  }
 }

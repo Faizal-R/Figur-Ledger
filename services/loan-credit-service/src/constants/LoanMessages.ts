@@ -9,4 +9,5 @@ export enum LoanMessages {
   EMI_FETCHED = "EMI details fetched successfully",
   INVALID_LOAN_STATUS = "Invalid loan application status provided.",
   NOT_FOUND = "Loan application or product not found.",
+  LOANS_STATS_RETRIEVED = "Loan stats retrieved successfully",
 }

@@ -207,4 +207,18 @@ export class TransactionController implements ITransactionController {
       result,
     );
   });
+
+  getTransactionStats = tryCatch(async (req: Request, res: Response) => {
+    const { type } = req.query as { type: "daily" | "monthly" | "yearly" };
+    const period = type || "daily";
+
+    const stats = await this._transactionUseCases.getTransactionStats(period);
+    createResponse(
+      res,
+      statusCodes.SUCCESS,
+      true,
+      "Transaction stats fetched successfully",
+      stats,
+    );
+  });
 }

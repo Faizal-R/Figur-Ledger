@@ -19,4 +19,5 @@ export interface IBillerService {
   saveBiller(data: Partial<IUsersSavedBillers>): Promise<IUsersSavedBillers>;
 
   getAllSavedBillers(userId: string,category: string): Promise<IUsersSavedBillers[]>;
+  getBillerStats(): Promise<any>;
 }
